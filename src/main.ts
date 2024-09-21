@@ -1,3 +1,5 @@
+import { VideoGame } from "./domain/library/valueobject/VideoGame.ts";
+
 export function add(a: number, b: number): number {
   return a + b;
 }
@@ -6,3 +8,9 @@ export function add(a: number, b: number): number {
 if (import.meta.main) {
   console.log("Add 2 + 3 =", add(2, 3));
 }
+
+VideoGame.builder()
+  .withTitle("Super Mario Bros.")
+  .withPlatform("NES")
+  .withReleaseYear(1900)
+  .build();
