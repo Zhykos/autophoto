@@ -1,5 +1,5 @@
-import { DomainError } from "../../DomainError.ts";
-import type { ValueObject } from "../../ValueObject.ts";
+import { DomainError } from "../DomainError.ts";
+import type { ValueObject } from "../ValueObject.ts";
 import { VideoGamePlatform } from "./VideoGamePlatform.ts";
 import { VideoGameReleaseYear } from "./VideoGameReleaseYear.ts";
 import { VideoGameTitle } from "./VideoGameTitle.ts";

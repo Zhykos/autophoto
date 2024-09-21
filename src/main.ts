@@ -1,4 +1,4 @@
-import { VideoGame } from "./domain/library/valueobject/VideoGame.ts";
+import { VideoGame } from "./library/domain/valueobject/VideoGame.ts";
 
 export function add(a: number, b: number): number {
   return a + b;
