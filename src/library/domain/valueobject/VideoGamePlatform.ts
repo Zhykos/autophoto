@@ -1,5 +1,5 @@
-import { DomainError } from "../DomainError.ts";
-import type { ValueObject } from "../ValueObject.ts";
+import { DomainError } from "../../../common/domain/DomainError.ts";
+import type { ValueObject } from "../../../common/domain/ValueObject.ts";
 
 const platforms = ["NES"];
 

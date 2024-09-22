@@ -1,6 +1,4 @@
 import { VideoGame } from "./library/domain/valueobject/VideoGame.ts";
-import { KvAccessor } from "./library/repository/KvAccessor/KvAccessor.ts";
-import { LibraryRepository } from "./library/repository/LibraryRepository.ts";
 
 export function add(a: number, b: number): number {
   return a + b;
@@ -16,5 +14,3 @@ VideoGame.builder()
   .withPlatform("NES")
   .withReleaseYear(1900)
   .build();
-
-new LibraryRepository(new KvAccessor()).loadLibrary();
