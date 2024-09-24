@@ -1,6 +1,6 @@
+import { crypto } from "@std/crypto/crypto";
 import type { ValueObject } from "../../../common/domain/ValueObject.ts";
 import type { Path } from "./Path.ts";
-import { crypto } from "@std/crypto/crypto";
 
 export class File implements ValueObject {
   private checksum: string | undefined = undefined;

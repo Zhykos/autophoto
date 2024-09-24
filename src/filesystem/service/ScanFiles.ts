@@ -1,5 +1,5 @@
-import type { File } from "../domain/valueobject/File.ts";
 import type { Directory } from "../domain/valueobject/Directory.ts";
+import type { File } from "../domain/valueobject/File.ts";
 import type { FilesRepository } from "../repository/FilesRepository.ts";
 
 export class ScanFiles {

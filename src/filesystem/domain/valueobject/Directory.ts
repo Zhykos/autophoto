@@ -1,6 +1,6 @@
 import type { ValueObject } from "../../../common/domain/ValueObject.ts";
-import { Path } from "./Path.ts";
 import { File } from "./File.ts";
+import { Path } from "./Path.ts";
 
 export class Directory implements ValueObject {
   public constructor(public readonly rootDir: Path) {
