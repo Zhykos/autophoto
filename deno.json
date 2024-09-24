@@ -2,6 +2,7 @@
   "tasks": {
     "dev": "deno run --allow-read --allow-write --unstable --watch src/main.ts",
     "test": "deno test --allow-read",
+    "coverage": "deno test --allow-read --coverage && deno coverage --html && open coverage/html/index.html",
     "format": "deno run -A npm:@biomejs/biome check --write"
   },
   "imports": {
