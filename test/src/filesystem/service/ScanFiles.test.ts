@@ -3,12 +3,12 @@ import {
   assertArrayIncludes,
   assertMatch,
 } from "jsr:@std/assert";
-import { ScanFiles } from "../src/filesystem/service/ScanFiles.ts";
-import { FilesRepository } from "../src/filesystem/repository/FilesRepository.ts";
-import { FilesDataAccessor } from "./mock/repository/FilesDataAccessor.ts";
-import { Directory } from "../src/filesystem/domain/valueobject/Directory.ts";
-import type { File } from "../src/filesystem/domain/valueobject/File.ts";
-import { Path } from "../src/filesystem/domain/valueobject/Path.ts";
+import { ScanFiles } from "../../../../src/filesystem/service/ScanFiles.ts";
+import { FilesRepository } from "../../../../src/filesystem/repository/FilesRepository.ts";
+import { FilesDataAccessor } from "../../../mock/repository/FilesDataAccessor.ts";
+import { Directory } from "../../../../src/filesystem/domain/valueobject/Directory.ts";
+import type { File } from "../../../../src/filesystem/domain/valueobject/File.ts";
+import { Path } from "../../../../src/filesystem/domain/valueobject/Path.ts";
 
 Deno.test(async function scanEmptyDirectory() {
   const service = new ScanFiles(new FilesRepository(new FilesDataAccessor()));
