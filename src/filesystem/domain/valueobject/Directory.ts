@@ -1,6 +1,6 @@
 import { DomainError } from "../../../common/domain/DomainError.ts";
 import type { ValueObject } from "../../../common/domain/ValueObject.ts";
-import { isDirectory } from "../../../common/utils/fileExists.ts";
+import { isDirectory } from "../../../common/utils/file.ts";
 import { File } from "./File.ts";
 import { Path } from "./Path.ts";
 

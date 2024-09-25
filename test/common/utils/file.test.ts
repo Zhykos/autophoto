@@ -1,5 +1,5 @@
 import { assertFalse } from "jsr:@std/assert";
-import { isDirectory, isFile } from "../../../src/common/utils/fileExists.ts";
+import { isDirectory, isFile } from "../../../src/common/utils/file.ts";
 
 Deno.test(function isNotFile() {
   assertFalse(isFile("foo"));

@@ -1,6 +1,6 @@
 import { DomainError } from "../../../common/domain/DomainError.ts";
 import type { ValueObject } from "../../../common/domain/ValueObject.ts";
-import { fileExists } from "../../../common/utils/fileExists.ts";
+import { fileExists } from "../../../common/utils/file.ts";
 
 export class Path implements ValueObject {
   constructor(public readonly value: string) {
