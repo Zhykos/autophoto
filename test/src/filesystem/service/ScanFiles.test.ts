@@ -8,17 +8,21 @@ import type { File } from "../../../../src/filesystem/domain/valueobject/File.ts
 import { Path } from "../../../../src/filesystem/domain/valueobject/Path.ts";
 import { FilesRepository } from "../../../../src/filesystem/repository/FilesRepository.ts";
 import { ScanFiles } from "../../../../src/filesystem/service/ScanFiles.ts";
-import { FilesDataAccessor } from "../../../mock/repository/FilesDataAccessor.ts";
+import { MockFilesDataAccessor } from "../../../mock/repository/MockFilesDataAccessor.ts";
 
 Deno.test(async function scanEmptyDirectory() {
-  const service = new ScanFiles(new FilesRepository(new FilesDataAccessor()));
+  const service = new ScanFiles(
+    new FilesRepository(new MockFilesDataAccessor()),
+  );
   const files: Map<Directory, File[]> = await service.scan([]);
   assertEquals(files.size, 0);
 });
 
 Deno.test(async function scanDirectoryRecursively() {
   // GIVEN
-  const service = new ScanFiles(new FilesRepository(new FilesDataAccessor()));
+  const service = new ScanFiles(
+    new FilesRepository(new MockFilesDataAccessor()),
+  );
   const directory = new Directory(new Path("./test/resources"));
 
   // WHEN
