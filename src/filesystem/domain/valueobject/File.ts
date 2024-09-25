@@ -1,8 +1,8 @@
 import { crypto } from "@std/crypto/crypto";
-import type { ValueObject } from "../../../common/domain/ValueObject.ts";
-import type { Path } from "./Path.ts";
-import { isFile } from "../../../common/utils/fileExists.ts";
 import { DomainError } from "../../../common/domain/DomainError.ts";
+import type { ValueObject } from "../../../common/domain/ValueObject.ts";
+import { isFile } from "../../../common/utils/fileExists.ts";
+import type { Path } from "./Path.ts";
 
 export class File implements ValueObject {
   private checksum: string | undefined = undefined;

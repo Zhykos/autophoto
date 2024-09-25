@@ -1,6 +1,6 @@
+import { assert, assertFalse, assertThrows } from "jsr:@std/assert";
 import { Directory } from "../../../../src/filesystem/domain/valueobject/Directory.ts";
 import { Path } from "../../../../src/filesystem/domain/valueobject/Path.ts";
-import { assert, assertFalse } from "jsr:@std/assert";
 
 Deno.test(function equals() {
   const dir1 = new Directory(new Path("src"));
@@ -17,4 +17,8 @@ Deno.test(function notEqualsSameType() {
 Deno.test(function notEquals() {
   const dir = new Directory(new Path("src"));
   assertFalse(dir.equals("dir2"));
+});
+
+Deno.test(function notDirectory() {
+  assertThrows(() => new Directory(new Path("LICENSE")));
 });
