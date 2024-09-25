@@ -7,7 +7,7 @@ export class Path implements ValueObject {
     this.validateObjectProperties();
   }
 
-  async validateObjectProperties(): Promise<void> {
+  validateObjectProperties(): void {
     if (this.value.trim().length === 0) {
       throw new DomainError("Path is empty");
     }
@@ -16,7 +16,7 @@ export class Path implements ValueObject {
       throw new DomainError(`Path ends with a slash: '${this.value}'`);
     }
 
-    if (!(await fileExists(this.value))) {
+    if (!fileExists(this.value)) {
       throw new DomainError(`Path does not exist: '${this.value}'`);
     }
   }
