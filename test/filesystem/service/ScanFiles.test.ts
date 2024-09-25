@@ -3,10 +3,10 @@ import {
   assertEquals,
   assertMatch,
 } from "jsr:@std/assert";
-import { Directory } from "../../../../src/filesystem/domain/valueobject/Directory.ts";
-import type { File } from "../../../../src/filesystem/domain/valueobject/File.ts";
-import { Path } from "../../../../src/filesystem/domain/valueobject/Path.ts";
-import { ScanFiles } from "../../../../src/filesystem/service/ScanFiles.ts";
+import { Directory } from "../../../src/filesystem/domain/valueobject/Directory.ts";
+import type { File } from "../../../src/filesystem/domain/valueobject/File.ts";
+import { Path } from "../../../src/filesystem/domain/valueobject/Path.ts";
+import { ScanFiles } from "../../../src/filesystem/service/ScanFiles.ts";
 
 Deno.test(async function scanEmptyDirectory() {
   const service = new ScanFiles();
