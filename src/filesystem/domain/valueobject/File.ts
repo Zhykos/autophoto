@@ -1,6 +1,8 @@
 import { crypto } from "@std/crypto/crypto";
 import type { ValueObject } from "../../../common/domain/ValueObject.ts";
 import type { Path } from "./Path.ts";
+import { isFile } from "../../../common/utils/fileExists.ts";
+import { DomainError } from "../../../common/domain/DomainError.ts";
 
 export class File implements ValueObject {
   private checksum: string | undefined = undefined;
@@ -17,7 +19,9 @@ export class File implements ValueObject {
   }
 
   public validateObjectProperties(): void {
-    // DO NOTHING
+    if (!isFile(this.path.value)) {
+      throw new DomainError(`Path is not a file: "${this.path.value}"`);
+    }
   }
 
   public equals(other: unknown): boolean {

@@ -1,4 +1,6 @@
+import { DomainError } from "../../../common/domain/DomainError.ts";
 import type { ValueObject } from "../../../common/domain/ValueObject.ts";
+import { isDirectory } from "../../../common/utils/fileExists.ts";
 import { File } from "./File.ts";
 import { Path } from "./Path.ts";
 
@@ -8,7 +10,9 @@ export class Directory implements ValueObject {
   }
 
   validateObjectProperties(): void {
-    // DO NOTHING
+    if (!isDirectory(this.rootDir.value)) {
+      throw new DomainError(`Path is not a directory: "${this.rootDir.value}"`);
+    }
   }
 
   public equals(other: unknown): boolean {
