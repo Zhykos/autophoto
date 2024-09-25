@@ -4,14 +4,9 @@ import { Path } from "./filesystem/domain/valueobject/Path.ts";
 import { FilesRepository } from "./filesystem/repository/FilesRepository.ts";
 import { KvAccessor } from "./filesystem/repository/KvAccessor/KvAccessor.ts";
 import { Scan } from "./filesystem/service/Scan.ts";
-import { ScanFiles } from "./filesystem/service/ScanFiles.ts";
 
-const scanFilesService = new ScanFiles();
 const fileRepository = new FilesRepository(new KvAccessor());
 const directoryToScan = new Directory(new Path("./test/resources/video-game"));
 const directoryType = FileType.VIDEO_GAME;
 
-new Scan(scanFilesService, fileRepository).scanAndSave(
-  directoryToScan,
-  directoryType,
-);
+new Scan(fileRepository).scanAndSave(directoryToScan, directoryType);
