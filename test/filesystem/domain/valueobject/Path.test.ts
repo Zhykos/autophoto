@@ -1,4 +1,4 @@
-import { assertThrows, assertFalse } from "jsr:@std/assert";
+import { assertFalse, assertThrows } from "jsr:@std/assert";
 import { Path } from "../../../../src/filesystem/domain/valueobject/Path.ts";
 
 Deno.test(function pathEmpty() {
