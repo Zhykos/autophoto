@@ -5,8 +5,12 @@ import { FilesRepository } from "./filesystem/repository/FilesRepository.ts";
 import { KvAccessor } from "./filesystem/repository/KvAccessor/KvAccessor.ts";
 import { Scan } from "./filesystem/service/Scan.ts";
 
-const fileRepository = new FilesRepository(new KvAccessor());
-const directoryToScan = new Directory(new Path("./test/resources/video-game"));
-const directoryType = FileType.VIDEO_GAME;
+export const scan = async (): Promise<void> => {
+  const fileRepository = new FilesRepository(new KvAccessor());
+  const directoryToScan = new Directory(
+    new Path("./test/resources/video-game"),
+  );
+  const directoryType = FileType.VIDEO_GAME;
 
-new Scan(fileRepository).scanAndSave(directoryToScan, directoryType);
+  await new Scan(fileRepository).scanAndSave(directoryToScan, directoryType);
+};

@@ -1,6 +1,6 @@
 {
   "tasks": {
-    "scandir": "deno run --allow-read --allow-write --unstable-kv src/main-scan.ts",
+    "scandir": "deno run --allow-read --allow-write --unstable-kv src/main-run-scan.ts",
     "test": "deno test --allow-read",
     "coverage": "rm -fr coverage && deno test --allow-read --coverage && deno coverage --html --exclude=\"/test/\" && open coverage/html/index.html",
     "format": "deno run -A npm:@biomejs/biome check --write"
