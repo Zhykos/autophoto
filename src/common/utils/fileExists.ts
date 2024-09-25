@@ -1,30 +1,22 @@
-const getFileInfo = (path: string): Deno.FileInfo => {
-  return Deno.lstatSync(path);
+const getFileInfo = (path: string): Deno.FileInfo | null => {
+  try {
+    return Deno.lstatSync(path);
+  } catch (_) {
+    return null;
+  }
 };
 
 export const fileExists = (path: string): boolean => {
-  try {
-    getFileInfo(path);
-    return true;
-  } catch (_) {
-    return false;
-  }
+  const fileInfo: Deno.FileInfo | null = getFileInfo(path);
+  return fileInfo !== null;
 };
 
 export const isFile = (path: string): boolean => {
-  try {
-    const fileInfo: Deno.FileInfo = getFileInfo(path);
-    return fileInfo.isFile;
-  } catch (_) {
-    return false;
-  }
+  const fileInfo: Deno.FileInfo | null = getFileInfo(path);
+  return fileInfo?.isFile ?? false;
 };
 
 export const isDirectory = (path: string): boolean => {
-  try {
-    const fileInfo: Deno.FileInfo = getFileInfo(path);
-    return fileInfo.isDirectory;
-  } catch (_) {
-    return false;
-  }
+  const fileInfo: Deno.FileInfo | null = getFileInfo(path);
+  return fileInfo?.isDirectory ?? false;
 };
