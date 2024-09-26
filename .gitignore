@@ -1,2 +1,2 @@
 /coverage/
-db.autophoto.sqlite3*
+*.sqlite3*
