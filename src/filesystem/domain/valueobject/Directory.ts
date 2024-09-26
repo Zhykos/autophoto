@@ -22,9 +22,9 @@ export class Directory implements ValueObject {
     return false;
   }
 
-  public async scanDirectories(): Promise<File[]> {
+  public async scanDirectories(pattern: RegExp): Promise<File[]> {
     const files: File[] = [];
-    await Directory.scanDirectory(this.rootDir.value, (file: File) => {
+    await Directory.scanDirectory(this.rootDir.value, pattern, (file: File) => {
       files.push(file);
     });
     return files;
@@ -32,16 +32,18 @@ export class Directory implements ValueObject {
 
   private static async scanDirectory(
     directory: string,
+    pattern: RegExp,
     onFileAdded: (file: File) => void,
   ): Promise<void> {
     for await (const dirEntry of Deno.readDir(directory)) {
       if (dirEntry.isDirectory) {
         await Directory.scanDirectory(
           `${directory}/${dirEntry.name}`,
+          pattern,
           onFileAdded,
         );
       } else if (dirEntry.isFile) {
-        if (dirEntry.name === ".DS_Store") {
+        if (dirEntry.name === ".DS_Store" || !pattern.test(dirEntry.name)) {
           continue;
         }
 

@@ -6,7 +6,9 @@ export class Scanner {
   constructor(private readonly repository: FilesRepository) {}
 
   public async scanAndSave(scanData: ScanData): Promise<void> {
-    const files: File[] = await scanData.directory.scanDirectories();
-    await this.repository.saveFiles(files, scanData.fileType);
+    const files: File[] = await scanData.directory.scanDirectories(
+      scanData.pattern,
+    );
+    await this.repository.saveFiles(files);
   }
 }

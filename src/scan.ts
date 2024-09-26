@@ -1,9 +1,7 @@
 import type { Configuration } from "./configuration/domain/aggregate/Configuration.ts";
-import { FileType as ConfigurationFileType } from "./configuration/domain/valueobject/FileType.ts";
 import { ReadConfiguration } from "./configuration/service/ReadConfiguration.ts";
 import { ScanData } from "./filesystem/domain/aggregate/ScanData.ts";
 import { Directory } from "./filesystem/domain/valueobject/Directory.ts";
-import { FileType as FileSystemFileType } from "./filesystem/domain/valueobject/FileType.ts";
 import { Path } from "./filesystem/domain/valueobject/Path.ts";
 import { FilesRepository } from "./filesystem/repository/FilesRepository.ts";
 import { KvAccessor } from "./filesystem/repository/KvAccessor/KvAccessor.ts";
@@ -30,19 +28,10 @@ const readConfiguration = (): ScanData[] => {
       new Path(scan.directory.rootDir.value),
     );
 
-    const directoryType = mapFileType(scan.fileType);
-    scanData.push(new ScanData(directoryToScan, directoryType));
+    scanData.push(new ScanData(directoryToScan, scan.pattern.regex));
   }
 
   // TODO Also save library (video game)
 
   return scanData;
-};
-
-const mapFileType = (fileType: ConfigurationFileType): FileSystemFileType => {
-  if (fileType === ConfigurationFileType["video-game"]) {
-    return FileSystemFileType.VIDEO_GAME;
-  }
-
-  throw new Error(`Invalid file type: ${fileType}`);
 };

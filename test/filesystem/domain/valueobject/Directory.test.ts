@@ -36,7 +36,7 @@ Deno.test(async function scanDirectoryRecursively() {
   const directory = new Directory(new Path("./test/resources"));
 
   // WHEN
-  const files: File[] = await directory.scanDirectories();
+  const files: File[] = await directory.scanDirectories(/^.+webp$/);
 
   // THEN
   assertEquals(files.length, 5);
