@@ -12,7 +12,7 @@ Deno.test(function load() {
     configuration.scans[0].directory.rootDir.value,
     "./test/resources/video-game",
   );
-  assertEquals(configuration.scans[0].fileType, "video-game");
+  assertEquals(configuration.scans[0].directoryType, "video-game");
   assertEquals(
     configuration.scans[0].pattern.regex.source,
     "^(.+) \\(\\d{4}\\)\\/(.+)\\/.+\\.webp$",

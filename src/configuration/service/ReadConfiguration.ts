@@ -4,7 +4,7 @@ import { Configuration } from "../domain/aggregate/Configuration.ts";
 import { ConfigurationDataPattern } from "../domain/valueobject/ConfigurationDataPattern.ts";
 import { ConfigurationScanWithPattern } from "../domain/valueobject/ConfigurationScanWithPattern.ts";
 import { Directory } from "../domain/valueobject/Directory.ts";
-import { FileType } from "../domain/valueobject/FileType.ts";
+import { DirectoryType } from "../domain/valueobject/DirectoryType.ts";
 import { Path } from "../domain/valueobject/Path.ts";
 import type { ConfigurationYamlType } from "./ConfigurationYamlType.ts";
 
@@ -35,23 +35,25 @@ export class ReadConfiguration {
       }
 
       const directory = new Directory(new Path(scan.directory));
-      const fileType: FileType = ReadConfiguration.getFileType(scan.type);
+      const directoryType: DirectoryType = ReadConfiguration.getDirectoryType(
+        scan.type,
+      );
       const pattern = new ConfigurationDataPattern(
         new RegExp(scan["data-pattern"].regex),
         scan["data-pattern"].groups,
       );
 
       configPatterns.push(
-        new ConfigurationScanWithPattern(directory, fileType, pattern),
+        new ConfigurationScanWithPattern(directory, directoryType, pattern),
       );
     }
 
     return configPatterns;
   }
 
-  private static getFileType(type: string): FileType {
+  private static getDirectoryType(type: string): DirectoryType {
     if (type === "video-game") {
-      return FileType["video-game"];
+      return DirectoryType["video-game"];
     }
 
     throw new Error(`Invalid directory type: "${type}"`);
