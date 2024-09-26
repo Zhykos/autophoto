@@ -5,8 +5,8 @@ import type { DataAccessor } from "../DataAccessor.ts";
 import type { FileEntity } from "../entity/FileEntity.ts";
 
 export class KvAccessor extends CommonKvAccessor implements DataAccessor {
-  saveFiles(files: File[]): Promise<void> {
-    this.getKv().then(async (kv) => {
+  async saveFiles(files: File[]): Promise<void> {
+    await this.getKv().then(async (kv) => {
       const fileEntitiesPromises: Promise<FileEntity>[] = files.map(
         async (file) => {
           return {
@@ -22,10 +22,13 @@ export class KvAccessor extends CommonKvAccessor implements DataAccessor {
       for (const fileEntity of fileEntities) {
         const encoder = new TextEncoder();
         const fileData = encoder.encode(JSON.stringify(fileEntity));
-        kv.set(["file", fileEntity.uuid], fileData);
+        await kv.set(["file", fileEntity.uuid], fileData);
       }
     });
+  }
 
-    return Promise.resolve();
+  async close(): Promise<void> {
+    const kv = await this.getKv();
+    kv.close();
   }
 }

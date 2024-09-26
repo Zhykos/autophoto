@@ -2,8 +2,8 @@
   "tasks": {
     "scandir": "deno run --allow-read --allow-write --unstable-kv src/main-run-scan.ts",
     "scanschedule": "deno run --allow-read --allow-write --unstable-kv --unstable-cron src/main-schedule-scan.ts",
-    "test": "deno test --allow-read",
-    "coverage": "rm -fr coverage && deno test --allow-read --coverage && deno coverage --html --exclude=\"/test/\" && open coverage/html/index.html",
+    "test": "deno test --allow-read --allow-write --trace-leaks --unstable-kv",
+    "coverage": "rm -fr coverage && deno test --allow-read --allow-write --unstable-kv --coverage && deno coverage --html --exclude=\"/test/\" && open coverage/html/index.html",
     "format": "deno run -A npm:@biomejs/biome check --write"
   },
   "imports": {
