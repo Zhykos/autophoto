@@ -1,6 +1,6 @@
-import type { Configuration } from "./config/domain/aggregate/Configuration.ts";
-import { FileType as ConfigurationFileType } from "./config/domain/valueobject/FileType.ts";
-import { ReadConfiguration } from "./config/service/ReadConfiguration.ts";
+import type { Configuration } from "./configuration/domain/aggregate/Configuration.ts";
+import { FileType as ConfigurationFileType } from "./configuration/domain/valueobject/FileType.ts";
+import { ReadConfiguration } from "./configuration/service/ReadConfiguration.ts";
 import { ScanData } from "./filesystem/domain/aggregate/ScanData.ts";
 import { Directory } from "./filesystem/domain/valueobject/Directory.ts";
 import { FileType as FileSystemFileType } from "./filesystem/domain/valueobject/FileType.ts";
