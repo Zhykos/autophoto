@@ -35,7 +35,7 @@ export class ReadConfiguration {
       }
 
       const directory = new Directory(new Path(scan.directory));
-      const fileType = FileType[scan.type];
+      const fileType: FileType = ReadConfiguration.getFileType(scan.type);
       const pattern = new ConfigurationDataPattern(
         new RegExp(scan["data-pattern"].regex),
         scan["data-pattern"].groups,
@@ -47,5 +47,13 @@ export class ReadConfiguration {
     }
 
     return configPatterns;
+  }
+
+  private static getFileType(type: string): FileType {
+    if (type === "video-game") {
+      return FileType["video-game"];
+    }
+
+    throw new Error(`Invalid file type: "${type}"`);
   }
 }

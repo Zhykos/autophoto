@@ -15,7 +15,8 @@ export class ConfigurationDataPattern implements ValueObject {
   public equals(other: unknown): boolean {
     if (other instanceof ConfigurationDataPattern) {
       return (
-        this.regex === other.regex && this.groups.join() === other.groups.join()
+        this.regex.source === other.regex.source &&
+        this.groups.join() === other.groups.join()
       );
     }
     return false;
