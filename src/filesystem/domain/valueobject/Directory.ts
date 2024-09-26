@@ -43,11 +43,16 @@ export class Directory implements ValueObject {
           onFileAdded,
         );
       } else if (dirEntry.isFile) {
-        if (dirEntry.name === ".DS_Store" || !pattern.test(dirEntry.name)) {
+        if (dirEntry.name === ".DS_Store") {
           continue;
         }
 
-        const file = new File(new Path(`${directory}/${dirEntry.name}`));
+        const fullPath = `${directory}/${dirEntry.name}`;
+        if (!pattern.test(fullPath)) {
+          continue;
+        }
+
+        const file = new File(new Path(fullPath));
         onFileAdded(file);
       }
     }
