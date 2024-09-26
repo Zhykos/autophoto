@@ -25,11 +25,41 @@ Deno.test(function load() {
 });
 
 Deno.test(function loadFileDoesNotExist() {
-  assertThrows(() => new ReadConfiguration().load("./foo.yml"));
+  const error = assertThrows(() =>
+    new ReadConfiguration().load("./foo.yml"),
+  ) as Error;
+
+  assertEquals(error.message, 'Configuration file not found: "./foo.yml"');
 });
 
 Deno.test(function invalidYaml() {
-  assertThrows(() =>
+  const error = assertThrows(() =>
     new ReadConfiguration().load("./test/resources/invalid-config.yml"),
+  ) as Error;
+
+  assertEquals(
+    error.message,
+    'Invalid configuration file: "./test/resources/invalid-config.yml"',
   );
+});
+
+Deno.test(function invalidYamlNoDirectory() {
+  const error = assertThrows(() =>
+    new ReadConfiguration().load(
+      "./test/resources/invalid-config-no-directory.yml",
+    ),
+  ) as Error;
+
+  assertEquals(
+    error.message,
+    'Invalid configuration scan: {"type":"video-game","data-pattern":{"regex":"^(.+) \\\\(\\\\d{4}\\\\)/(.+)/.+\\\\.webp$","groups":["name"]}}',
+  );
+});
+
+Deno.test(function invalidYamlType() {
+  const error = assertThrows(() =>
+    new ReadConfiguration().load("./test/resources/invalid-config-type.yml"),
+  ) as Error;
+
+  assertEquals(error.message, 'Invalid directory type: "foo"');
 });

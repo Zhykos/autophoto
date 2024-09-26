@@ -54,6 +54,6 @@ export class ReadConfiguration {
       return FileType["video-game"];
     }
 
-    throw new Error(`Invalid file type: "${type}"`);
+    throw new Error(`Invalid directory type: "${type}"`);
   }
 }
