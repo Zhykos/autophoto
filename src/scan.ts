@@ -7,12 +7,12 @@ import { FileType as FileSystemFileType } from "./filesystem/domain/valueobject/
 import { Path } from "./filesystem/domain/valueobject/Path.ts";
 import { FilesRepository } from "./filesystem/repository/FilesRepository.ts";
 import { KvAccessor } from "./filesystem/repository/KvAccessor/KvAccessor.ts";
-import { Scan } from "./filesystem/service/Scan.ts";
+import { Scanner } from "./filesystem/service/Scanner.ts";
 
 export const scan = async (): Promise<void> => {
   const scanData: ScanData[] = readConfiguration();
   const fileRepository = new FilesRepository(new KvAccessor());
-  const scanner = new Scan(fileRepository);
+  const scanner = new Scanner(fileRepository);
   for (const data of scanData) {
     await scanner.scanAndSave(data);
   }
