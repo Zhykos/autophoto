@@ -1,6 +1,6 @@
 import type { ValueObject } from "../../../common/domain/ValueObject.ts";
-import type { Directory } from "../../../filesystem/domain/valueobject/Directory.ts";
-import type { FileType } from "../../../filesystem/domain/valueobject/FileType.ts";
+import type { Directory } from "../../domain/valueobject/Directory.ts";
+import type { FileType } from "../../domain/valueobject/FileType.ts";
 import type { ConfigurationDataPattern } from "./ConfigurationDataPattern.ts";
 
 export class ConfigurationScanWithPattern implements ValueObject {
