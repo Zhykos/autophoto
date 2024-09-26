@@ -12,6 +12,7 @@ export const scan = async (): Promise<void> => {
   const fileRepository = new FilesRepository(new KvAccessor());
   const scanner = new Scanner(fileRepository);
   for (const data of scanData) {
+    console.log(`Scanning ${data.directory.rootDir.value}`);
     await scanner.scanAndSave(data);
   }
 };
