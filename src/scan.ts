@@ -3,8 +3,8 @@ import { ReadConfiguration } from "./configuration/service/ReadConfiguration.ts"
 import { ScanData } from "./filesystem/domain/aggregate/ScanData.ts";
 import { Directory } from "./filesystem/domain/valueobject/Directory.ts";
 import { Path } from "./filesystem/domain/valueobject/Path.ts";
+import { KvAccessor } from "./filesystem/repository/DataAccessor.ts";
 import { FilesRepository } from "./filesystem/repository/FilesRepository.ts";
-import { KvAccessor } from "./filesystem/repository/KvAccessor/KvAccessor.ts";
 import { Scanner } from "./filesystem/service/Scanner.ts";
 
 export const scan = async (
@@ -41,7 +41,7 @@ const readConfiguration = (configurationFilePath: string): ScanData[] => {
     scanData.push(new ScanData(directoryToScan, scan.pattern.regex));
   }
 
-  // TODO Also save library (video game)
+  // TODO Also save library (video game) and link to the scan data
 
   return scanData;
 };
