@@ -1,9 +1,9 @@
-import { scan } from "./scan.ts";
+import { Scanner } from "./x-scanner/service/Scanner.ts";
 
 Deno.cron("Schedule scan", "*/1 * * * *", async () => {
   try {
     console.log("Scanning scheduled...", new Date());
-    await scan();
+    await new Scanner().scan();
     console.log("Scan completed!");
   } catch (error) {
     // TODO Alerting

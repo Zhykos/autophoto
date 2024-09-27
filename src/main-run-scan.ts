@@ -1,8 +1,8 @@
-import { scan } from "./scan.ts";
+import { Scanner } from "./x-scanner/service/Scanner.ts";
 
 try {
   console.log("Scanning...");
-  await scan();
+  await new Scanner().scan();
   console.log("Scan completed!");
 } catch (error) {
   console.error("An error occurred while scanning.");
