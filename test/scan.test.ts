@@ -17,9 +17,8 @@ Deno.test(async function scanOk() {
   await scan("config.yml", tempDatabaseFilePath);
 
   const filesAfterScan: FileEntity[] = await getFilesFromDatabase();
-  assertEquals(filesAfterScan.length, 5);
-
   filesAfterScan.sort((a, b) => a.path.localeCompare(b.path));
+  assertEquals(filesAfterScan.length, 5);
 
   assertEquals(
     filesAfterScan[0].path,
@@ -41,7 +40,14 @@ Deno.test(async function scanOk() {
 
   const videoGamesAfterScan: VideoGameEntity[] =
     await getVideoGamesFromDatabase();
+  videoGamesAfterScan.sort((a, b) => a.title.localeCompare(b.title));
   assertEquals(videoGamesAfterScan.length, 2);
+
+  assertEquals(videoGamesAfterScan[0].title, "8-Bit Bayonetta");
+  assertEquals(videoGamesAfterScan[0].releaseYear, 2015);
+
+  assertEquals(videoGamesAfterScan[1].title, "80's Overdrive");
+  assertEquals(videoGamesAfterScan[1].releaseYear, 2017);
 });
 
 async function getFilesFromDatabase(): Promise<FileEntity[]> {
