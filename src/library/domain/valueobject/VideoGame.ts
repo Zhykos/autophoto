@@ -1,8 +1,7 @@
-import { DomainError } from "../../../common/domain/DomainError.ts";
 import type { ValueObject } from "../../../common/domain/ValueObject.ts";
-import { VideoGamePlatform } from "./VideoGamePlatform.ts";
-import { VideoGameReleaseYear } from "./VideoGameReleaseYear.ts";
-import { VideoGameTitle } from "./VideoGameTitle.ts";
+import type { VideoGamePlatform } from "./VideoGamePlatform.ts";
+import type { VideoGameReleaseYear } from "./VideoGameReleaseYear.ts";
+import type { VideoGameTitle } from "./VideoGameTitle.ts";
 
 export class VideoGame implements ValueObject {
   public constructor(
@@ -24,41 +23,5 @@ export class VideoGame implements ValueObject {
       );
     }
     return false;
-  }
-
-  static builder() {
-    return new VideoGameBuilder();
-  }
-}
-
-class VideoGameBuilder {
-  private title: string | undefined;
-  private platform: string | undefined;
-  private releaseYear: number | undefined;
-
-  withTitle(title: string): VideoGameBuilder {
-    this.title = title;
-    return this;
-  }
-
-  withPlatform(platform: string): VideoGameBuilder {
-    this.platform = platform;
-    return this;
-  }
-
-  withReleaseYear(releaseYear: number): VideoGameBuilder {
-    this.releaseYear = releaseYear;
-    return this;
-  }
-
-  build(): VideoGame {
-    if (!this.title || !this.platform || !this.releaseYear) {
-      throw new DomainError("Title, platform and release year are required");
-    }
-    return new VideoGame(
-      new VideoGameTitle(this.title),
-      new VideoGamePlatform(this.platform),
-      new VideoGameReleaseYear(this.releaseYear),
-    );
   }
 }
