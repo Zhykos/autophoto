@@ -3,7 +3,7 @@ autophoto:
     - directory: ./test/resources/video-game
       type: video-game
       data-pattern:
-        regex: '^(.+) \((\d{4})\)/(.+)/.+\.webp$'
+        regex: '^(.+) \(\d{5}\)/(.+)/.+\.webp$'
         groups:
           - title
           - release-year

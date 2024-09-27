@@ -1,13 +1,16 @@
-import type { VideoGame } from "../valueobject/VideoGame.ts";
+import type { LibraryObject } from "../valueobject/LibraryObject.ts";
+import { VideoGame } from "../valueobject/VideoGame.ts";
 
 export class Library {
-  private videoGames: VideoGame[] = [];
+  private objects: LibraryObject[] = [];
 
   public addVideoGame(videoGame: VideoGame): void {
-    this.videoGames.push(videoGame);
+    if (!this.objects.find((obj) => obj.equals(videoGame))) {
+      this.objects.push(videoGame);
+    }
   }
 
   public getVideoGames(): ReadonlyArray<VideoGame> {
-    return this.videoGames;
+    return this.objects.filter((obj) => obj instanceof VideoGame);
   }
 }

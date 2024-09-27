@@ -9,7 +9,9 @@ export class VideoGameReleaseYear implements ValueObject {
   public validateObjectProperties(): void {
     if (this.year < 1900) {
       // 1900 is an arbitrary value but I'm pretty sure that no video game was released before that year
-      throw new DomainError("Year must be greater than or equal to 1900");
+      throw new DomainError(
+        `Year ${this.year} must be greater than or equal to 1900`,
+      );
     }
   }
 

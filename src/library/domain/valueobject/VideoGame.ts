@@ -1,15 +1,17 @@
 import { DomainError } from "../../../common/domain/DomainError.ts";
-import type { ValueObject } from "../../../common/domain/ValueObject.ts";
+import type { LibraryObject } from "./LibraryObject.ts";
 import { VideoGamePlatform } from "./VideoGamePlatform.ts";
 import { VideoGameReleaseYear } from "./VideoGameReleaseYear.ts";
 import { VideoGameTitle } from "./VideoGameTitle.ts";
 
-export class VideoGame implements ValueObject {
+export class VideoGame implements LibraryObject {
   public constructor(
     public readonly title: VideoGameTitle,
     public readonly platform: VideoGamePlatform,
     public readonly releaseYear: VideoGameReleaseYear,
-  ) {}
+  ) {
+    this.validateObjectProperties();
+  }
 
   public validateObjectProperties(): void {
     // DO NOTHING
@@ -31,7 +33,7 @@ export class VideoGame implements ValueObject {
   }
 }
 
-class VideoGameBuilder {
+export class VideoGameBuilder {
   private title: string | undefined;
   private platform: string | undefined;
   private releaseYear: number | undefined;
@@ -53,8 +55,11 @@ class VideoGameBuilder {
 
   build(): VideoGame {
     if (!this.title || !this.platform || !this.releaseYear) {
-      throw new DomainError("Title, platform and release year are required");
+      throw new DomainError(
+        `Title (${this.title}), platform (${this.platform}) and release year (${this.releaseYear}) are required`,
+      );
     }
+
     return new VideoGame(
       new VideoGameTitle(this.title),
       new VideoGamePlatform(this.platform),

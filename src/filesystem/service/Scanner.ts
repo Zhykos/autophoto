@@ -5,10 +5,11 @@ import type { FilesRepository } from "../repository/FilesRepository.ts";
 export class Scanner {
   constructor(private readonly repository: FilesRepository) {}
 
-  public async scanAndSave(scanData: ScanData): Promise<void> {
+  public async scanAndSave(scanData: ScanData): Promise<File[]> {
     const files: File[] = await scanData.directory.scanDirectories(
       scanData.pattern,
     );
     await this.repository.saveFiles(files);
+    return files;
   }
 }
