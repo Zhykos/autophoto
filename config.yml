@@ -5,6 +5,6 @@ autophoto:
       data-pattern:
         regex: '^(.+) \(\d{4}\)/(.+)/.+\.webp$'
         groups:
-          - name
-          - year
+          - title
+          - release-year
           - platform

@@ -18,8 +18,8 @@ Deno.test(function load() {
     "^(.+) \\(\\d{4}\\)\\/(.+)\\/.+\\.webp$",
   );
   assertEquals(configuration.scans[0].pattern.groups, [
-    "name",
-    "year",
+    "title",
+    "release-year",
     "platform",
   ]);
 });
@@ -52,7 +52,7 @@ Deno.test(function invalidYamlNoDirectory() {
 
   assertEquals(
     error.message,
-    'Invalid configuration scan: {"type":"video-game","data-pattern":{"regex":"^(.+) \\\\(\\\\d{4}\\\\)/(.+)/.+\\\\.webp$","groups":["name"]}}',
+    'Invalid configuration scan: {"type":"video-game","data-pattern":{"regex":"^(.+) \\\\(\\\\d{4}\\\\)/(.+)/.+\\\\.webp$","groups":["title"]}}',
   );
 });
 

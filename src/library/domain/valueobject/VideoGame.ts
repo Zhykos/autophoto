@@ -31,7 +31,7 @@ export class VideoGame implements ValueObject {
   }
 }
 
-class VideoGameBuilder {
+export class VideoGameBuilder {
   private title: string | undefined;
   private platform: string | undefined;
   private releaseYear: number | undefined;

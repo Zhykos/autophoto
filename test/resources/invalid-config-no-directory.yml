@@ -4,4 +4,4 @@ autophoto:
       data-pattern:
         regex: '^(.+) \(\d{4}\)/(.+)/.+\.webp$'
         groups:
-          - name
+          - title
