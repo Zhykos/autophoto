@@ -1,6 +1,7 @@
 import { assertEquals } from "jsr:@std/assert";
 import { fileExists } from "../src/common/utils/file.ts";
 import type { FileEntity } from "../src/filesystem/repository/entity/FileEntity.ts";
+import type { VideoGameEntity } from "../src/library/repository/entity/VideoGameEntity.ts";
 import { scan } from "../src/scan.ts";
 
 const tempDatabaseFilePath = "./test/it-database.sqlite3";
@@ -11,6 +12,7 @@ Deno.test(async function scanOk() {
   }
 
   assertEquals(await getFilesFromDatabase(), []);
+  assertEquals(await getVideoGamesFromDatabase(), []);
 
   await scan("config.yml", tempDatabaseFilePath);
 
@@ -36,6 +38,10 @@ Deno.test(async function scanOk() {
     filesAfterScan[2].checksum,
     "2d64e06439195fd08c21ad7c0e0fb702d27e66c6795ca9bd3089f19a3e328c2cf79e0491279703294c971dd04942fd0e30316206a18081f88e2ae6067d257a5a",
   );
+
+  const videoGamesAfterScan: VideoGameEntity[] =
+    await getVideoGamesFromDatabase();
+  assertEquals(videoGamesAfterScan.length, 2);
 });
 
 async function getFilesFromDatabase(): Promise<FileEntity[]> {
@@ -46,6 +52,19 @@ async function getFilesFromDatabase(): Promise<FileEntity[]> {
     const encoder = new TextDecoder();
     const fileData = encoder.decode(entry.value as BufferSource);
     result.push(JSON.parse(fileData) as FileEntity);
+  }
+  kv.close();
+  return result;
+}
+
+async function getVideoGamesFromDatabase(): Promise<VideoGameEntity[]> {
+  const result: VideoGameEntity[] = [];
+  const kv = await Deno.openKv(tempDatabaseFilePath);
+  const entries = kv.list({ prefix: ["library", "video-game"] });
+  for await (const entry of entries) {
+    const encoder = new TextDecoder();
+    const fileData = encoder.decode(entry.value as BufferSource);
+    result.push(JSON.parse(fileData) as VideoGameEntity);
   }
   kv.close();
   return result;

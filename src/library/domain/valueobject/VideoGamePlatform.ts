@@ -1,7 +1,7 @@
 import { DomainError } from "../../../common/domain/DomainError.ts";
 import type { ValueObject } from "../../../common/domain/ValueObject.ts";
 
-const platforms = ["NES"];
+const platforms = ["Nintendo Switch", "PC"];
 
 export class VideoGamePlatform implements ValueObject {
   public constructor(public readonly platform: string) {

@@ -15,7 +15,7 @@ Deno.test(function load() {
   assertEquals(configuration.scans[0].directoryType, "video-game");
   assertEquals(
     configuration.scans[0].pattern.regex.source,
-    "^(.+) \\(\\d{4}\\)\\/(.+)\\/.+\\.webp$",
+    "^(.+) \\((\\d{4})\\)\\/(.+)\\/.+\\.webp$",
   );
   assertEquals(configuration.scans[0].pattern.groups, [
     "title",
