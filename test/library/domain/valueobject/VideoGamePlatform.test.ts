@@ -4,8 +4,8 @@ import {
   assertMatch,
   assertThrows,
 } from "jsr:@std/assert";
-import { VideoGamePlatform } from "../../../../src/library/domain/valueobject/VideoGamePlatform.ts";
 import { DomainError } from "../../../../src/common/domain/DomainError.ts";
+import { VideoGamePlatform } from "../../../../src/library/domain/valueobject/VideoGamePlatform.ts";
 
 Deno.test(function notEquals() {
   const obj = new VideoGamePlatform("PC");

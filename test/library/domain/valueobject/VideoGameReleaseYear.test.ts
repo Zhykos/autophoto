@@ -1,11 +1,11 @@
 import {
   assert,
-  assertFalse,
   assertEquals,
+  assertFalse,
   assertThrows,
 } from "jsr:@std/assert";
-import { VideoGameReleaseYear } from "../../../../src/library/domain/valueobject/VideoGameReleaseYear.ts";
 import { DomainError } from "../../../../src/common/domain/DomainError.ts";
+import { VideoGameReleaseYear } from "../../../../src/library/domain/valueobject/VideoGameReleaseYear.ts";
 
 Deno.test(function notEquals() {
   const obj = new VideoGameReleaseYear(2000);

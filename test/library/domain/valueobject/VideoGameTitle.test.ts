@@ -1,11 +1,11 @@
 import {
   assert,
-  assertFalse,
   assertEquals,
+  assertFalse,
   assertThrows,
 } from "jsr:@std/assert";
-import { VideoGameTitle } from "../../../../src/library/domain/valueobject/VideoGameTitle.ts";
 import { DomainError } from "../../../../src/common/domain/DomainError.ts";
+import { VideoGameTitle } from "../../../../src/library/domain/valueobject/VideoGameTitle.ts";
 
 Deno.test(function notEquals() {
   const obj = new VideoGameTitle("foo");
