@@ -21,6 +21,7 @@ import {
   type LibraryRepository,
 } from "../../library/repository/LibraryRepository.ts";
 import { Library as LibraryService } from "../../library/service/Library.ts";
+import type { ScanData as XScanData } from "../../x-scanner/domain/aggregate/ScanData.ts";
 
 export class Scanner {
   private kvDriver: KvDriver | undefined;
@@ -28,18 +29,15 @@ export class Scanner {
   private readonly libraryRepository: LibraryRepository;
   private readonly filesRepository: FilesRepository;
 
-  constructor(
-    private readonly configurationFilePath = "./config.yml",
-    databaseFilePath = "./db.autophoto.sqlite3",
-  ) {
-    this.kvDriver = new KvDriver(databaseFilePath);
+  constructor(private readonly scanData: XScanData) {
+    this.kvDriver = new KvDriver(scanData.databaseFilePath);
     this.libraryRepository = new KvLibraryRepository(this.kvDriver);
     this.filesRepository = new KvFilesRepository(this.kvDriver);
   }
 
   public async scan(): Promise<void> {
     const configuration: Configuration = new ReadConfiguration().load(
-      this.configurationFilePath,
+      this.scanData.configurationFilePath.path.value,
     );
 
     const allFiles: File[] = await this.scanFilesThenSave(configuration);

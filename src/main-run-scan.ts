@@ -1,8 +1,9 @@
+import { ScanData } from "./x-scanner/domain/aggregate/ScanData.ts";
 import { Scanner } from "./x-scanner/service/Scanner.ts";
 
 try {
   console.log("Scanning...");
-  await new Scanner().scan();
+  await new Scanner(ScanData.builder().build()).scan();
   console.log("Scan completed!");
 } catch (error) {
   console.error("An error occurred while scanning.");

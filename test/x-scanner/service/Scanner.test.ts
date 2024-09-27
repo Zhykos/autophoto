@@ -2,6 +2,7 @@ import { assertEquals } from "jsr:@std/assert";
 import { fileExists } from "../../../src/common/utils/file.ts";
 import type { FileEntity } from "../../../src/filesystem/repository/entity/FileEntity.ts";
 import type { VideoGameEntity } from "../../../src/library/repository/entity/VideoGameEntity.ts";
+import { ScanData } from "../../../src/x-scanner/domain/aggregate/ScanData.ts";
 import { Scanner } from "../../../src/x-scanner/service/Scanner.ts";
 
 const tempDatabaseFilePath = "./test/it-database.sqlite3";
@@ -44,7 +45,11 @@ async function getVideoGamesFromDatabase(): Promise<VideoGameEntity[]> {
 Deno.test(async function scanOk() {
   await beforeEach();
 
-  const scanner = new Scanner("config.yml", tempDatabaseFilePath);
+  const scanData = ScanData.builder()
+    .withDatabaseFilePath(tempDatabaseFilePath)
+    .build();
+  const scanner = new Scanner(scanData);
+
   try {
     await scanner.scan();
 
