@@ -1,4 +1,4 @@
-import { assertEquals } from "jsr:@std/assert";
+import { assertEquals, assertThrows } from "jsr:@std/assert";
 import { fileExists } from "../src/common/utils/file.ts";
 import type { FileEntity } from "../src/filesystem/repository/entity/FileEntity.ts";
 import type { VideoGameEntity } from "../src/library/repository/entity/VideoGameEntity.ts";
@@ -6,13 +6,43 @@ import { scan } from "../src/scan.ts";
 
 const tempDatabaseFilePath = "./test/it-database.sqlite3";
 
-Deno.test(async function scanOk() {
+async function beforeEach() {
   if (fileExists(tempDatabaseFilePath)) {
     Deno.removeSync(tempDatabaseFilePath);
   }
 
   assertEquals(await getFilesFromDatabase(), []);
   assertEquals(await getVideoGamesFromDatabase(), []);
+}
+
+async function getFilesFromDatabase(): Promise<FileEntity[]> {
+  const result: FileEntity[] = [];
+  const kv = await Deno.openKv(tempDatabaseFilePath);
+  const entries = kv.list({ prefix: ["file"] });
+  for await (const entry of entries) {
+    const encoder = new TextDecoder();
+    const fileData = encoder.decode(entry.value as BufferSource);
+    result.push(JSON.parse(fileData) as FileEntity);
+  }
+  kv.close();
+  return result;
+}
+
+async function getVideoGamesFromDatabase(): Promise<VideoGameEntity[]> {
+  const result: VideoGameEntity[] = [];
+  const kv = await Deno.openKv(tempDatabaseFilePath);
+  const entries = kv.list({ prefix: ["library", "video-game"] });
+  for await (const entry of entries) {
+    const encoder = new TextDecoder();
+    const fileData = encoder.decode(entry.value as BufferSource);
+    result.push(JSON.parse(fileData) as VideoGameEntity);
+  }
+  kv.close();
+  return result;
+}
+
+Deno.test(async function scanOk() {
+  await beforeEach();
 
   await scan("config.yml", tempDatabaseFilePath);
 
@@ -49,29 +79,3 @@ Deno.test(async function scanOk() {
   assertEquals(videoGamesAfterScan[1].title, "80's Overdrive");
   assertEquals(videoGamesAfterScan[1].releaseYear, 2017);
 });
-
-async function getFilesFromDatabase(): Promise<FileEntity[]> {
-  const result: FileEntity[] = [];
-  const kv = await Deno.openKv(tempDatabaseFilePath);
-  const entries = kv.list({ prefix: ["file"] });
-  for await (const entry of entries) {
-    const encoder = new TextDecoder();
-    const fileData = encoder.decode(entry.value as BufferSource);
-    result.push(JSON.parse(fileData) as FileEntity);
-  }
-  kv.close();
-  return result;
-}
-
-async function getVideoGamesFromDatabase(): Promise<VideoGameEntity[]> {
-  const result: VideoGameEntity[] = [];
-  const kv = await Deno.openKv(tempDatabaseFilePath);
-  const entries = kv.list({ prefix: ["library", "video-game"] });
-  for await (const entry of entries) {
-    const encoder = new TextDecoder();
-    const fileData = encoder.decode(entry.value as BufferSource);
-    result.push(JSON.parse(fileData) as VideoGameEntity);
-  }
-  kv.close();
-  return result;
-}

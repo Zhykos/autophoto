@@ -84,11 +84,8 @@ const mapScanToLibraryData = (
   const filePath = completeFilePath
     .replace(scan.directory.rootDir.value, "")
     .substring(1);
-  const regexResult: RegExpExecArray | null = scan.pattern.regex.exec(filePath);
 
-  if (regexResult === null) {
-    throw new Error(`No meta data found from regex for file "${filePath}"`);
-  }
+  const regexResult = scan.pattern.regex.exec(filePath) as RegExpExecArray;
 
   const group1: string = regexResult[1];
   const group2: string = regexResult[2];

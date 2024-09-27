@@ -9,7 +9,9 @@ export class VideoGame implements LibraryObject {
     public readonly title: VideoGameTitle,
     public readonly platform: VideoGamePlatform,
     public readonly releaseYear: VideoGameReleaseYear,
-  ) {}
+  ) {
+    this.validateObjectProperties();
+  }
 
   public validateObjectProperties(): void {
     // DO NOTHING
