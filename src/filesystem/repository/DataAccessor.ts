@@ -1,3 +1,4 @@
+import { crypto } from "@std/crypto/crypto";
 import { CommonKvAccessor } from "../../common/repository/CommonKvAccessor.ts";
 import type { File } from "../domain/valueobject/File.ts";
 import type { FileEntity } from "./entity/FileEntity.ts";
@@ -12,6 +13,7 @@ export class KvAccessor extends CommonKvAccessor implements DataAccessor {
       const fileEntitiesPromises: Promise<FileEntity>[] = files.map(
         async (file) => {
           return {
+            uuid: crypto.randomUUID(),
             path: file.path.value,
             checksum: await file.getChecksum(),
           } satisfies FileEntity;
@@ -23,7 +25,7 @@ export class KvAccessor extends CommonKvAccessor implements DataAccessor {
       for (const fileEntity of fileEntities) {
         const encoder = new TextEncoder();
         const fileData = encoder.encode(JSON.stringify(fileEntity));
-        await kv.set(["file", fileEntity.path], fileData);
+        await kv.set(["file", fileEntity.uuid], fileData);
       }
     });
   }
