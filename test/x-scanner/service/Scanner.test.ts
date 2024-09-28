@@ -160,7 +160,18 @@ Deno.test(async function scanCheckExistingLinks() {
 
   try {
     await scanner.scan();
-    // TODO Check links
+    const allLinks: VideoGameFileLinkEntity[] =
+      await getAllLinksFromDatabase(tempDatabaseFilePath);
+    assertEquals(allLinks.length, 2);
+
+    // Send again the same files
+
+    await scanner.scan();
+    const allLinksTwice: VideoGameFileLinkEntity[] =
+      await getAllLinksFromDatabase(tempDatabaseFilePath);
+    assertEquals(allLinksTwice.length, 2);
+
+    assertEquals(allLinks, allLinksTwice);
   } finally {
     scanner.destroy();
   }
