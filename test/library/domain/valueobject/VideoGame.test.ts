@@ -6,14 +6,12 @@ import {
 } from "jsr:@std/assert";
 import { DomainError } from "../../../../src/common/domain/DomainError.ts";
 import { VideoGame } from "../../../../src/library/domain/valueobject/VideoGame.ts";
-import { VideoGamePlatform } from "../../../../src/library/domain/valueobject/VideoGamePlatform.ts";
 import { VideoGameReleaseYear } from "../../../../src/library/domain/valueobject/VideoGameReleaseYear.ts";
 import { VideoGameTitle } from "../../../../src/library/domain/valueobject/VideoGameTitle.ts";
 
 Deno.test(function notEquals() {
   const obj = new VideoGame(
     new VideoGameTitle("title"),
-    new VideoGamePlatform("PC"),
     new VideoGameReleaseYear(2000),
   );
   assertFalse(obj.equals("foo"));
@@ -21,12 +19,12 @@ Deno.test(function notEquals() {
 
 Deno.test(function builderNoTitle() {
   const error = assertThrows(() =>
-    VideoGame.builder().withPlatform("PC").withReleaseYear(2000).build(),
+    VideoGame.builder().withReleaseYear(2000).build(),
   ) as Error;
 
   assertMatch(
     error.message,
-    /Title \(undefined\), platform \(PC\) and release year \(2000\) are required/,
+    /Title \(undefined\) and release year \(2000\) are required/,
   );
   assert(error instanceof DomainError);
 });

@@ -1,10 +1,12 @@
 import { crypto } from "@std/crypto/crypto";
 import type { KvDriver } from "../../common/dbdriver/KvDriver.ts";
-import type { File } from "../domain/valueobject/File.ts";
+import { File } from "../domain/valueobject/File.ts";
+import { Path } from "../domain/valueobject/Path.ts";
 import type { FileEntity } from "./entity/FileEntity.ts";
 
 export interface FilesRepository {
   saveFiles(files: File[]): Promise<void>;
+  getAllFiles(): Promise<File[]>;
 }
 
 export class KvFilesRepository implements FilesRepository {
@@ -26,5 +28,15 @@ export class KvFilesRepository implements FilesRepository {
     for (const fileEntity of fileEntities) {
       await this.kvDriver.save(["file", fileEntity.uuid], fileEntity);
     }
+  }
+
+  async getAllFiles(): Promise<File[]> {
+    const entities: FileEntity[] = await this.kvDriver.list(
+      ["file"],
+      {} as FileEntity,
+    );
+    return entities.map((entity) => {
+      return new File(new Path(entity.path));
+    });
   }
 }

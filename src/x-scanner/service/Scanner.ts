@@ -4,7 +4,6 @@ import type { ConfigurationScanWithPattern } from "../../configuration/domain/va
 import { ReadConfiguration } from "../../configuration/service/ReadConfiguration.ts";
 import { ScanData } from "../../filesystem/domain/aggregate/ScanData.ts";
 import { Directory } from "../../filesystem/domain/valueobject/Directory.ts";
-import type { File } from "../../filesystem/domain/valueobject/File.ts";
 import { Path } from "../../filesystem/domain/valueobject/Path.ts";
 import {
   type FilesRepository,
@@ -22,34 +21,37 @@ import {
 } from "../../library/repository/LibraryRepository.ts";
 import { Library as LibraryService } from "../../library/service/Library.ts";
 import type { ScanData as XScanData } from "../../x-scanner/domain/aggregate/ScanData.ts";
+import type { File as ScannerFile } from "../domain/valueobject/File.ts";
 
 export class Scanner {
   private kvDriver: KvDriver | undefined;
 
   private readonly libraryRepository: LibraryRepository;
   private readonly filesRepository: FilesRepository;
+  private readonly configurationFilePath: ScannerFile;
 
-  constructor(private readonly scanData: XScanData) {
+  constructor(scanData: XScanData) {
     this.kvDriver = new KvDriver(scanData.databaseFilePath);
     this.libraryRepository = new KvLibraryRepository(this.kvDriver);
     this.filesRepository = new KvFilesRepository(this.kvDriver);
+    this.configurationFilePath = scanData.configurationFilePath;
   }
 
   public async scan(): Promise<void> {
     const configuration: Configuration = new ReadConfiguration().load(
-      this.scanData.configurationFilePath.path.value,
+      this.configurationFilePath.path.value,
     );
 
-    const allFiles: File[] = await this.scanFilesThenSave(configuration);
+    const allFiles: ScannerFile[] = await this.scanFilesThenSave(configuration);
     await this.saveLibrary(configuration, allFiles);
   }
 
   private async scanFilesThenSave(
     configuration: Configuration,
-  ): Promise<File[]> {
+  ): Promise<ScannerFile[]> {
     const scanner = new FsScanner(this.filesRepository);
 
-    const allFiles: File[] = [];
+    const allFiles: ScannerFile[] = [];
 
     for (const scan of configuration.scans) {
       const dirPath = scan.directory.rootDir.value;
@@ -58,7 +60,7 @@ export class Scanner {
       const directoryToScan = new Directory(new Path(dirPath));
 
       const data = new ScanData(directoryToScan, scan.pattern.regex);
-      const files: File[] = await scanner.scanAndSave(data);
+      const files: ScannerFile[] = await scanner.scanAndSave(data);
       allFiles.push(...files);
     }
 
@@ -67,7 +69,7 @@ export class Scanner {
 
   private async saveLibrary(
     configuration: Configuration,
-    allFiles: File[],
+    allFiles: ScannerFile[],
   ): Promise<void> {
     const library = new Library();
 
@@ -85,7 +87,7 @@ export class Scanner {
     }
 
     const libraryService = new LibraryService(this.libraryRepository);
-    await libraryService.save(library);
+    await libraryService.saveVideoGames(library.getVideoGames());
   }
 
   private mapScanToLibraryData(
@@ -100,7 +102,6 @@ export class Scanner {
 
     const group1: string = regexResult[1];
     const group2: string = regexResult[2];
-    const group3: string = regexResult[3];
 
     const builder: VideoGameBuilder = VideoGame.builder();
 
@@ -110,10 +111,6 @@ export class Scanner {
 
     if (scan.pattern.groups[1] === "release-year") {
       builder.withReleaseYear(Number.parseInt(group2));
-    }
-
-    if (scan.pattern.groups[2] === "platform") {
-      builder.withPlatform(group3);
     }
 
     return builder.build();

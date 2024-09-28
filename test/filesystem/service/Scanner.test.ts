@@ -11,5 +11,5 @@ Deno.test(async function scanAndSave() {
   const service = new Scanner(repository);
   const scanData = new ScanData(directory, /^.+webp$/);
   await service.scanAndSave(scanData);
-  assertEquals(repository.files.length, 5);
+  assertEquals((await repository.getAllFiles()).length, 5);
 });

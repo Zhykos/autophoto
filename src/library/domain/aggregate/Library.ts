@@ -10,7 +10,7 @@ export class Library {
     }
   }
 
-  public getVideoGames(): ReadonlyArray<VideoGame> {
+  public getVideoGames(): VideoGame[] {
     return this.objects.filter((obj) => obj instanceof VideoGame);
   }
 }
