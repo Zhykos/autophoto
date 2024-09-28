@@ -19,21 +19,32 @@ import {
   KvLibraryRepository,
   type LibraryRepository,
 } from "../../library/repository/LibraryRepository.ts";
+import type { VideoGameEntity as LibraryVideoGameEntity } from "../../library/repository/entity/VideoGameEntity.ts";
 import { Library as LibraryService } from "../../library/service/Library.ts";
 import type { ScanData as XScanData } from "../../x-scanner/domain/aggregate/ScanData.ts";
+import { FileEntity } from "../domain/entity/FileEntity.ts";
+import { VideoGameEntity as XVideoGameEntity } from "../domain/entity/VideoGameEntity.ts";
+import { VideoGameFileLinkEntity } from "../domain/entity/VideoGameFileLinkEntity.ts";
 import type { File as ScannerFile } from "../domain/valueobject/File.ts";
+import { VideoGamePlatform } from "../domain/valueobject/VideoGamePlatform.ts";
+import {
+  KvLinksRepository,
+  type LinksRepository,
+} from "../repository/LinksRepository.ts";
 
 export class Scanner {
   private kvDriver: KvDriver | undefined;
 
   private readonly libraryRepository: LibraryRepository;
   private readonly filesRepository: FilesRepository;
+  private readonly linksRepository: LinksRepository;
   private readonly configurationFilePath: ScannerFile;
 
   constructor(scanData: XScanData) {
     this.kvDriver = new KvDriver(scanData.databaseFilePath);
     this.libraryRepository = new KvLibraryRepository(this.kvDriver);
     this.filesRepository = new KvFilesRepository(this.kvDriver);
+    this.linksRepository = new KvLinksRepository(this.kvDriver);
     this.configurationFilePath = scanData.configurationFilePath;
   }
 
@@ -42,8 +53,15 @@ export class Scanner {
       this.configurationFilePath.path.value,
     );
 
-    const allFiles: ScannerFile[] = await this.scanFilesThenSave(configuration);
-    await this.saveLibrary(configuration, allFiles);
+    const savedFiles: ScannerFile[] =
+      await this.scanFilesThenSave(configuration);
+
+    const links: VideoGameFileLinkEntity[] = await this.saveVideoGames(
+      configuration,
+      savedFiles,
+    );
+
+    await this.saveLinks(links);
   }
 
   private async scanFilesThenSave(
@@ -51,7 +69,7 @@ export class Scanner {
   ): Promise<ScannerFile[]> {
     const scanner = new FsScanner(this.filesRepository);
 
-    const allFiles: ScannerFile[] = [];
+    const allSavedFiles: ScannerFile[] = [];
 
     for (const scan of configuration.scans) {
       const dirPath = scan.directory.rootDir.value;
@@ -60,37 +78,65 @@ export class Scanner {
       const directoryToScan = new Directory(new Path(dirPath));
 
       const data = new ScanData(directoryToScan, scan.pattern.regex);
-      const files: ScannerFile[] = await scanner.scanAndSave(data);
-      allFiles.push(...files);
+      const savedFiles: ScannerFile[] = await scanner.scanAndSave(data);
+      allSavedFiles.push(...savedFiles);
     }
 
-    return allFiles;
+    return allSavedFiles;
   }
 
-  private async saveLibrary(
+  private async saveVideoGames(
     configuration: Configuration,
-    allFiles: ScannerFile[],
-  ): Promise<void> {
-    const library = new Library();
+    savedFiles: ScannerFile[],
+  ): Promise<VideoGameFileLinkEntity[]> {
+    const links: VideoGameFileLinkEntity[] = [];
 
     for (const scan of configuration.scans) {
-      const dirPath = scan.directory.rootDir.value;
+      const dirPath: string = scan.directory.rootDir.value;
       console.log(`Get meta data from directory ${dirPath}`);
 
-      for (const file of allFiles) {
-        const videoGame: VideoGame = this.mapScanToLibraryData(
-          scan,
-          file.path.value,
+      for (const file of savedFiles) {
+        const filePath: string = file.path.value;
+        const videoGame: VideoGame = this.mapScanToVideoGame(scan, filePath);
+
+        const existingLink: VideoGameFileLinkEntity | undefined = links.find(
+          (link) => link.videoGameEntity.videoGame.equals(videoGame),
         );
-        library.addVideoGame(videoGame);
+
+        const fileEntity = new FileEntity("", file);
+
+        if (existingLink) {
+          existingLink.addFile(fileEntity);
+        } else {
+          const plaform: VideoGamePlatform = this.getVideoGamePlatform(
+            scan,
+            filePath,
+          );
+
+          const videoGameEntity = new XVideoGameEntity("", videoGame);
+
+          links.push(
+            new VideoGameFileLinkEntity(videoGameEntity, plaform, [fileEntity]),
+          );
+        }
       }
     }
 
+    const videoGamesEntities: LibraryVideoGameEntity[] = links.map((link) => {
+      return {
+        uuid: link.videoGameEntity.uuid,
+        title: link.videoGameEntity.videoGame.title.value,
+        releaseYear: link.videoGameEntity.videoGame.releaseYear.year,
+      } satisfies LibraryVideoGameEntity;
+    });
+
     const libraryService = new LibraryService(this.libraryRepository);
-    await libraryService.saveVideoGames(library.getVideoGames());
+    await libraryService.saveVideoGames(videoGamesEntities);
+
+    return links;
   }
 
-  private mapScanToLibraryData(
+  private mapScanToVideoGame(
     scan: ConfigurationScanWithPattern,
     completeFilePath: string,
   ): VideoGame {
@@ -116,7 +162,25 @@ export class Scanner {
     return builder.build();
   }
 
+  private getVideoGamePlatform(
+    scan: ConfigurationScanWithPattern,
+    completeFilePath: string,
+  ): VideoGamePlatform {
+    const filePath = completeFilePath
+      .replace(scan.directory.rootDir.value, "")
+      .substring(1);
+
+    const regexResult = scan.pattern.regex.exec(filePath) as RegExpExecArray;
+    const group3: string = regexResult[3];
+    return new VideoGamePlatform(group3);
+  }
+
   public destroy(): void {
     this.kvDriver?.close();
+  }
+
+  private async saveLinks(links: VideoGameFileLinkEntity[]): Promise<void> {
+    // For now we are assuming that we have only video games
+    await this.linksRepository.saveVideoGamesLinks(links);
   }
 }

@@ -17,6 +17,6 @@ export class Scanner {
     });
 
     await this.repository.saveFiles(filesToSave);
-    return [...allFiles, ...filesToSave];
+    return filesToSave;
   }
 }

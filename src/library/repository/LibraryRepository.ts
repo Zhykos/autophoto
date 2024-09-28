@@ -1,4 +1,3 @@
-import { crypto } from "@std/crypto/crypto";
 import type { KvDriver } from "../../common/dbdriver/KvDriver.ts";
 import { VideoGame } from "../domain/valueobject/VideoGame.ts";
 import { VideoGameReleaseYear } from "../domain/valueobject/VideoGameReleaseYear.ts";
@@ -6,23 +5,15 @@ import { VideoGameTitle } from "../domain/valueobject/VideoGameTitle.ts";
 import type { VideoGameEntity } from "./entity/VideoGameEntity.ts";
 
 export interface LibraryRepository {
-  saveVideoGames(videoGames: VideoGame[]): Promise<void>;
+  saveVideoGames(videoGamesEntities: VideoGameEntity[]): Promise<void>;
   getAllVideoGames(): Promise<VideoGame[]>;
 }
 
 export class KvLibraryRepository implements LibraryRepository {
   constructor(private readonly kvDriver: KvDriver) {}
 
-  async saveVideoGames(videoGames: VideoGame[]): Promise<void> {
-    const videoGameEntities: VideoGameEntity[] = videoGames.map((videoGame) => {
-      return {
-        uuid: crypto.randomUUID(),
-        title: videoGame.title.value,
-        releaseYear: videoGame.releaseYear.year,
-      } satisfies VideoGameEntity;
-    });
-
-    for (const videoGameEntity of videoGameEntities) {
+  async saveVideoGames(videoGamesEntities: VideoGameEntity[]): Promise<void> {
+    for (const videoGameEntity of videoGamesEntities) {
       await this.kvDriver.save(
         ["library", "video-game", videoGameEntity.uuid],
         videoGameEntity,
