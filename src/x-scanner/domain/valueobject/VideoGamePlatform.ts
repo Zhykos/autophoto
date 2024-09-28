@@ -4,12 +4,12 @@ import type { ValueObject } from "../../../common/domain/ValueObject.ts";
 const platforms = ["Nintendo Switch", "PC"];
 
 export class VideoGamePlatform implements ValueObject {
-  public constructor(public readonly platform: string) {
+  public constructor(public readonly value: string) {
     this.validateObjectProperties();
   }
 
   public validateObjectProperties(): void {
-    if (!platforms.includes(this.platform)) {
+    if (!platforms.includes(this.value)) {
       throw new DomainError(
         `Platform must be one of the following: ${platforms.join(", ")}`,
       );
@@ -18,7 +18,7 @@ export class VideoGamePlatform implements ValueObject {
 
   public equals(anotherObject: unknown): boolean {
     if (anotherObject instanceof VideoGamePlatform) {
-      return this.platform === anotherObject.platform;
+      return this.value === anotherObject.value;
     }
     return false;
   }

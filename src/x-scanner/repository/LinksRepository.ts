@@ -13,8 +13,9 @@ export class KvLinksRepository implements LinksRepository {
     const entities: VideoGameFileLinkRepositoryEntity[] = links.map((link) => {
       return {
         uuid: link.uuid,
-        videoGameUUID: "link.videoGame.",
-        filesUUIDs: ["link.filesUUIDs"],
+        videoGameUUID: link.videoGameEntity.uuid,
+        platform: link.platform.value,
+        filesUUIDs: link.filesEntities.map((file) => file.uuid),
       } satisfies VideoGameFileLinkRepositoryEntity;
     });
 
