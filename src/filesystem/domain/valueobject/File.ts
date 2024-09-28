@@ -26,12 +26,16 @@ export class File implements ValueObject {
 
   public equals(other: unknown): boolean {
     if (other instanceof File) {
-      return this.path.equals(other.path) && this.checksum === other.checksum;
+      if (this.checksum === undefined || other.checksum === undefined) {
+        throw new DomainError("Checksum not computed");
+      }
+
+      return this.checksum === other.checksum;
     }
     return false;
   }
 
-  private async computeChecksum(): Promise<void> {
+  async computeChecksum(): Promise<void> {
     const text: string = await Deno.readTextFile(this.path.value);
     const encoder = new TextEncoder();
     const data: Uint8Array = encoder.encode(text);
