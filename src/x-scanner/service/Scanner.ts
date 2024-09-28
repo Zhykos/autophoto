@@ -92,7 +92,7 @@ export class Scanner {
     }
 
     const libraryService = new LibraryService(this.libraryRepository);
-    await libraryService.save(library);
+    await libraryService.saveVideoGames(library.getVideoGames());
   }
 
   private mapScanToLibraryData(
@@ -107,7 +107,6 @@ export class Scanner {
 
     const group1: string = regexResult[1];
     const group2: string = regexResult[2];
-    const group3: string = regexResult[3];
 
     const builder: VideoGameBuilder = VideoGame.builder();
 
@@ -117,10 +116,6 @@ export class Scanner {
 
     if (scan.pattern.groups[1] === "release-year") {
       builder.withReleaseYear(Number.parseInt(group2));
-    }
-
-    if (scan.pattern.groups[2] === "platform") {
-      builder.withPlatform(group3);
     }
 
     return builder.build();
