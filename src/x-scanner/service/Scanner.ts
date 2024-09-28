@@ -1,8 +1,10 @@
+// XXX The fuck? So much imports...
 import { KvDriver } from "../../common/dbdriver/KvDriver.ts";
 import type { Configuration } from "../../configuration/domain/aggregate/Configuration.ts";
 import type { ConfigurationScanWithPattern } from "../../configuration/domain/valueobject/ConfigurationScanWithPattern.ts";
 import { ReadConfiguration } from "../../configuration/service/ReadConfiguration.ts";
 import { ScanData } from "../../filesystem/domain/aggregate/ScanData.ts";
+import type { FileEntity as FsFileEntity } from "../../filesystem/domain/entity/FileEntity.ts";
 import { Directory } from "../../filesystem/domain/valueobject/Directory.ts";
 import { Path } from "../../filesystem/domain/valueobject/Path.ts";
 import {
@@ -10,7 +12,6 @@ import {
   KvFilesRepository,
 } from "../../filesystem/repository/FilesRepository.ts";
 import { Scanner as FsScanner } from "../../filesystem/service/Scanner.ts";
-import { Library } from "../../library/domain/aggregate/Library.ts";
 import {
   VideoGame,
   type VideoGameBuilder,
@@ -22,7 +23,7 @@ import {
 import type { VideoGameEntity as LibraryVideoGameEntity } from "../../library/repository/entity/VideoGameEntity.ts";
 import { Library as LibraryService } from "../../library/service/Library.ts";
 import type { ScanData as XScanData } from "../../x-scanner/domain/aggregate/ScanData.ts";
-import { FileEntity } from "../domain/entity/FileEntity.ts";
+import { FileEntity as XFileEntity } from "../domain/entity/FileEntity.ts";
 import { VideoGameEntity as XVideoGameEntity } from "../domain/entity/VideoGameEntity.ts";
 import { VideoGameFileLinkEntity } from "../domain/entity/VideoGameFileLinkEntity.ts";
 import type { File as ScannerFile } from "../domain/valueobject/File.ts";
@@ -53,7 +54,7 @@ export class Scanner {
       this.configurationFilePath.path.value,
     );
 
-    const savedFiles: ScannerFile[] =
+    const savedFiles: FsFileEntity[] =
       await this.scanFilesThenSave(configuration);
 
     const links: VideoGameFileLinkEntity[] = await this.saveVideoGames(
@@ -66,10 +67,10 @@ export class Scanner {
 
   private async scanFilesThenSave(
     configuration: Configuration,
-  ): Promise<ScannerFile[]> {
+  ): Promise<FsFileEntity[]> {
     const scanner = new FsScanner(this.filesRepository);
 
-    const allSavedFiles: ScannerFile[] = [];
+    const allSavedFiles: FsFileEntity[] = [];
 
     for (const scan of configuration.scans) {
       const dirPath = scan.directory.rootDir.value;
@@ -78,7 +79,7 @@ export class Scanner {
       const directoryToScan = new Directory(new Path(dirPath));
 
       const data = new ScanData(directoryToScan, scan.pattern.regex);
-      const savedFiles: ScannerFile[] = await scanner.scanAndSave(data);
+      const savedFiles: FsFileEntity[] = await scanner.scanAndSave(data);
       allSavedFiles.push(...savedFiles);
     }
 
@@ -87,7 +88,7 @@ export class Scanner {
 
   private async saveVideoGames(
     configuration: Configuration,
-    savedFiles: ScannerFile[],
+    savedFiles: FsFileEntity[],
   ): Promise<VideoGameFileLinkEntity[]> {
     const links: VideoGameFileLinkEntity[] = [];
 
@@ -95,28 +96,30 @@ export class Scanner {
       const dirPath: string = scan.directory.rootDir.value;
       console.log(`Get meta data from directory ${dirPath}`);
 
-      for (const file of savedFiles) {
-        const filePath: string = file.path.value;
+      for (const fileEntity of savedFiles) {
+        const filePath: string = fileEntity.file.path.value;
         const videoGame: VideoGame = this.mapScanToVideoGame(scan, filePath);
 
         const existingLink: VideoGameFileLinkEntity | undefined = links.find(
           (link) => link.videoGameEntity.videoGame.equals(videoGame),
         );
 
-        const fileEntity = new FileEntity("", file);
+        const xFileEntity = new XFileEntity(fileEntity.uuid, fileEntity.file);
 
         if (existingLink) {
-          existingLink.addFile(fileEntity);
+          existingLink.addFile(xFileEntity);
         } else {
           const plaform: VideoGamePlatform = this.getVideoGamePlatform(
             scan,
             filePath,
           );
 
-          const videoGameEntity = new XVideoGameEntity("", videoGame);
-
           links.push(
-            new VideoGameFileLinkEntity(videoGameEntity, plaform, [fileEntity]),
+            new VideoGameFileLinkEntity(
+              new XVideoGameEntity(videoGame),
+              plaform,
+              [xFileEntity],
+            ),
           );
         }
       }

@@ -3,7 +3,11 @@ import { fileExists } from "../../../src/common/utils/file.ts";
 import type { FileEntity } from "../../../src/filesystem/repository/entity/FileEntity.ts";
 import type { VideoGameEntity } from "../../../src/library/repository/entity/VideoGameEntity.ts";
 import { ScanData } from "../../../src/x-scanner/domain/aggregate/ScanData.ts";
+import type { VideoGameFileLinkEntity } from "../../../src/x-scanner/repository/entity/VideoGameFileLinkEntity.ts";
 import { Scanner } from "../../../src/x-scanner/service/Scanner.ts";
+import { getAllFilesFromDatabase } from "../../common/repository/getAllFilesFromDatabase.ts";
+import { getAllLinksFromDatabase } from "../../common/repository/getAllLinksFromDatabase.ts";
+import { getAllVideoGamesFromDatabase } from "../../common/repository/getAllVideoGamesFromDatabase.ts";
 
 const tempDatabaseFilePath = "./test/it-database.sqlite3";
 
@@ -12,34 +16,9 @@ async function beforeEach() {
     Deno.removeSync(tempDatabaseFilePath);
   }
 
-  assertEquals(await getFilesFromDatabase(), []);
-  assertEquals(await getVideoGamesFromDatabase(), []);
-}
-
-async function getFilesFromDatabase(): Promise<FileEntity[]> {
-  const result: FileEntity[] = [];
-  const kv = await Deno.openKv(tempDatabaseFilePath);
-  const entries = kv.list({ prefix: ["file"] });
-  for await (const entry of entries) {
-    const encoder = new TextDecoder();
-    const fileData = encoder.decode(entry.value as BufferSource);
-    result.push(JSON.parse(fileData) as FileEntity);
-  }
-  kv.close();
-  return result;
-}
-
-async function getVideoGamesFromDatabase(): Promise<VideoGameEntity[]> {
-  const result: VideoGameEntity[] = [];
-  const kv = await Deno.openKv(tempDatabaseFilePath);
-  const entries = kv.list({ prefix: ["library", "video-game"] });
-  for await (const entry of entries) {
-    const encoder = new TextDecoder();
-    const fileData = encoder.decode(entry.value as BufferSource);
-    result.push(JSON.parse(fileData) as VideoGameEntity);
-  }
-  kv.close();
-  return result;
+  assertEquals(await getAllFilesFromDatabase(tempDatabaseFilePath), []);
+  assertEquals(await getAllVideoGamesFromDatabase(tempDatabaseFilePath), []);
+  assertEquals(await getAllLinksFromDatabase(tempDatabaseFilePath), []);
 }
 
 Deno.test(async function scanOk() {
@@ -53,7 +32,8 @@ Deno.test(async function scanOk() {
   try {
     await scanner.scan();
 
-    const filesAfterScan: FileEntity[] = await getFilesFromDatabase();
+    const filesAfterScan: FileEntity[] =
+      await getAllFilesFromDatabase(tempDatabaseFilePath);
     filesAfterScan.sort((a, b) => a.path.localeCompare(b.path));
     assertEquals(filesAfterScan.length, 5);
 
@@ -76,7 +56,7 @@ Deno.test(async function scanOk() {
     );
 
     const videoGamesAfterScan: VideoGameEntity[] =
-      await getVideoGamesFromDatabase();
+      await getAllVideoGamesFromDatabase(tempDatabaseFilePath);
     videoGamesAfterScan.sort((a, b) => a.title.localeCompare(b.title));
     assertEquals(videoGamesAfterScan.length, 2);
 
@@ -101,22 +81,24 @@ Deno.test(async function scanCheckDuplicates() {
   try {
     await scanner.scan();
 
-    const filesAfterScan: FileEntity[] = await getFilesFromDatabase();
+    const filesAfterScan: FileEntity[] =
+      await getAllFilesFromDatabase(tempDatabaseFilePath);
     assertEquals(filesAfterScan.length, 5);
 
     const videoGamesAfterScan: VideoGameEntity[] =
-      await getVideoGamesFromDatabase();
+      await getAllVideoGamesFromDatabase(tempDatabaseFilePath);
     assertEquals(videoGamesAfterScan.length, 2);
 
     // Send again the same files
 
     await scanner.scan();
 
-    const filesAfterScanTwice: FileEntity[] = await getFilesFromDatabase();
+    const filesAfterScanTwice: FileEntity[] =
+      await getAllFilesFromDatabase(tempDatabaseFilePath);
     assertEquals(filesAfterScanTwice.length, 5);
 
     const videoGamesAfterScanTwice: VideoGameEntity[] =
-      await getVideoGamesFromDatabase();
+      await getAllVideoGamesFromDatabase(tempDatabaseFilePath);
     assertEquals(videoGamesAfterScanTwice.length, 2);
 
     assertEquals(filesAfterScan, filesAfterScanTwice);
@@ -136,7 +118,49 @@ Deno.test(async function scanCheckLinks() {
 
   try {
     await scanner.scan();
-    // Check links
+
+    const allLinks: VideoGameFileLinkEntity[] =
+      await getAllLinksFromDatabase(tempDatabaseFilePath);
+    allLinks.sort((a, b) => a.platform.localeCompare(b.platform));
+    assertEquals(allLinks.length, 2);
+
+    const allFiles: FileEntity[] =
+      await getAllFilesFromDatabase(tempDatabaseFilePath);
+    allFiles.sort((a, b) => a.path.localeCompare(b.path));
+
+    const allVideoGames: VideoGameEntity[] =
+      await getAllVideoGamesFromDatabase(tempDatabaseFilePath);
+    allVideoGames.sort((a, b) => a.title.localeCompare(b.title));
+
+    assertEquals(allLinks[0].videoGameUUID, allVideoGames[1].uuid);
+    assertEquals(allLinks[1].videoGameUUID, allVideoGames[0].uuid);
+
+    assertEquals(allLinks[0].platform, "Nintendo Switch");
+    assertEquals(allLinks[1].platform, "PC");
+
+    assertEquals(allLinks[0].filesUUIDs.length, 3);
+    assertEquals(allLinks[1].filesUUIDs.length, 2);
+
+    assertEquals(
+      [...allLinks[0].filesUUIDs, ...allLinks[1].filesUUIDs].sort(),
+      allFiles.map((file) => file.uuid).sort(),
+    );
+  } finally {
+    scanner.destroy();
+  }
+});
+
+Deno.test(async function scanCheckExistingLinks() {
+  await beforeEach();
+
+  const scanData = ScanData.builder()
+    .withDatabaseFilePath(tempDatabaseFilePath)
+    .build();
+  const scanner = new Scanner(scanData);
+
+  try {
+    await scanner.scan();
+    // TODO Check links
   } finally {
     scanner.destroy();
   }
