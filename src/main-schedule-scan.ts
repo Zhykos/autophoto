@@ -3,7 +3,7 @@ import { Scanner } from "./x-scanner/service/Scanner.ts";
 
 // Every minute
 Deno.cron("Schedule scan", "*/1 * * * *", async () => {
-  const scanner = new Scanner();
+  const scanner = new Scanner(ScanData.builder().build());
 
   try {
     console.log("Scanning scheduled...", new Date());

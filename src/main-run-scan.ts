@@ -1,7 +1,7 @@
 import { ScanData } from "./x-scanner/domain/aggregate/ScanData.ts";
 import { Scanner } from "./x-scanner/service/Scanner.ts";
 
-const scanner = new Scanner();
+const scanner = new Scanner(ScanData.builder().build());
 
 try {
   console.log("Scanning...");

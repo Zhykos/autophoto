@@ -20,7 +20,7 @@ import {
   type LibraryRepository,
 } from "../../library/repository/LibraryRepository.ts";
 import { Library as LibraryService } from "../../library/service/Library.ts";
-import { ScanData as XScanData } from "../../x-scanner/domain/aggregate/ScanData.ts";
+import type { ScanData as XScanData } from "../../x-scanner/domain/aggregate/ScanData.ts";
 import type { File as ScannerFile } from "../domain/valueobject/File.ts";
 
 export class Scanner {
@@ -30,16 +30,11 @@ export class Scanner {
   private readonly filesRepository: FilesRepository;
   private readonly configurationFilePath: ScannerFile;
 
-  constructor(scanData?: XScanData) {
-    let data: XScanData | undefined = scanData;
-    if (!data) {
-      data = XScanData.builder().build();
-    }
-
-    this.kvDriver = new KvDriver(data.databaseFilePath);
+  constructor(scanData: XScanData) {
+    this.kvDriver = new KvDriver(scanData.databaseFilePath);
     this.libraryRepository = new KvLibraryRepository(this.kvDriver);
     this.filesRepository = new KvFilesRepository(this.kvDriver);
-    this.configurationFilePath = data.configurationFilePath;
+    this.configurationFilePath = scanData.configurationFilePath;
   }
 
   public async scan(): Promise<void> {
