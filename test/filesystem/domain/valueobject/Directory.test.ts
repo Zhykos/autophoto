@@ -33,7 +33,7 @@ Deno.test(function notDirectory() {
 
 Deno.test(async function scanDirectoryRecursively() {
   // GIVEN
-  const directory = new Directory(new Path("./test/resources"));
+  const directory = new Directory(new Path("./test/resources/video-game"));
 
   // WHEN
   const files: File[] = await directory.scanDirectories(/^.+webp$/);

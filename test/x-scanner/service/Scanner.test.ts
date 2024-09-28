@@ -176,3 +176,44 @@ Deno.test(async function scanCheckExistingLinks() {
     scanner.destroy();
   }
 });
+
+Deno.test(async function scanAddOtherFiles() {
+  await beforeEach();
+
+  const scanData = ScanData.builder()
+    .withDatabaseFilePath(tempDatabaseFilePath)
+    .build();
+  const scanner = new Scanner(scanData);
+
+  const scanData2 = ScanData.builder()
+    .withDatabaseFilePath(tempDatabaseFilePath)
+    .withConfigurationFilePath("./test/resources/config2.yml")
+    .build();
+  const scanner2 = new Scanner(scanData2);
+
+  try {
+    await scanner.scan();
+
+    // Scan another directory with other files
+
+    await scanner2.scan();
+
+    const filesAfterScan: FileEntity[] =
+      await getAllFilesFromDatabase(tempDatabaseFilePath);
+    filesAfterScan.sort((a, b) => a.path.localeCompare(b.path));
+    assertEquals(filesAfterScan.length, 8);
+
+    const videoGamesAfterScan: VideoGameEntity[] =
+      await getAllVideoGamesFromDatabase(tempDatabaseFilePath);
+    videoGamesAfterScan.sort((a, b) => a.title.localeCompare(b.title));
+    assertEquals(videoGamesAfterScan.length, 3);
+
+    const allLinks: VideoGameFileLinkEntity[] =
+      await getAllLinksFromDatabase(tempDatabaseFilePath);
+    allLinks.sort((a, b) => a.platform.localeCompare(b.platform));
+    assertEquals(allLinks.length, 3);
+  } finally {
+    scanner.destroy();
+    scanner2.destroy();
+  }
+});
