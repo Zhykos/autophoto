@@ -125,3 +125,19 @@ Deno.test(async function scanCheckDuplicates() {
     scanner.destroy();
   }
 });
+
+Deno.test(async function scanCheckLinks() {
+  await beforeEach();
+
+  const scanData = ScanData.builder()
+    .withDatabaseFilePath(tempDatabaseFilePath)
+    .build();
+  const scanner = new Scanner(scanData);
+
+  try {
+    await scanner.scan();
+    // Check links
+  } finally {
+    scanner.destroy();
+  }
+});
