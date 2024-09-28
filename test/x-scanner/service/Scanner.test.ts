@@ -89,3 +89,39 @@ Deno.test(async function scanOk() {
     scanner.destroy();
   }
 });
+
+Deno.test(async function scanCheckDuplicates() {
+  await beforeEach();
+
+  const scanData = ScanData.builder()
+    .withDatabaseFilePath(tempDatabaseFilePath)
+    .build();
+  const scanner = new Scanner(scanData);
+
+  try {
+    await scanner.scan();
+
+    const filesAfterScan: FileEntity[] = await getFilesFromDatabase();
+    assertEquals(filesAfterScan.length, 5);
+
+    const videoGamesAfterScan: VideoGameEntity[] =
+      await getVideoGamesFromDatabase();
+    assertEquals(videoGamesAfterScan.length, 2);
+
+    // Send again the same files
+
+    await scanner.scan();
+
+    const filesAfterScanTwice: FileEntity[] = await getFilesFromDatabase();
+    assertEquals(filesAfterScanTwice.length, 5);
+
+    const videoGamesAfterScanTwice: VideoGameEntity[] =
+      await getVideoGamesFromDatabase();
+    assertEquals(videoGamesAfterScanTwice.length, 2);
+
+    assertEquals(filesAfterScan, filesAfterScanTwice);
+    assertEquals(videoGamesAfterScan, videoGamesAfterScanTwice);
+  } finally {
+    scanner.destroy();
+  }
+});

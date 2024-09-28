@@ -3,21 +3,33 @@ export class KvDriver {
 
   constructor(private readonly databaseFilePath: string) {}
 
-  async getKv(): Promise<Deno.Kv> {
+  private async getKv(): Promise<Deno.Kv> {
     if (this.kvSingleton === undefined) {
       this.kvSingleton = await Deno.openKv(this.databaseFilePath);
     }
     return this.kvSingleton;
   }
 
-  async save(keys: string[], entity: unknown): Promise<void> {
-    const kv: Deno.Kv = await this.getKv();
+  public async save(keys: string[], entity: unknown): Promise<void> {
     const encoder = new TextEncoder();
     const data: Uint8Array = encoder.encode(JSON.stringify(entity));
+    const kv: Deno.Kv = await this.getKv();
     await kv.set(keys, data);
   }
 
-  close(): void {
+  public async list<T>(keys: string[], _: T): Promise<T[]> {
+    const result: T[] = [];
+    const kv: Deno.Kv = await this.getKv();
+    const entries = kv.list({ prefix: keys });
+    for await (const entry of entries) {
+      const encoder = new TextDecoder();
+      const fileData = encoder.decode(entry.value as BufferSource);
+      result.push(JSON.parse(fileData) as T);
+    }
+    return result;
+  }
+
+  public close(): void {
     if (this.kvSingleton) {
       this.kvSingleton.close();
     }
