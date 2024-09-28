@@ -4,7 +4,6 @@ import type { ConfigurationScanWithPattern } from "../../configuration/domain/va
 import { ReadConfiguration } from "../../configuration/service/ReadConfiguration.ts";
 import { ScanData } from "../../filesystem/domain/aggregate/ScanData.ts";
 import { Directory } from "../../filesystem/domain/valueobject/Directory.ts";
-import type { File } from "../../filesystem/domain/valueobject/File.ts";
 import { Path } from "../../filesystem/domain/valueobject/Path.ts";
 import {
   type FilesRepository,
@@ -21,35 +20,43 @@ import {
   type LibraryRepository,
 } from "../../library/repository/LibraryRepository.ts";
 import { Library as LibraryService } from "../../library/service/Library.ts";
-import type { ScanData as XScanData } from "../../x-scanner/domain/aggregate/ScanData.ts";
+import { ScanData as XScanData } from "../../x-scanner/domain/aggregate/ScanData.ts";
+import type { File as ScannerFile } from "../domain/valueobject/File.ts";
 
 export class Scanner {
   private kvDriver: KvDriver | undefined;
 
   private readonly libraryRepository: LibraryRepository;
   private readonly filesRepository: FilesRepository;
+  private readonly configurationFilePath: ScannerFile;
 
-  constructor(private readonly scanData: XScanData) {
-    this.kvDriver = new KvDriver(scanData.databaseFilePath);
+  constructor(scanData?: XScanData) {
+    let data: XScanData | undefined = scanData;
+    if (!data) {
+      data = XScanData.builder().build();
+    }
+
+    this.kvDriver = new KvDriver(data.databaseFilePath);
     this.libraryRepository = new KvLibraryRepository(this.kvDriver);
     this.filesRepository = new KvFilesRepository(this.kvDriver);
+    this.configurationFilePath = data.configurationFilePath;
   }
 
   public async scan(): Promise<void> {
     const configuration: Configuration = new ReadConfiguration().load(
-      this.scanData.configurationFilePath.path.value,
+      this.configurationFilePath.path.value,
     );
 
-    const allFiles: File[] = await this.scanFilesThenSave(configuration);
+    const allFiles: ScannerFile[] = await this.scanFilesThenSave(configuration);
     await this.saveLibrary(configuration, allFiles);
   }
 
   private async scanFilesThenSave(
     configuration: Configuration,
-  ): Promise<File[]> {
+  ): Promise<ScannerFile[]> {
     const scanner = new FsScanner(this.filesRepository);
 
-    const allFiles: File[] = [];
+    const allFiles: ScannerFile[] = [];
 
     for (const scan of configuration.scans) {
       const dirPath = scan.directory.rootDir.value;
@@ -58,7 +65,7 @@ export class Scanner {
       const directoryToScan = new Directory(new Path(dirPath));
 
       const data = new ScanData(directoryToScan, scan.pattern.regex);
-      const files: File[] = await scanner.scanAndSave(data);
+      const files: ScannerFile[] = await scanner.scanAndSave(data);
       allFiles.push(...files);
     }
 
@@ -67,7 +74,7 @@ export class Scanner {
 
   private async saveLibrary(
     configuration: Configuration,
-    allFiles: File[],
+    allFiles: ScannerFile[],
   ): Promise<void> {
     const library = new Library();
 
