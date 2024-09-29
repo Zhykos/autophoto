@@ -33,7 +33,7 @@ Deno.test(function notDirectory() {
 
 Deno.test(async function scanDirectoryRecursively() {
   // GIVEN
-  const directory = new Directory(new Path("./test/resources"));
+  const directory = new Directory(new Path("./test/resources/video-game"));
 
   // WHEN
   const files: File[] = await directory.scanDirectories(/^.+webp$/);
@@ -59,13 +59,9 @@ Deno.test(async function scanDirectoryRecursively() {
     "./test/resources/video-game/80's Overdrive (2017)/Nintendo Switch/80's Overdrive - 00006.webp",
   ]);
 
-  const filesChecksums: Promise<string>[] = files.map((file) =>
-    file.getChecksum(),
-  );
+  const filesChecksums: string[] = files.map((file) => file.getChecksum());
 
-  Promise.all(filesChecksums).then((checksums) => {
-    for (const checksum of checksums) {
-      assertMatch(checksum, /^[0-9a-f]{128}$/);
-    }
-  });
+  for (const checksum of filesChecksums) {
+    assertMatch(checksum, /^[0-9a-f]{128}$/);
+  }
 });
