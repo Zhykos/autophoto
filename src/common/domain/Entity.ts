@@ -7,10 +7,11 @@ export abstract class Entity {
     this.uuid = uuid || crypto.randomUUID();
   }
 
+  /* XXX Why not use this method?
   public equals(other: unknown): boolean {
     if (other instanceof Entity) {
       return this.uuid === other.uuid;
     }
     return false;
-  }
+  }*/
 }

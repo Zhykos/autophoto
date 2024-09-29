@@ -4,7 +4,6 @@ import type { VideoGameFileLinkEntity as VideoGameFileLinkRepositoryEntity } fro
 
 export interface LinksRepository {
   saveVideoGamesLinks(links: VideoGameFileLinkEntity[]): Promise<void>;
-  getAllVideoGamesLinks(): Promise<VideoGameFileLinkRepositoryEntity[]>;
 }
 
 export class KvLinksRepository implements LinksRepository {
@@ -23,12 +22,5 @@ export class KvLinksRepository implements LinksRepository {
     for (const entity of entities) {
       await this.kvDriver.save(["link", entity.uuid], entity);
     }
-  }
-
-  async getAllVideoGamesLinks(): Promise<VideoGameFileLinkRepositoryEntity[]> {
-    return await this.kvDriver.list(
-      ["link"],
-      {} as VideoGameFileLinkRepositoryEntity,
-    );
   }
 }

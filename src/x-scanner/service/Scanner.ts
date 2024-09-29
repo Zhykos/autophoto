@@ -59,10 +59,8 @@ export class Scanner {
     const savedFiles: FsFileEntity[] =
       await this.scanFilesThenSave(configuration);
 
-    const links: VideoGameFileLinkEntity[] = await this.saveVideoGames(
-      configuration,
-      savedFiles,
-    );
+    const links: VideoGameFileLinkEntity[] =
+      await this.saveVideoGamesAndCreateLinks(configuration, savedFiles);
 
     await this.saveLinks(links);
   }
@@ -89,7 +87,7 @@ export class Scanner {
     return allSavedFiles;
   }
 
-  private async saveVideoGames(
+  private async saveVideoGamesAndCreateLinks(
     configuration: Configuration,
     savedFiles: FsFileEntity[],
   ): Promise<VideoGameFileLinkEntity[]> {
@@ -118,34 +116,41 @@ export class Scanner {
           filePath,
         );
 
+        // XXX Crap: comparing a Value Object with an Entity...
         const videoGameEntity: VideoGameEntity | undefined =
           allVideoGamesEntities.find((vg) =>
             vg.videoGame.equals(videoGameFromScan),
           );
 
-        let uuid: string | undefined = videoGameEntity?.uuid;
-
-        if (!videoGameEntity) {
-          uuid = crypto.randomUUID();
+        if (videoGameEntity) {
+          linksToSave.push(
+            new VideoGameFileLinkEntity(
+              new XVideoGameEntity(videoGameFromScan, videoGameEntity.uuid),
+              plaform,
+              xFileEntity,
+            ),
+          );
+        } else {
+          const uuid: string = crypto.randomUUID();
 
           videoGamesEntitiesToSave.push({
-            uuid: uuid as string,
+            uuid,
             title: videoGameFromScan.title.value,
             releaseYear: videoGameFromScan.releaseYear.year,
           } satisfies LibraryVideoGameEntity);
 
           allVideoGamesEntities.push(
-            new VideoGameEntity(uuid as string, videoGameFromScan),
+            new VideoGameEntity(uuid, videoGameFromScan),
+          );
+
+          linksToSave.push(
+            new VideoGameFileLinkEntity(
+              new XVideoGameEntity(videoGameFromScan, uuid),
+              plaform,
+              xFileEntity,
+            ),
           );
         }
-
-        linksToSave.push(
-          new VideoGameFileLinkEntity(
-            new XVideoGameEntity(videoGameFromScan, uuid),
-            plaform,
-            xFileEntity,
-          ),
-        );
       }
     }
 
