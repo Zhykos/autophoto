@@ -1,4 +1,5 @@
 // XXX The fuck? So much imports...
+import { crypto } from "@std/crypto/crypto";
 import { KvDriver } from "../../common/dbdriver/KvDriver.ts";
 import type { Configuration } from "../../configuration/domain/aggregate/Configuration.ts";
 import type { ConfigurationScanWithPattern } from "../../configuration/domain/valueobject/ConfigurationScanWithPattern.ts";
@@ -12,6 +13,7 @@ import {
   KvFilesRepository,
 } from "../../filesystem/repository/FilesRepository.ts";
 import { Scanner as FsScanner } from "../../filesystem/service/Scanner.ts";
+import { VideoGameEntity } from "../../library/domain/entity/VideoGameEntity.ts";
 import {
   VideoGame,
   type VideoGameBuilder,
@@ -91,7 +93,11 @@ export class Scanner {
     configuration: Configuration,
     savedFiles: FsFileEntity[],
   ): Promise<VideoGameFileLinkEntity[]> {
-    const links: VideoGameFileLinkEntity[] = [];
+    const linksToSave: VideoGameFileLinkEntity[] = [];
+    const videoGamesEntitiesToSave: LibraryVideoGameEntity[] = [];
+
+    const allVideoGamesEntities: VideoGameEntity[] =
+      await this.libraryRepository.getAllVideoGames();
 
     for (const scan of configuration.scans) {
       const dirPath: string = scan.directory.rootDir.value;
@@ -99,45 +105,54 @@ export class Scanner {
 
       for (const fileEntity of savedFiles) {
         const filePath: string = fileEntity.file.path.value;
-        const videoGame: VideoGame = this.mapScanToVideoGame(scan, filePath);
-
-        const existingLink: VideoGameFileLinkEntity | undefined = links.find(
-          (link) => link.videoGameEntity.videoGame.equals(videoGame),
-        );
 
         const xFileEntity = new XFileEntity(fileEntity.uuid, fileEntity.file);
 
-        if (existingLink) {
-          existingLink.addFile(xFileEntity);
-        } else {
-          const plaform: VideoGamePlatform = this.getVideoGamePlatform(
-            scan,
-            filePath,
+        const videoGameFromScan: VideoGame = this.mapScanToVideoGame(
+          scan,
+          filePath,
+        );
+
+        const plaform: VideoGamePlatform = this.getVideoGamePlatform(
+          scan,
+          filePath,
+        );
+
+        const videoGameEntity: VideoGameEntity | undefined =
+          allVideoGamesEntities.find((vg) =>
+            vg.videoGame.equals(videoGameFromScan),
           );
 
-          links.push(
-            new VideoGameFileLinkEntity(
-              new XVideoGameEntity(videoGame),
-              plaform,
-              [xFileEntity],
-            ),
+        let uuid: string | undefined = videoGameEntity?.uuid;
+
+        if (!videoGameEntity) {
+          uuid = crypto.randomUUID();
+
+          videoGamesEntitiesToSave.push({
+            uuid: uuid as string,
+            title: videoGameFromScan.title.value,
+            releaseYear: videoGameFromScan.releaseYear.year,
+          } satisfies LibraryVideoGameEntity);
+
+          allVideoGamesEntities.push(
+            new VideoGameEntity(uuid as string, videoGameFromScan),
           );
         }
+
+        linksToSave.push(
+          new VideoGameFileLinkEntity(
+            new XVideoGameEntity(videoGameFromScan, uuid),
+            plaform,
+            xFileEntity,
+          ),
+        );
       }
     }
 
-    const videoGamesEntities: LibraryVideoGameEntity[] = links.map((link) => {
-      return {
-        uuid: link.videoGameEntity.uuid,
-        title: link.videoGameEntity.videoGame.title.value,
-        releaseYear: link.videoGameEntity.videoGame.releaseYear.year,
-      } satisfies LibraryVideoGameEntity;
-    });
-
     const libraryService = new LibraryService(this.libraryRepository);
-    await libraryService.saveVideoGames(videoGamesEntities);
+    await libraryService.saveVideoGames(videoGamesEntitiesToSave);
 
-    return links;
+    return linksToSave;
   }
 
   private mapScanToVideoGame(

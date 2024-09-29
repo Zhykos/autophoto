@@ -1,4 +1,4 @@
-import { assertEquals } from "jsr:@std/assert";
+import { assert, assertEquals } from "jsr:@std/assert";
 import { fileExists } from "../../../src/common/utils/file.ts";
 import type { FileEntity } from "../../../src/filesystem/repository/entity/FileEntity.ts";
 import type { VideoGameEntity } from "../../../src/library/repository/entity/VideoGameEntity.ts";
@@ -122,27 +122,29 @@ Deno.test(async function scanCheckLinks() {
     const allLinks: VideoGameFileLinkEntity[] =
       await getAllLinksFromDatabase(tempDatabaseFilePath);
     allLinks.sort((a, b) => a.platform.localeCompare(b.platform));
-    assertEquals(allLinks.length, 2);
+    assertEquals(allLinks.length, 5);
 
     const allFiles: FileEntity[] =
       await getAllFilesFromDatabase(tempDatabaseFilePath);
-    allFiles.sort((a, b) => a.path.localeCompare(b.path));
+    assertEquals(allFiles.length, 5);
 
     const allVideoGames: VideoGameEntity[] =
       await getAllVideoGamesFromDatabase(tempDatabaseFilePath);
-    allVideoGames.sort((a, b) => a.title.localeCompare(b.title));
+    assertEquals(allVideoGames.length, 2);
 
-    assertEquals(allLinks[0].videoGameUUID, allVideoGames[1].uuid);
-    assertEquals(allLinks[1].videoGameUUID, allVideoGames[0].uuid);
+    assertEquals([...new Set(allLinks.map((link) => link.fileUUID))].length, 5);
+    assertEquals([...new Set(allLinks.map((link) => link.uuid))].length, 5);
+    assertEquals([...new Set(allLinks.map((link) => link.platform))].length, 2);
+    assertEquals(
+      [...new Set(allLinks.map((link) => link.videoGameUUID))].length,
+      2,
+    );
 
-    assertEquals(allLinks[0].platform, "Nintendo Switch");
-    assertEquals(allLinks[1].platform, "PC");
-
-    assertEquals(allLinks[0].filesUUIDs.length, 3);
-    assertEquals(allLinks[1].filesUUIDs.length, 2);
+    assert(allLinks.map((link) => link.platform).includes("PC"));
+    assert(allLinks.map((link) => link.platform).includes("Nintendo Switch"));
 
     assertEquals(
-      [...allLinks[0].filesUUIDs, ...allLinks[1].filesUUIDs].sort(),
+      allLinks.map((link) => link.fileUUID).sort(),
       allFiles.map((file) => file.uuid).sort(),
     );
   } finally {
@@ -162,14 +164,14 @@ Deno.test(async function scanCheckExistingLinks() {
     await scanner.scan();
     const allLinks: VideoGameFileLinkEntity[] =
       await getAllLinksFromDatabase(tempDatabaseFilePath);
-    assertEquals(allLinks.length, 2);
+    assertEquals(allLinks.length, 5);
 
     // Send again the same files
 
     await scanner.scan();
     const allLinksTwice: VideoGameFileLinkEntity[] =
       await getAllLinksFromDatabase(tempDatabaseFilePath);
-    assertEquals(allLinksTwice.length, 2);
+    assertEquals(allLinksTwice.length, 5);
 
     assertEquals(allLinks, allLinksTwice);
   } finally {
@@ -211,7 +213,23 @@ Deno.test(async function scanAddOtherFiles() {
     const allLinks: VideoGameFileLinkEntity[] =
       await getAllLinksFromDatabase(tempDatabaseFilePath);
     allLinks.sort((a, b) => a.platform.localeCompare(b.platform));
-    assertEquals(allLinks.length, 3);
+    assertEquals(allLinks.length, 8);
+
+    assertEquals([...new Set(allLinks.map((link) => link.fileUUID))].length, 8);
+    assertEquals([...new Set(allLinks.map((link) => link.uuid))].length, 8);
+    assertEquals([...new Set(allLinks.map((link) => link.platform))].length, 2);
+    assertEquals(
+      [...new Set(allLinks.map((link) => link.videoGameUUID))].length,
+      3,
+    );
+
+    assert(allLinks.map((link) => link.platform).includes("PC"));
+    assert(allLinks.map((link) => link.platform).includes("Nintendo Switch"));
+
+    assertEquals(
+      allLinks.map((link) => link.fileUUID).sort(),
+      filesAfterScan.map((file) => file.uuid).sort(),
+    );
   } finally {
     scanner.destroy();
     scanner2.destroy();

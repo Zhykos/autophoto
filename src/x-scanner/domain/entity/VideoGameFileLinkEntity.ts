@@ -7,12 +7,9 @@ export class VideoGameFileLinkEntity extends Entity {
   constructor(
     public readonly videoGameEntity: VideoGameEntity,
     public readonly platform: VideoGamePlatform,
-    public readonly filesEntities: FileEntity[],
+    public readonly fileEntity: FileEntity,
+    uuid?: string,
   ) {
-    super();
-  }
-
-  addFile(file: FileEntity): void {
-    this.filesEntities.push(file);
+    super(uuid);
   }
 }
