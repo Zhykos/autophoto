@@ -11,9 +11,9 @@ export class File implements ValueObject {
     this.validateObjectProperties();
   }
 
-  public async getChecksum(): Promise<string> {
+  public getChecksum(): string {
     if (this.checksum === undefined) {
-      await this.computeChecksum();
+      this.computeChecksum();
     }
     return this.checksum as string;
   }
@@ -35,11 +35,11 @@ export class File implements ValueObject {
     return false;
   }
 
-  async computeChecksum(): Promise<void> {
-    const text: string = await Deno.readTextFile(this.path.value);
+  computeChecksum(): void {
+    const text: string = Deno.readTextFileSync(this.path.value);
     const encoder = new TextEncoder();
     const data: Uint8Array = encoder.encode(text);
-    const digest: ArrayBuffer = await crypto.subtle.digest("SHA-512", data);
+    const digest: ArrayBuffer = crypto.subtle.digestSync("SHA-512", data);
     const hashArray: number[] = Array.from(new Uint8Array(digest));
     this.checksum = hashArray
       .map((b) => b.toString(16).padStart(2, "0"))

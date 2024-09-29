@@ -10,6 +10,6 @@ Deno.test(async function scanAndSave() {
   const repository = new MockFilesRepository();
   const service = new Scanner(repository);
   const scanData = new ScanData(directory, /^.+webp$/);
-  await service.scanAndSave(scanData);
+  await service.scanAndSaveNewFiles(scanData);
   assertEquals((await repository.getAllFiles()).length, 5);
 });

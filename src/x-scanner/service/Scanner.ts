@@ -79,7 +79,8 @@ export class Scanner {
       const directoryToScan = new Directory(new Path(dirPath));
 
       const data = new ScanData(directoryToScan, scan.pattern.regex);
-      const savedFiles: FsFileEntity[] = await scanner.scanAndSave(data);
+      const savedFiles: FsFileEntity[] =
+        await scanner.scanAndSaveNewFiles(data);
       allSavedFiles.push(...savedFiles);
     }
 
