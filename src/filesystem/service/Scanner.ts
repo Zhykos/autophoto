@@ -13,13 +13,9 @@ export class Scanner {
 
     const repositoryFiles: File[] = await this.repository.getAllFiles();
 
-    const filesToSave: File[] = scannedFiles.filter((file) => {
-      file.computeChecksum();
-      return !repositoryFiles.some((f) => {
-        f.computeChecksum();
-        return f.equals(file);
-      });
-    });
+    const filesToSave: File[] = scannedFiles.filter(
+      (file) => !repositoryFiles.some((f) => f.equals(file)),
+    );
 
     return await this.repository.saveFiles(filesToSave);
   }
