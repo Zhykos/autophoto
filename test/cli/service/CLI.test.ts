@@ -1,6 +1,6 @@
 import { assert, assertEquals, assertThrows } from "jsr:@std/assert";
 import { CLI } from "../../../src/cli/service/CLI.ts";
-import type { File } from "../../../src/common/domain/valubobject/File.ts";
+import type { File } from "../../../src/common/domain/valueobject/File.ts";
 
 Deno.test(function noArgs() {
   const error = assertThrows(() => new CLI().read([]));
