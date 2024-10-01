@@ -1,8 +1,10 @@
 import { assert, assertEquals } from "jsr:@std/assert";
-import { fileExists } from "../../../src/common/utils/file.ts";
+import { pathExists } from "../../../src/common/utils/file.ts";
 import type { FileEntity } from "../../../src/filesystem/repository/entity/FileEntity.ts";
 import type { VideoGameEntity } from "../../../src/library/repository/entity/VideoGameEntity.ts";
 import { ScanData } from "../../../src/x-scanner/domain/aggregate/ScanData.ts";
+import { File } from "../../../src/x-scanner/domain/valueobject/File.ts";
+import { Path } from "../../../src/x-scanner/domain/valueobject/Path.ts";
 import type { VideoGameFileLinkEntity } from "../../../src/x-scanner/repository/entity/VideoGameFileLinkEntity.ts";
 import { Scanner } from "../../../src/x-scanner/service/Scanner.ts";
 import { getAllFilesFromDatabase } from "../../common/repository/getAllFilesFromDatabase.ts";
@@ -12,7 +14,7 @@ import { getAllVideoGamesFromDatabase } from "../../common/repository/getAllVide
 const tempDatabaseFilePath = "./test/it-database.sqlite3";
 
 async function beforeEach() {
-  if (fileExists(tempDatabaseFilePath)) {
+  if (pathExists(tempDatabaseFilePath)) {
     Deno.removeSync(tempDatabaseFilePath);
   }
 
@@ -189,7 +191,9 @@ Deno.test(async function scanAddOtherFiles() {
 
   const scanData2 = ScanData.builder()
     .withDatabaseFilePath(tempDatabaseFilePath)
-    .withConfigurationFilePath("./test/resources/config2.yml")
+    .withConfigurationFilePath(
+      new File(new Path("./test/resources/config2.yml")),
+    )
     .build();
   const scanner2 = new Scanner(scanData2);
 

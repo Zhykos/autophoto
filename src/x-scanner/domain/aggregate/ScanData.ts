@@ -18,7 +18,7 @@ export class ScanData {
 
 export class ScanDataBuilder {
   private databaseFilePath = "./db.autophoto.sqlite3";
-  private configurationFilePath = "./config.yml";
+  private configurationFilePath = new File(new Path("./config.yml"));
 
   public withDatabaseFilePath(databaseFilePath: string): ScanDataBuilder {
     this.databaseFilePath = databaseFilePath;
@@ -26,16 +26,13 @@ export class ScanDataBuilder {
   }
 
   public withConfigurationFilePath(
-    configurationFilePath: string,
+    configurationFilePath: File,
   ): ScanDataBuilder {
     this.configurationFilePath = configurationFilePath;
     return this;
   }
 
   public build(): ScanData {
-    return new ScanData(
-      new File(new Path(this.configurationFilePath)),
-      this.databaseFilePath,
-    );
+    return new ScanData(this.configurationFilePath, this.databaseFilePath);
   }
 }
