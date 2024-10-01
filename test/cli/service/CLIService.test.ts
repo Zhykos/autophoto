@@ -54,3 +54,12 @@ Deno.test(function wrongCron() {
   assert(error instanceof Error);
   assertEquals(error.message, 'Invalid cron expression: "*/1 *"');
 });
+
+Deno.test(function newDatabaseFile() {
+  const cliResult: CLI = new CLIService().read([
+    "--database=new.db",
+    "README.md",
+  ]);
+  assertEquals(cliResult.configuration.path.value, "README.md");
+  assertEquals(cliResult.databaseFilepath, "new.db");
+});

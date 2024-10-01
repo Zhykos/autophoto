@@ -1,13 +1,21 @@
 import type { CLI } from "./cli/domain/aggregate/CLI.ts";
 import { CLIService } from "./cli/service/CLIService.ts";
-import { ScanData } from "./x-scanner/domain/aggregate/ScanData.ts";
+import {
+  ScanData,
+  type ScanDataBuilder,
+} from "./x-scanner/domain/aggregate/ScanData.ts";
 import { Scanner } from "./x-scanner/service/Scanner.ts";
 
 const cli: CLI = new CLIService().read(Deno.args);
 
-const scanner = new Scanner(
-  ScanData.builder().withConfigurationFilePath(cli.configuration).build(),
-);
+const scanDataBuilder: ScanDataBuilder =
+  ScanData.builder().withConfigurationFilePath(cli.configuration);
+
+if (cli.databaseFilepath) {
+  scanDataBuilder.withDatabaseFilePath(cli.databaseFilepath);
+}
+
+const scanner = new Scanner(scanDataBuilder.build());
 
 if (cli.cron) {
   Deno.cron("Schedule scan", cli.cron, async () => {

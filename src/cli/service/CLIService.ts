@@ -8,7 +8,7 @@ import { CLI } from "../domain/aggregate/CLI.ts";
 export class CLIService {
   read(cliArgs: string[]): CLI {
     const args: Args = parseArgs(cliArgs, {
-      string: ["cron"],
+      string: ["cron", "database"],
     });
 
     const configFiles: (string | number)[] = args._;
@@ -35,6 +35,17 @@ export class CLIService {
       }
     }
 
-    return new CLI(new File(new Path(filepath)), cronStr);
+    const databaseFilepath: string | undefined = args.database;
+    if (databaseFilepath) {
+      if (pathExists(databaseFilepath)) {
+        console.log(`Using database file: ${databaseFilepath}`);
+      } else {
+        console.warn(
+          `Database file not found, using a new one: ${databaseFilepath}`,
+        );
+      }
+    }
+
+    return new CLI(new File(new Path(filepath)), databaseFilepath, cronStr);
   }
 }
