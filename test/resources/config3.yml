@@ -1,0 +1,26 @@
+autophoto:
+  scan:
+    - directory: ./test/resources/video-game
+      type: video-game
+      data-pattern:
+        regex: '^(.+) \((\d{4})\)/(.+)/.+\.webp$'
+        groups:
+          - title
+          - release-year
+          - platform
+    - directory: ./test/resources/video-game2
+      type: video-game
+      data-pattern:
+        regex: '^(.+) \((\d{4})\)/(.+)/.+\.webp$'
+        groups:
+          - title
+          - release-year
+          - platform
+    - directory: ./test/resources/video-game3
+      type: video-game
+      data-pattern:
+        regex: '^(.+) \((\d{4})\)/(.+)/.+\.webp$'
+        groups:
+          - title
+          - release-year
+          - platform
