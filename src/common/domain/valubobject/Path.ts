@@ -1,6 +1,6 @@
-import { DomainError } from "../../../common/domain/DomainError.ts";
-import type { ValueObject } from "../../../common/domain/ValueObject.ts";
-import { pathExists } from "../../../common/utils/file.ts";
+import { pathExists } from "../../utils/file.ts";
+import { DomainError } from "../DomainError.ts";
+import type { ValueObject } from "../ValueObject.ts";
 
 export class Path implements ValueObject {
   constructor(public readonly value: string) {
@@ -13,7 +13,7 @@ export class Path implements ValueObject {
     }
 
     if (this.value.endsWith("/")) {
-      throw new DomainError(`Path ends with a slash: '${this.value}'`);
+      throw new DomainError(`Path cannot ends with a slash: '${this.value}'`);
     }
 
     if (!pathExists(this.value)) {

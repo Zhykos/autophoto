@@ -1,5 +1,5 @@
 import { parse } from "@std/yaml";
-import { fileExists } from "../../common/utils/file.ts";
+import { pathExists } from "../../common/utils/file.ts";
 import { Configuration } from "../domain/aggregate/Configuration.ts";
 import { ConfigurationDataPattern } from "../domain/valueobject/ConfigurationDataPattern.ts";
 import { ConfigurationScanWithPattern } from "../domain/valueobject/ConfigurationScanWithPattern.ts";
@@ -10,7 +10,7 @@ import type { ConfigurationYamlType } from "./ConfigurationYamlType.ts";
 
 export class ReadConfiguration {
   public load(configurationFile: string): Configuration {
-    if (!fileExists(configurationFile)) {
+    if (!pathExists(configurationFile)) {
       throw new Error(`Configuration file not found: "${configurationFile}"`);
     }
 

@@ -6,7 +6,7 @@ const getFileInfo = (path: string): Deno.FileInfo | null => {
   }
 };
 
-export const fileExists = (path: string): boolean => {
+export const pathExists = (path: string): boolean => {
   const fileInfo: Deno.FileInfo | null = getFileInfo(path);
   return fileInfo !== null;
 };
