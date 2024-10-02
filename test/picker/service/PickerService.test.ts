@@ -30,7 +30,7 @@ async function beforeEach() {
   assertEquals(await getAllLinksFromDatabase(tempDatabaseFilePath), []);
 }
 
-Deno.test.only(async function pick() {
+Deno.test(async function pick() {
   await beforeEach();
 
   const scanData = ScanData.builder()
