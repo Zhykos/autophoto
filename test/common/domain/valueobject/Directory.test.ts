@@ -1,6 +1,6 @@
 import { assert, assertFalse, assertThrows } from "jsr:@std/assert";
-import { Directory } from "../../../../src/configuration/domain/valueobject/Directory.ts";
-import { Path } from "../../../../src/filesystem/domain/valueobject/Path.ts";
+import { Directory } from "../../../../src/common/domain/valueobject/Directory.ts";
+import { Path } from "../../../../src/common/domain/valueobject/Path.ts";
 
 Deno.test(function equals() {
   const dir1 = new Directory(new Path("src"));

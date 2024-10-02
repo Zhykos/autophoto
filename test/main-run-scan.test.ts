@@ -1,11 +1,11 @@
 import { assertEquals } from "jsr:@std/assert";
 import { pathExists } from "../src/common/utils/file.ts";
-import type { FileEntity } from "../src/filesystem/repository/entity/FileEntity.ts";
-import type { VideoGameEntity } from "../src/library/repository/entity/VideoGameEntity.ts";
-import type { VideoGameFileLinkEntity } from "../src/x-scanner/repository/entity/VideoGameFileLinkEntity.ts";
-import { getAllFilesFromDatabase } from "./common/repository/getAllFilesFromDatabase.ts";
-import { getAllLinksFromDatabase } from "./common/repository/getAllLinksFromDatabase.ts";
-import { getAllVideoGamesFromDatabase } from "./common/repository/getAllVideoGamesFromDatabase.ts";
+import type { ImageRepositoryRepositoryEntity } from "../src/scanner/repository/entity/ImageRepositoryRepositoryEntity.ts";
+import type { VideoGameRelationImageRepositoryEntity } from "../src/scanner/repository/entity/VideoGameRelationImageRepositoryEntity.ts";
+import type { VideoGameRepositoryEntity } from "../src/scanner/repository/entity/VideoGameRepositoryEntity.ts";
+import { getAllImagesFromRepository } from "./common/repository/getAllImagesFromRepository.ts";
+import { getAllRelationsFromRepository } from "./common/repository/getAllRelationsFromRepository.ts";
+import { getAllVideoGamesFromRepository } from "./common/repository/getAllVideoGamesFromRepository.ts";
 
 const tempDatabaseFilePath = "./test/it-database.sqlite3";
 
@@ -14,9 +14,9 @@ async function beforeEach() {
     Deno.removeSync(tempDatabaseFilePath);
   }
 
-  assertEquals(await getAllFilesFromDatabase(tempDatabaseFilePath), []);
-  assertEquals(await getAllVideoGamesFromDatabase(tempDatabaseFilePath), []);
-  assertEquals(await getAllLinksFromDatabase(tempDatabaseFilePath), []);
+  assertEquals(await getAllImagesFromRepository(tempDatabaseFilePath), []);
+  assertEquals(await getAllVideoGamesFromRepository(tempDatabaseFilePath), []);
+  assertEquals(await getAllRelationsFromRepository(tempDatabaseFilePath), []);
 }
 
 Deno.test(async function noArgs() {
@@ -24,15 +24,15 @@ Deno.test(async function noArgs() {
 
   await import("../src/main-run-scan.ts");
 
-  const filesAfterScan: FileEntity[] =
-    await getAllFilesFromDatabase(tempDatabaseFilePath);
+  const filesAfterScan: ImageRepositoryRepositoryEntity[] =
+    await getAllImagesFromRepository(tempDatabaseFilePath);
   assertEquals(filesAfterScan.length, 5);
 
-  const videoGamesAfterScan: VideoGameEntity[] =
-    await getAllVideoGamesFromDatabase(tempDatabaseFilePath);
+  const videoGamesAfterScan: VideoGameRepositoryEntity[] =
+    await getAllVideoGamesFromRepository(tempDatabaseFilePath);
   assertEquals(videoGamesAfterScan.length, 2);
 
-  const allLinks: VideoGameFileLinkEntity[] =
-    await getAllLinksFromDatabase(tempDatabaseFilePath);
+  const allLinks: VideoGameRelationImageRepositoryEntity[] =
+    await getAllRelationsFromRepository(tempDatabaseFilePath);
   assertEquals(allLinks.length, 5);
 });

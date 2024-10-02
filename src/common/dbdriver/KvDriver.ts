@@ -18,8 +18,11 @@ export class KvDriver {
   }
 
   public async list<T>(keys: string[], _: T): Promise<T[]> {
+    return KvDriver.list(await this.getKv(), keys, _);
+  }
+
+  public static async list<T>(kv: Deno.Kv, keys: string[], _: T): Promise<T[]> {
     const result: T[] = [];
-    const kv: Deno.Kv = await this.getKv();
     const entries = kv.list({ prefix: keys });
     for await (const entry of entries) {
       const encoder = new TextDecoder();

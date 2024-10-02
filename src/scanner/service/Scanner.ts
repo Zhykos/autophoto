@@ -149,7 +149,7 @@ export class Scanner {
       screenshot,
     );
 
-    const group3: string = regexResult[2];
+    const group3: string = regexResult[3];
     return new VideoGamePlatform(group3);
   }
 

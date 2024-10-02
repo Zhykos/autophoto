@@ -1,9 +1,9 @@
 import { assert, assertFalse } from "jsr:@std/assert";
+import { Directory } from "../../../../src/common/domain/valueobject/Directory.ts";
+import { Path } from "../../../../src/common/domain/valueobject/Path.ts";
 import { ConfigurationDataPattern } from "../../../../src/configuration/domain/valueobject/ConfigurationDataPattern.ts";
 import { ConfigurationScanWithPattern } from "../../../../src/configuration/domain/valueobject/ConfigurationScanWithPattern.ts";
-import { Directory } from "../../../../src/configuration/domain/valueobject/Directory.ts";
 import { DirectoryType } from "../../../../src/configuration/domain/valueobject/DirectoryType.ts";
-import { Path } from "../../../../src/configuration/domain/valueobject/Path.ts";
 
 Deno.test(function equals() {
   const obj1 = new ConfigurationScanWithPattern(

@@ -1,4 +1,4 @@
-export type VideoGameRelationImageEntity = {
+export type VideoGameRelationImageRepositoryEntity = {
   uuid: string;
   videoGameID: string;
   platform: string;

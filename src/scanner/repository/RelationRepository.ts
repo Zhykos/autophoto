@@ -3,7 +3,7 @@ import type { KvDriver } from "../../common/dbdriver/KvDriver.ts";
 import type { VideoGame } from "../domain/entity/VideoGame.ts";
 import type { VideoGameScreenshot } from "../domain/entity/VideoGameScreenshot.ts";
 import type { VideoGamePlatform } from "../domain/valueobject/VideoGamePlatform.ts";
-import type { VideoGameRelationImageEntity } from "./entity/VideoGameRelationImageEntity.ts";
+import type { VideoGameRelationImageRepositoryEntity } from "./entity/VideoGameRelationImageRepositoryEntity.ts";
 
 export interface RelationRepository {
   saveVideoGameRelation(
@@ -26,7 +26,7 @@ export class KvRelationRepository implements RelationRepository {
       videoGameID: videoGame.id,
       platform: platform.value,
       imageID: screenshot.id,
-    } satisfies VideoGameRelationImageEntity;
+    } satisfies VideoGameRelationImageRepositoryEntity;
 
     await this.kvDriver.save(["relation", entity.uuid], entity);
   }

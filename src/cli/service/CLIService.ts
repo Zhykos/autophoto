@@ -31,6 +31,7 @@ export class CLIService {
       try {
         parseCronExpression(cronStr);
       } catch (error) {
+        console.error(error);
         throw new Error(`Invalid cron expression: "${cronStr}"`);
       }
     }
