@@ -1,28 +1,15 @@
 import { DomainError } from "../../../common/domain/DomainError.ts";
-import type { LibraryObject } from "./LibraryObject.ts";
-import { VideoGameReleaseYear } from "./VideoGameReleaseYear.ts";
-import { VideoGameTitle } from "./VideoGameTitle.ts";
+import { Entity } from "../../../common/domain/Entity.ts";
+import { VideoGameReleaseYear } from "../valueobject/VideoGameReleaseYear.ts";
+import { VideoGameTitle } from "../valueobject/VideoGameTitle.ts";
 
-export class VideoGame implements LibraryObject {
+export class VideoGame extends Entity {
   public constructor(
     public readonly title: VideoGameTitle,
     public readonly releaseYear: VideoGameReleaseYear,
+    uuid?: string,
   ) {
-    this.validateObjectProperties();
-  }
-
-  public validateObjectProperties(): void {
-    // DO NOTHING
-  }
-
-  public equals(anotherObject: unknown): boolean {
-    if (anotherObject instanceof VideoGame) {
-      return (
-        this.title.equals(anotherObject.title) &&
-        this.releaseYear.equals(anotherObject.releaseYear)
-      );
-    }
-    return false;
+    super(uuid);
   }
 
   static builder() {

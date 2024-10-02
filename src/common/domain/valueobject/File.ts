@@ -26,9 +26,16 @@ export class File implements ValueObject {
 
   public equals(other: unknown): boolean {
     if (other instanceof File) {
-      return this.getChecksum() === other.getChecksum();
+      return (
+        this.path.equals(other.path) &&
+        this.getChecksum() === other.getChecksum()
+      );
     }
     return false;
+  }
+
+  public getExtension(): string {
+    return this.path.value.split(".").pop() ?? "";
   }
 
   private computeChecksum(digestAlgorithm: DigestAlgorithm): void {

@@ -1,5 +1,5 @@
 import type { ValueObject } from "../../../common/domain/ValueObject.ts";
-import type { Directory } from "../../domain/valueobject/Directory.ts";
+import type { Directory } from "../../../common/domain/valueobject/Directory.ts";
 import type { DirectoryType } from "../../domain/valueobject/DirectoryType.ts";
 import type { ConfigurationDataPattern } from "./ConfigurationDataPattern.ts";
 
