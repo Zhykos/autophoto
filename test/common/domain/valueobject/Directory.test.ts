@@ -1,4 +1,4 @@
-import { assert, assertFalse, assertThrows } from "jsr:@std/assert";
+import { assert, assertFalse, assertThrows } from "@std/assert";
 import { Directory } from "../../../../src/common/domain/valueobject/Directory.ts";
 import { Path } from "../../../../src/common/domain/valueobject/Path.ts";
 

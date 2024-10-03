@@ -1,4 +1,4 @@
-import { assertEquals } from "jsr:@std/assert";
+import { assertEquals } from "@std/assert";
 import { KvDriver } from "../../../src/common/dbdriver/KvDriver.ts";
 import { Directory } from "../../../src/common/domain/valueobject/Directory.ts";
 import { Path } from "../../../src/common/domain/valueobject/Path.ts";

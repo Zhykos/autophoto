@@ -1,4 +1,4 @@
-import { assertEquals } from "jsr:@std/assert";
+import { assertEquals } from "@std/assert";
 import { pathExists } from "../../../src/common/utils/file.ts";
 import { runScanner, scan } from "../../../src/scan.ts";
 import type { ImageRepositoryRepositoryEntity } from "../../../src/scanner/repository/entity/ImageRepositoryRepositoryEntity.ts";
@@ -32,11 +32,18 @@ Deno.test(async function pick() {
 
   const filesAfterScan: ImageRepositoryRepositoryEntity[] =
     await getAllImagesFromRepository(tempDatabaseFilePath);
+  filesAfterScan.sort((a, b) => a.path.localeCompare(b.path));
   assertEquals(filesAfterScan.length, 13);
 
   const videoGamesAfterScan: VideoGameRepositoryEntity[] =
     await getAllVideoGamesFromRepository(tempDatabaseFilePath);
   assertEquals(videoGamesAfterScan.length, 4);
+  assertEquals(videoGamesAfterScan.map((vg) => vg.title).sort(), [
+    "8-Bit Bayonetta",
+    "80's Overdrive",
+    "Absolver",
+    "Control",
+  ]);
 
   const allLinks: VideoGameRelationImageRepositoryEntity[] =
     await getAllRelationsFromRepository(tempDatabaseFilePath);

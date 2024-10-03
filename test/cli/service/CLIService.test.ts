@@ -1,4 +1,4 @@
-import { assert, assertEquals, assertThrows } from "jsr:@std/assert";
+import { assert, assertEquals, assertThrows } from "@std/assert";
 import type { CLI } from "../../../src/cli/domain/aggregate/CLI.ts";
 import { CLIService } from "../../../src/cli/service/CLIService.ts";
 

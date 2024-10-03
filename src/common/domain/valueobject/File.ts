@@ -35,7 +35,8 @@ export class File implements ValueObject {
   }
 
   public getExtension(): string {
-    return this.path.value.split(".").pop() ?? "";
+    const split: string[] = this.path.value.split(".");
+    return split.length > 1 ? split[split.length - 1] : "";
   }
 
   private computeChecksum(digestAlgorithm: DigestAlgorithm): void {

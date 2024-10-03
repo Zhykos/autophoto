@@ -1,14 +1,14 @@
-import { assert, assertFalse, assertThrows } from "jsr:@std/assert";
+import { assert, assertEquals, assertFalse, assertThrows } from "@std/assert";
 import { File } from "../../../../src/common/domain/valueobject/File.ts";
 import { Path } from "../../../../src/common/domain/valueobject/Path.ts";
 
-Deno.test(async function equals() {
+Deno.test(function equals() {
   const dir1 = new File(new Path("LICENSE"));
   const dir2 = new File(new Path("LICENSE"));
   assert(dir1.equals(dir2));
 });
 
-Deno.test(async function notEqualsSameType() {
+Deno.test(function notEqualsSameType() {
   const dir1 = new File(new Path("LICENSE"));
   const dir2 = new File(new Path("README.md"));
   assertFalse(dir1.equals(dir2));
@@ -21,4 +21,8 @@ Deno.test(function notEquals() {
 
 Deno.test(function notFile() {
   assertThrows(() => new File(new Path("src")));
+});
+
+Deno.test(function fileWithoutExtension() {
+  assertEquals(new File(new Path("LICENSE")).getExtension(), "");
 });

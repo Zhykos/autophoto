@@ -46,7 +46,7 @@ export class KvImageRepository implements ImageRepository {
       const repositoryChecksum: string = file.getChecksum();
       if (repositoryChecksum !== entity.checksum) {
         throw new Error(
-          `Checksum mismatch for file "${file.path.value}": expected "${entity.checksum}", got "${repositoryChecksum}"`,
+          `Checksum mismatch for file "${file.path.value}": expected "${entity.checksum}" (into repository), got "${repositoryChecksum}" (from file)`,
         );
       }
 

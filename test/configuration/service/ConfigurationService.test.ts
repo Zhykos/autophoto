@@ -1,4 +1,4 @@
-import { assertEquals, assertThrows } from "jsr:@std/assert";
+import { assertEquals, assertThrows } from "@std/assert";
 import type { Configuration } from "../../../src/configuration/domain/aggregate/Configuration.ts";
 import { ConfigurationService } from "../../../src/configuration/service/ConfigurationService.ts";
 

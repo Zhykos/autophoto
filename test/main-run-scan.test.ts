@@ -1,4 +1,4 @@
-import { assertEquals } from "jsr:@std/assert";
+import { assertEquals } from "@std/assert";
 import { pathExists } from "../src/common/utils/file.ts";
 import type { ImageRepositoryRepositoryEntity } from "../src/scanner/repository/entity/ImageRepositoryRepositoryEntity.ts";
 import type { VideoGameRelationImageRepositoryEntity } from "../src/scanner/repository/entity/VideoGameRelationImageRepositoryEntity.ts";

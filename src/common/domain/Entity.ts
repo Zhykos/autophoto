@@ -7,10 +7,11 @@ export abstract class Entity {
     this.id = id || crypto.randomUUID();
   }
 
-  public equals(other: unknown): boolean {
+  /* NOT USED
+public equals(other: unknown): boolean {
     if (other instanceof Entity) {
       return this.id === other.id;
     }
     return false;
-  }
+  }*/
 }
