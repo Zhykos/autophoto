@@ -52,7 +52,7 @@ export class Scanner {
     imageDirectory: ImageDirectory,
     newSavedScreenshots: VideoGameScreenshot[],
   ): Promise<void> {
-    const videoGames: VideoGame[] = [];
+    const videoGamesFromScanner: VideoGame[] = [];
 
     for (const screenshot of newSavedScreenshots) {
       const videoGame: VideoGame = this.createVideoGame(
@@ -60,20 +60,22 @@ export class Scanner {
         screenshot,
       );
 
-      videoGames.find(
-        (exisingVideoGame) =>
-          exisingVideoGame.title.equals(videoGame.title) &&
-          exisingVideoGame.releaseYear.equals(videoGame.releaseYear),
-      ) || videoGames.push(videoGame);
+      videoGamesFromScanner.find(
+        (existingVideoGame) =>
+          existingVideoGame.title.equals(videoGame.title) &&
+          existingVideoGame.releaseYear.equals(videoGame.releaseYear),
+      ) || videoGamesFromScanner.push(videoGame);
     }
 
     const repositoryVideoGames: VideoGame[] =
       await this.videoGameRepository.getAllVideoGames();
 
-    const newVideoGamesToSave: VideoGame[] = videoGames.filter(
+    const newVideoGamesToSave: VideoGame[] = videoGamesFromScanner.filter(
       (videoGame) =>
-        !repositoryVideoGames.some((existingVideoGame) =>
-          existingVideoGame.equals(videoGame),
+        !repositoryVideoGames.some(
+          (existingVideoGame) =>
+            existingVideoGame.title.equals(videoGame.title) &&
+            existingVideoGame.releaseYear.equals(videoGame.releaseYear),
         ),
     );
 
@@ -158,7 +160,7 @@ export class Scanner {
     screenshot: VideoGameScreenshot,
   ): RegExpExecArray {
     const filePath: string = screenshot.image.file.path.value
-      .replace(imageDirectory.directory.rootDir.value, "")
+      .replace(imageDirectory.directory.path.value, "")
       .substring(1);
 
     return imageDirectory.fileFetchPattern.exec(filePath) as RegExpExecArray;

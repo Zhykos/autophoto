@@ -48,4 +48,8 @@ export class File implements ValueObject {
       .map((b) => b.toString(16).padStart(2, "0"))
       .join("");
   }
+
+  public makeRelativeToPath(directory: Path): string {
+    return this.path.value.replace(directory.value, "").substring(1);
+  }
 }

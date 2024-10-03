@@ -1,6 +1,6 @@
 import { assertEquals } from "jsr:@std/assert";
 import { pathExists } from "../../../src/common/utils/file.ts";
-import { runScanner, scan } from "../../../src/run-scan.ts";
+import { runScanner, scan } from "../../../src/scan.ts";
 import type { ImageRepositoryRepositoryEntity } from "../../../src/scanner/repository/entity/ImageRepositoryRepositoryEntity.ts";
 import type { VideoGameRelationImageRepositoryEntity } from "../../../src/scanner/repository/entity/VideoGameRelationImageRepositoryEntity.ts";
 import type { VideoGameRepositoryEntity } from "../../../src/scanner/repository/entity/VideoGameRepositoryEntity.ts";
@@ -32,7 +32,6 @@ Deno.test(async function pick() {
 
   const filesAfterScan: ImageRepositoryRepositoryEntity[] =
     await getAllImagesFromRepository(tempDatabaseFilePath);
-  console.log("filesAfterScan=============", filesAfterScan);
   assertEquals(filesAfterScan.length, 13);
 
   const videoGamesAfterScan: VideoGameRepositoryEntity[] =

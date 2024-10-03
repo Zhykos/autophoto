@@ -14,6 +14,6 @@ export class ImageDirectory {
       this.fileFetchPattern,
     );
 
-    return files.map((file) => new Image(file));
+    return files.map((file) => new Image(this.directory, file));
   }
 }

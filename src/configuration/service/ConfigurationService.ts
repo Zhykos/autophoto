@@ -8,20 +8,22 @@ import { ConfigurationScanWithPattern } from "../domain/valueobject/Configuratio
 import { DirectoryType } from "../domain/valueobject/DirectoryType.ts";
 import type { ConfigurationYamlType } from "./ConfigurationYamlType.ts";
 
-export class ReadConfiguration {
-  public load(configurationFile: string): Configuration {
-    if (!pathExists(configurationFile)) {
-      throw new Error(`Configuration file not found: "${configurationFile}"`);
+export class ConfigurationService {
+  public loadFile(configurationFilepath: string): Configuration {
+    if (!pathExists(configurationFilepath)) {
+      throw new Error(
+        `Configuration file not found: "${configurationFilepath}"`,
+      );
     }
 
-    const configStr: string = Deno.readTextFileSync(configurationFile);
+    const configStr: string = Deno.readTextFileSync(configurationFilepath);
     const config = parse(configStr) as ConfigurationYamlType;
     if (config?.autophoto?.scan && Array.isArray(config.autophoto.scan)) {
       const scans: ConfigurationScanWithPattern[] = this.parseScans(config);
       return new Configuration(scans);
     }
 
-    throw new Error(`Invalid configuration file: "${configurationFile}"`);
+    throw new Error(`Invalid configuration file: "${configurationFilepath}"`);
   }
 
   private parseScans(
@@ -35,9 +37,8 @@ export class ReadConfiguration {
       }
 
       const directory = new Directory(new Path(scan.directory));
-      const directoryType: DirectoryType = ReadConfiguration.getDirectoryType(
-        scan.type,
-      );
+      const directoryType: DirectoryType =
+        ConfigurationService.getDirectoryType(scan.type);
       const pattern = new ConfigurationDataPattern(
         new RegExp(scan["data-pattern"].regex),
         scan["data-pattern"].groups,

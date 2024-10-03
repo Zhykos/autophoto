@@ -1,4 +1,4 @@
-import { runScanner, scan } from "./run-scan.ts";
+import { runScanner, scan } from "./scan.ts";
 
 await runScanner(Deno.args, async (cli, scanner, configuration) => {
   if (cli.cron) {

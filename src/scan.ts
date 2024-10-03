@@ -3,7 +3,7 @@ import { CLIService } from "./cli/service/CLIService.ts";
 import { KvDriver } from "./common/dbdriver/KvDriver.ts";
 import type { Configuration } from "./configuration/domain/aggregate/Configuration.ts";
 import type { ConfigurationScanWithPattern } from "./configuration/domain/valueobject/ConfigurationScanWithPattern.ts";
-import { ReadConfiguration } from "./configuration/service/ReadConfiguration.ts";
+import { ConfigurationService } from "./configuration/service/ConfigurationService.ts";
 import { ImageDirectory } from "./scanner/domain/aggregate/ImageDirectory.ts";
 import { KvImageRepository } from "./scanner/repository/ImageRepository.ts";
 import { KvRelationRepository } from "./scanner/repository/RelationRepository.ts";
@@ -30,7 +30,7 @@ export const runScanner = async (
       new KvRelationRepository(kvDriver),
     );
 
-    const configuration: Configuration = new ReadConfiguration().load(
+    const configuration: Configuration = new ConfigurationService().loadFile(
       cli.configuration.path.value,
     );
 
@@ -48,7 +48,7 @@ export async function scan(
     console.log("Scanning...");
     // TODO Alerting
     for (const scan of scanData) {
-      console.log(`Scanning ${scan.directory.rootDir.value}...`);
+      console.log(`Scanning ${scan.directory.path.value}...`);
       const imageDirectory = new ImageDirectory(
         scan.directory,
         scan.pattern.regex,

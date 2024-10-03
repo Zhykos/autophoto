@@ -5,26 +5,26 @@ import { File } from "./File.ts";
 import { Path } from "./Path.ts";
 
 export class Directory implements ValueObject {
-  public constructor(public readonly rootDir: Path) {
+  public constructor(public readonly path: Path) {
     this.validateObjectProperties();
   }
 
   validateObjectProperties(): void {
-    if (!isDirectory(this.rootDir.value)) {
-      throw new DomainError(`Path is not a directory: "${this.rootDir.value}"`);
+    if (!isDirectory(this.path.value)) {
+      throw new DomainError(`Path is not a directory: "${this.path.value}"`);
     }
   }
 
   public equals(other: unknown): boolean {
     if (other instanceof Directory) {
-      return this.rootDir.equals(other.rootDir);
+      return this.path.equals(other.path);
     }
     return false;
   }
 
   public async scanDirectories(pattern: RegExp): Promise<File[]> {
     const files: File[] = [];
-    await Directory.scanDirectory(this.rootDir.value, pattern, (file: File) => {
+    await Directory.scanDirectory(this.path.value, pattern, (file: File) => {
       files.push(file);
     });
     return files;

@@ -1,4 +1,5 @@
 import type { KvDriver } from "../../common/dbdriver/KvDriver.ts";
+import { Directory } from "../../common/domain/valueobject/Directory.ts";
 import { File } from "../../common/domain/valueobject/File.ts";
 import { Path } from "../../common/domain/valueobject/Path.ts";
 import { VideoGameScreenshot } from "../domain/entity/VideoGameScreenshot.ts";
@@ -20,6 +21,7 @@ export class KvImageRepository implements ImageRepository {
       (screenshot) => {
         return {
           uuid: screenshot.id,
+          scanRootDirectory: screenshot.image.scannerRootDirectory.path.value,
           path: screenshot.image.file.path.value,
           checksum: screenshot.image.file.getChecksum(),
         } satisfies ImageRepositoryRepositoryEntity;
@@ -48,7 +50,10 @@ export class KvImageRepository implements ImageRepository {
         );
       }
 
-      return new VideoGameScreenshot(new Image(file), entity.uuid);
+      return new VideoGameScreenshot(
+        new Image(new Directory(new Path(entity.scanRootDirectory)), file),
+        entity.uuid,
+      );
     });
   }
 }
