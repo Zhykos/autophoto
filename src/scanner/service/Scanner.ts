@@ -115,27 +115,21 @@ export class Scanner {
       await this.videoGameRepository.getAllVideoGames();
 
     for (const screenshot of newSavedScreenshots) {
-      const videoGameWithWrongID: VideoGame = this.createVideoGame(
+      const videoGameWithWuthoutID: VideoGame = this.createVideoGame(
         imageDirectory,
         screenshot,
       );
 
-      const videoGame: VideoGame | undefined = repositoryVideoGames.find(
+      const videoGameWithID: VideoGame = repositoryVideoGames.find(
         (existingVideoGame) =>
-          existingVideoGame.title.equals(videoGameWithWrongID.title) &&
+          existingVideoGame.title.equals(videoGameWithWuthoutID.title) &&
           existingVideoGame.releaseYear.equals(
-            videoGameWithWrongID.releaseYear,
+            videoGameWithWuthoutID.releaseYear,
           ),
-      );
-
-      if (!videoGame) {
-        throw new Error(
-          `Video game not found in repository: ${videoGameWithWrongID.title} (${videoGameWithWrongID.releaseYear})`,
-        );
-      }
+      ) as VideoGame;
 
       await this.relationRepository.saveVideoGameRelation(
-        videoGame,
+        videoGameWithID,
         screenshot,
         this.createVideoGamePlatform(imageDirectory, screenshot),
       );

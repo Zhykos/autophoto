@@ -47,6 +47,6 @@ export class CLIService {
       }
     }
 
-    return new CLI(new File(new Path(filepath)), databaseFilepath, cronStr);
+    return new CLI(new File(new Path(filepath)), cronStr, databaseFilepath);
   }
 }

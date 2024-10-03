@@ -19,9 +19,7 @@ export const runScanner = async (
   ) => Promise<void>,
 ) => {
   const cli: CLI = new CLIService().read(args);
-  const kvDriver = new KvDriver(
-    cli.databaseFilepath ?? "./db.autophoto.sqlite3",
-  );
+  const kvDriver = new KvDriver(cli.databaseFilepath);
 
   try {
     const scanner = new Scanner(
@@ -44,6 +42,8 @@ export async function scan(
   scanner: Scanner,
   scanData: ConfigurationScanWithPattern[],
 ): Promise<void> {
+  let hasError = false;
+
   try {
     console.log("Scanning...");
     // TODO Alerting
@@ -59,7 +59,12 @@ export async function scan(
     console.log("Scan completed!");
   } catch (error) {
     // TODO Alerting
+    hasError = true;
     console.error("An error occurred while scanning.");
     console.error(error);
+  }
+
+  if (hasError) {
+    throw new Error("An error occurred while scanning.");
   }
 }

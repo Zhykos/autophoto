@@ -24,9 +24,9 @@ export class Directory implements ValueObject {
 
   public async scanDirectories(pattern: RegExp): Promise<File[]> {
     const files: File[] = [];
-    await Directory.scanDirectory(this.path.value, pattern, (file: File) => {
-      files.push(file);
-    });
+    await Directory.scanDirectory(this.path.value, pattern, (file: File) =>
+      files.push(file),
+    );
     return files;
   }
 
