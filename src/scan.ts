@@ -10,14 +10,7 @@ import { KvRelationRepository } from "./scanner/repository/RelationRepository.ts
 import { KvVideoGameRepository } from "./scanner/repository/VideoGameRepository.ts";
 import { Scanner } from "./scanner/service/Scanner.ts";
 
-export const runScanner = async (
-  args: string[],
-  callback: (
-    cli: CLI,
-    scanner: Scanner,
-    configuration: Configuration,
-  ) => Promise<void>,
-) => {
+export const runScanner = async (args: string[]) => {
   const cli: CLI = new CLIService().read(args);
   const kvDriver = new KvDriver(cli.databaseFilepath);
 
@@ -32,7 +25,7 @@ export const runScanner = async (
       cli.configuration.path.value,
     );
 
-    await callback(cli, scanner, configuration);
+    await scan(scanner, configuration.scans);
   } finally {
     kvDriver.close();
   }

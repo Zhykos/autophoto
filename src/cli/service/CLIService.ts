@@ -1,4 +1,3 @@
-import { parseCronExpression } from "@p4sca1/cron-schedule";
 import { type Args, parseArgs } from "@std/cli/parse-args";
 import { File } from "../../common/domain/valueobject/File.ts";
 import { Path } from "../../common/domain/valueobject/Path.ts";
@@ -26,16 +25,6 @@ export class CLIService {
       );
     }
 
-    const cronStr: string | undefined = args.cron;
-    if (cronStr) {
-      try {
-        parseCronExpression(cronStr);
-      } catch (error) {
-        console.error(error);
-        throw new Error(`Invalid cron expression: "${cronStr}"`);
-      }
-    }
-
     const databaseFilepath: string | undefined = args.database;
     if (databaseFilepath) {
       if (pathExists(databaseFilepath)) {
@@ -47,6 +36,6 @@ export class CLIService {
       }
     }
 
-    return new CLI(new File(new Path(filepath)), cronStr, databaseFilepath);
+    return new CLI(new File(new Path(filepath)), databaseFilepath);
   }
 }

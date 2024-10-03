@@ -23,12 +23,10 @@ async function beforeEach() {
 Deno.test(async function pick() {
   await beforeEach();
 
-  await runScanner(
-    [`--database=${tempDatabaseFilePath}`, "./test/resources/config3.yml"],
-    async (_, scanner, configuration) => {
-      await scan(scanner, configuration.scans);
-    },
-  );
+  await runScanner([
+    `--database=${tempDatabaseFilePath}`,
+    "./test/resources/config3.yml",
+  ]);
 
   const filesAfterScan: ImageRepositoryRepositoryEntity[] =
     await getAllImagesFromRepository(tempDatabaseFilePath);

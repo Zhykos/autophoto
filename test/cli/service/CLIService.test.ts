@@ -39,22 +39,6 @@ Deno.test(function readOK() {
   assertEquals(cliResult.configuration.path.value, "README.md");
 });
 
-Deno.test(function cronOK() {
-  const cliResult: CLI = new CLIService().read([
-    "--cron=*/1 * * * *",
-    "README.md",
-  ]);
-  assertEquals(cliResult.configuration.path.value, "README.md");
-});
-
-Deno.test(function wrongCron() {
-  const error = assertThrows(() =>
-    new CLIService().read(["--cron=*/1 *", "README.md"]),
-  );
-  assert(error instanceof Error);
-  assertEquals(error.message, 'Invalid cron expression: "*/1 *"');
-});
-
 Deno.test(function newDatabaseFile() {
   const cliResult: CLI = new CLIService().read([
     "--database=new.db",
