@@ -1,7 +1,13 @@
-import { VideoGameScreeshotsToShare } from "../../../test/picker/domain/aggregate/VideoGameScreeshotsToShare.ts";
+import { VideoGameRelationImageRepositoryEntity } from "../../common/repository/entity/VideoGameRelationImageRepositoryEntity.ts";
+import { VideoGameScreeshotsToShare } from "../domain/aggregate/VideoGameScreeshotsToShare.ts";
+import type { RelationRepository } from "../repository/RelationRepository.ts";
 
 export class PickerService {
-  public pick(): VideoGameScreeshotsToShare {
+  constructor(private readonly relationRepository: RelationRepository) {}
+
+  public async pick(): Promise<VideoGameScreeshotsToShare> {
+    const unpublishedRelations: VideoGameRelationImageRepositoryEntity[] =
+      await this.relationRepository.getUnpublishedVideoGameRelations();
     return new VideoGameScreeshotsToShare("8-Bit Bayonetta", "PC", ["1", "2"]);
   }
 }
