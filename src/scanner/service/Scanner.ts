@@ -1,3 +1,6 @@
+import type { ImageRepository } from "../../common/repository/ImageRepository.ts";
+import type { RelationRepository } from "../../common/repository/RelationRepository.ts";
+import type { VideoGameRepository } from "../../common/repository/VideoGameRepository.ts";
 import type { ImageDirectory } from "../domain/aggregate/ImageDirectory.ts";
 import {
   VideoGame,
@@ -6,9 +9,6 @@ import {
 import { VideoGameScreenshot } from "../domain/entity/VideoGameScreenshot.ts";
 import type { Image } from "../domain/valueobject/Image.ts";
 import { VideoGamePlatform } from "../domain/valueobject/VideoGamePlatform.ts";
-import type { ImageRepository } from "../repository/ImageRepository.ts";
-import type { RelationRepository } from "../repository/RelationRepository.ts";
-import type { VideoGameRepository } from "../repository/VideoGameRepository.ts";
 
 export class Scanner {
   constructor(

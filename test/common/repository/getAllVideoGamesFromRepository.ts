@@ -1,5 +1,5 @@
 import { KvDriver } from "../../../src/common/dbdriver/KvDriver.ts";
-import type { VideoGameRepositoryEntity } from "../../../src/scanner/repository/entity/VideoGameRepositoryEntity.ts";
+import type { VideoGameRepositoryEntity } from "../../../src/common/repository/entity/VideoGameRepositoryEntity.ts";
 
 export async function getAllVideoGamesFromRepository(
   databaseFilePath: string,

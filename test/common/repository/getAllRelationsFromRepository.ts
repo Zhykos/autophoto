@@ -1,5 +1,5 @@
 import { KvDriver } from "../../../src/common/dbdriver/KvDriver.ts";
-import type { VideoGameRelationImageRepositoryEntity } from "../../../src/scanner/repository/entity/VideoGameRelationImageRepositoryEntity.ts";
+import type { VideoGameRelationImageRepositoryEntity } from "../../../src/common/repository/entity/VideoGameRelationImageRepositoryEntity.ts";
 
 export async function getAllRelationsFromRepository(
   databaseFilePath: string,
