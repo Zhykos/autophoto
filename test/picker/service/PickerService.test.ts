@@ -1,5 +1,5 @@
-import { assertEquals } from "@std/assert";
 import { unique } from "@radashi-org/radashi";
+import { assertEquals } from "@std/assert";
 import { pathExists } from "../../../src/common/utils/file.ts";
 import { runScanner } from "../../../src/scan.ts";
 import type { ImageRepositoryRepositoryEntity } from "../../../src/scanner/repository/entity/ImageRepositoryRepositoryEntity.ts";
