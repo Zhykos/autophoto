@@ -1,5 +1,5 @@
-import type { ImageRepository } from "../../../src/common/repository/ImageRepository.ts";
 import type { VideoGameScreenshot } from "../../../src/scanner/domain/entity/VideoGameScreenshot.ts";
+import type { ImageRepository } from "../../../src/scanner/repository/ImageRepository.ts";
 
 export class MockImageRepository implements ImageRepository {
   saveVideoGameScreenshots(_: VideoGameScreenshot[]): Promise<void> {

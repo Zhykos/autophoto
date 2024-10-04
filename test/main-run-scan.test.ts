@@ -3,9 +3,9 @@ import type { ImageRepositoryRepositoryEntity } from "../src/common/repository/e
 import type { VideoGameRelationImageRepositoryEntity } from "../src/common/repository/entity/VideoGameRelationImageRepositoryEntity.ts";
 import type { VideoGameRepositoryEntity } from "../src/common/repository/entity/VideoGameRepositoryEntity.ts";
 import { pathExists } from "../src/utils/file.ts";
-import { getAllImagesFromRepository } from "./common/repository/getAllImagesFromRepository.ts";
-import { getAllRelationsFromRepository } from "./common/repository/getAllRelationsFromRepository.ts";
-import { getAllVideoGamesFromRepository } from "./common/repository/getAllVideoGamesFromRepository.ts";
+import { getAllImagesFromRepository } from "./test-utils/getAllImagesFromRepository.ts";
+import { getAllRelationsFromRepository } from "./test-utils/getAllRelationsFromRepository.ts";
+import { getAllVideoGamesFromRepository } from "./test-utils/getAllVideoGamesFromRepository.ts";
 
 const tempDatabaseFilePath = "./test/it-database.sqlite3";
 

@@ -1,5 +1,5 @@
-import { KvDriver } from "../../../src/common/dbdriver/KvDriver.ts";
-import type { ImageRepositoryRepositoryEntity } from "../../../src/common/repository/entity/ImageRepositoryRepositoryEntity.ts";
+import { KvDriver } from "../../src/common/dbdriver/KvDriver.ts";
+import type { ImageRepositoryRepositoryEntity } from "../../src/common/repository/entity/ImageRepositoryRepositoryEntity.ts";
 
 export async function getAllImagesFromRepository(
   databaseFilePath: string,

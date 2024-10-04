@@ -3,9 +3,6 @@ import { assertEquals } from "@std/assert";
 import { KvDriver } from "../../../src/common/dbdriver/KvDriver.ts";
 import { Directory } from "../../../src/common/domain/valueobject/Directory.ts";
 import { Path } from "../../../src/common/domain/valueobject/Path.ts";
-import { KvImageRepository } from "../../../src/common/repository/ImageRepository.ts";
-import { KvRelationRepository } from "../../../src/common/repository/RelationRepository.ts";
-import { KvVideoGameRepository } from "../../../src/common/repository/VideoGameRepository.ts";
 import type { ImageRepositoryRepositoryEntity } from "../../../src/common/repository/entity/ImageRepositoryRepositoryEntity.ts";
 import type { VideoGameRelationImageRepositoryEntity } from "../../../src/common/repository/entity/VideoGameRelationImageRepositoryEntity.ts";
 import type { VideoGameRepositoryEntity } from "../../../src/common/repository/entity/VideoGameRepositoryEntity.ts";
@@ -13,11 +10,14 @@ import { ConfigurationDataPattern } from "../../../src/configuration/domain/valu
 import { ConfigurationScanWithPattern } from "../../../src/configuration/domain/valueobject/ConfigurationScanWithPattern.ts";
 import { DirectoryType } from "../../../src/configuration/domain/valueobject/DirectoryType.ts";
 import { scan } from "../../../src/scan.ts";
+import { KvImageRepository } from "../../../src/scanner/repository/ImageRepository.ts";
+import { KvRelationRepository } from "../../../src/scanner/repository/RelationRepository.ts";
+import { KvVideoGameRepository } from "../../../src/scanner/repository/VideoGameRepository.ts";
 import { Scanner } from "../../../src/scanner/service/Scanner.ts";
 import { pathExists } from "../../../src/utils/file.ts";
-import { getAllImagesFromRepository } from "../../common/repository/getAllImagesFromRepository.ts";
-import { getAllRelationsFromRepository } from "../../common/repository/getAllRelationsFromRepository.ts";
-import { getAllVideoGamesFromRepository } from "../../common/repository/getAllVideoGamesFromRepository.ts";
+import { getAllImagesFromRepository } from "../../test-utils/getAllImagesFromRepository.ts";
+import { getAllRelationsFromRepository } from "../../test-utils/getAllRelationsFromRepository.ts";
+import { getAllVideoGamesFromRepository } from "../../test-utils/getAllVideoGamesFromRepository.ts";
 
 const tempDatabaseFilePath = "./test/it-database.sqlite3";
 

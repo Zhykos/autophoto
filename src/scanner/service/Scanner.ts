@@ -1,6 +1,6 @@
-import type { ImageRepository } from "../../common/repository/ImageRepository.ts";
-import type { RelationRepository } from "../../common/repository/RelationRepository.ts";
-import type { VideoGameRepository } from "../../common/repository/VideoGameRepository.ts";
+import type { ImageRepository } from "../../scanner/repository/ImageRepository.ts";
+import type { RelationRepository } from "../../scanner/repository/RelationRepository.ts";
+import type { VideoGameRepository } from "../../scanner/repository/VideoGameRepository.ts";
 import type { ImageDirectory } from "../domain/aggregate/ImageDirectory.ts";
 import {
   VideoGame,

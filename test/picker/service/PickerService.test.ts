@@ -6,9 +6,9 @@ import type { VideoGameRepositoryEntity } from "../../../src/common/repository/e
 import { PickerService } from "../../../src/picker/service/PickerService.ts";
 import { runScanner } from "../../../src/scan.ts";
 import { pathExists } from "../../../src/utils/file.ts";
-import { getAllImagesFromRepository } from "../../common/repository/getAllImagesFromRepository.ts";
-import { getAllRelationsFromRepository } from "../../common/repository/getAllRelationsFromRepository.ts";
-import { getAllVideoGamesFromRepository } from "../../common/repository/getAllVideoGamesFromRepository.ts";
+import { getAllImagesFromRepository } from "../../test-utils/getAllImagesFromRepository.ts";
+import { getAllRelationsFromRepository } from "../../test-utils/getAllRelationsFromRepository.ts";
+import { getAllVideoGamesFromRepository } from "../../test-utils/getAllVideoGamesFromRepository.ts";
 import type { VideoGameScreeshotsToShare } from "../domain/aggregate/VideoGameScreeshotsToShare.ts";
 
 const tempDatabaseFilePath = "./test/it-database.sqlite3";

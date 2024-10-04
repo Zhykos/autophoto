@@ -1,31 +1,22 @@
 import { assert, assertEquals, assertRejects } from "@std/assert";
 import { KvDriver } from "../../../src/common/dbdriver/KvDriver.ts";
-import { KvImageRepository } from "../../../src/common/repository/ImageRepository.ts";
 import type { ImageRepositoryRepositoryEntity } from "../../../src/common/repository/entity/ImageRepositoryRepositoryEntity.ts";
+import { KvImageRepository } from "../../../src/scanner/repository/ImageRepository.ts";
 import { pathExists } from "../../../src/utils/file.ts";
-import { getAllImagesFromRepository } from "../../common/repository/getAllImagesFromRepository.ts";
-import { getAllRelationsFromRepository } from "../../common/repository/getAllRelationsFromRepository.ts";
-import { getAllVideoGamesFromRepository } from "../../common/repository/getAllVideoGamesFromRepository.ts";
 
 const tempDatabaseFilePath = "./test/it-database.sqlite3";
 
-async function beforeEach() {
+Deno.test(async function wrongChecksum() {
   if (pathExists(tempDatabaseFilePath)) {
     Deno.removeSync(tempDatabaseFilePath);
   }
-
-  assertEquals(await getAllImagesFromRepository(tempDatabaseFilePath), []);
-  assertEquals(await getAllVideoGamesFromRepository(tempDatabaseFilePath), []);
-  assertEquals(await getAllRelationsFromRepository(tempDatabaseFilePath), []);
-}
-
-Deno.test(async function wrongChecksum() {
-  await beforeEach();
 
   const kvDriver = new KvDriver(tempDatabaseFilePath);
   const repository = new KvImageRepository(kvDriver);
 
   try {
+    assertEquals(await repository.getAllVideoGameScreenshots(), []);
+
     await kvDriver.save(["image", "UUID"], {
       uuid: "UUID",
       scanRootDirectory: "test/resources/video-game",

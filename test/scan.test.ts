@@ -8,12 +8,12 @@ import { scan } from "../src/scan.ts";
 import type { VideoGameScreenshot } from "../src/scanner/domain/entity/VideoGameScreenshot.ts";
 import { Scanner } from "../src/scanner/service/Scanner.ts";
 import { pathExists } from "../src/utils/file.ts";
-import { getAllImagesFromRepository } from "./common/repository/getAllImagesFromRepository.ts";
-import { getAllRelationsFromRepository } from "./common/repository/getAllRelationsFromRepository.ts";
-import { getAllVideoGamesFromRepository } from "./common/repository/getAllVideoGamesFromRepository.ts";
 import { MockImageRepository } from "./mock/repository/MockImageRepository.ts";
 import { MockRelationRepository } from "./mock/repository/MockRelationRepository.ts";
 import { MockVideoGameRepository } from "./mock/repository/MockVideoGameRepository.ts";
+import { getAllImagesFromRepository } from "./test-utils/getAllImagesFromRepository.ts";
+import { getAllRelationsFromRepository } from "./test-utils/getAllRelationsFromRepository.ts";
+import { getAllVideoGamesFromRepository } from "./test-utils/getAllVideoGamesFromRepository.ts";
 
 const tempDatabaseFilePath = "./test/it-database.sqlite3";
 
