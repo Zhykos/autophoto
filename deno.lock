@@ -16,7 +16,8 @@
       "jsr:@std/path@^1.0.6": "jsr:@std/path@1.0.6",
       "jsr:@std/testing@^1.0.3": "jsr:@std/testing@1.0.3",
       "jsr:@std/yaml@^1.0.5": "jsr:@std/yaml@1.0.5",
-      "npm:@biomejs/biome": "npm:@biomejs/biome@1.9.2"
+      "npm:@biomejs/biome": "npm:@biomejs/biome@1.9.2",
+      "npm:@jsr/radashi-org__radashi@^12.2.0-beta.649f0d1": "npm:@jsr/radashi-org__radashi@12.2.0-beta.649f0d1"
     },
     "jsr": {
       "@p4sca1/cron-schedule@5.0.3": {
@@ -120,6 +121,10 @@
       "@biomejs/cli-win32-x64@1.9.2": {
         "integrity": "sha512-JC3XvdYcjmu1FmAehVwVV0SebLpeNTnO2ZaMdGCSOdS7f8O9Fq14T2P1gTG1Q29Q8Dt1S03hh0IdVpIZykOL8g==",
         "dependencies": {}
+      },
+      "@jsr/radashi-org__radashi@12.2.0-beta.649f0d1": {
+        "integrity": "sha512-a2bLw6Vr9exAUqogPcWcXAbKAjRrRCqASMKeaizrAcO685db60c7DMkwvz8RiaSnIgCzNleP71MdoYxm2KF4hw==",
+        "dependencies": {}
       }
     }
   },
@@ -166,6 +171,11 @@
       "jsr:@std/media-types@^1.0.3",
       "jsr:@std/testing@^1.0.3",
       "jsr:@std/yaml@^1.0.5"
-    ]
+    ],
+    "packageJson": {
+      "dependencies": [
+        "npm:@jsr/radashi-org__radashi@^12.2.0-beta.649f0d1"
+      ]
+    }
   }
 }
