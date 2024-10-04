@@ -9,4 +9,13 @@ export class CommonKvRelationRepository {
   ): Promise<void> {
     await this.kvDriver.save(["relation", entity.uuid], entity);
   }
+
+  async getAllVideoGameRelations(): Promise<
+    VideoGameRelationImageRepositoryEntity[]
+  > {
+    return await this.kvDriver.list(
+      ["relation"],
+      {} as VideoGameRelationImageRepositoryEntity,
+    );
+  }
 }
