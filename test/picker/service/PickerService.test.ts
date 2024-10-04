@@ -1,6 +1,7 @@
 import { unique } from "@radashi-org/radashi";
 import { assert, assertEquals } from "@std/assert";
 import { pathExists } from "../../../src/common/utils/file.ts";
+import { PickerService } from "../../../src/picker/service/PickerService.ts";
 import { runScanner } from "../../../src/scan.ts";
 import type { ImageRepositoryRepositoryEntity } from "../../../src/scanner/repository/entity/ImageRepositoryRepositoryEntity.ts";
 import type { VideoGameRelationImageRepositoryEntity } from "../../../src/scanner/repository/entity/VideoGameRelationImageRepositoryEntity.ts";
@@ -8,6 +9,7 @@ import type { VideoGameRepositoryEntity } from "../../../src/scanner/repository/
 import { getAllImagesFromRepository } from "../../common/repository/getAllImagesFromRepository.ts";
 import { getAllRelationsFromRepository } from "../../common/repository/getAllRelationsFromRepository.ts";
 import { getAllVideoGamesFromRepository } from "../../common/repository/getAllVideoGamesFromRepository.ts";
+import type { VideoGameScreeshotsToShare } from "../domain/aggregate/VideoGameScreeshotsToShare.ts";
 
 const tempDatabaseFilePath = "./test/it-database.sqlite3";
 
@@ -107,20 +109,20 @@ Deno.test(async function pick() {
 
   const screenshotsControl: VideoGameScreeshotsToShare =
     pickerService.pick() as VideoGameScreeshotsToShare;
-  assertEquals(screenshotsControl.files.length, 4);
-  assertEquals(screenshotsControl.platform.length, "PC");
+  assertEquals(screenshotsControl.screenshotsFilesIDs.length, 4);
+  assertEquals(screenshotsControl.platform, "PC");
   assertEquals(screenshotsControl.title, "Control");
 
   const screenshotsOverdriveSwitch: VideoGameScreeshotsToShare =
     pickerService.pick() as VideoGameScreeshotsToShare;
-  assertEquals(screenshotsOverdriveSwitch.files.length, 4);
-  assertEquals(screenshotsOverdriveSwitch.platform.length, "Nintendo Switch");
+  assertEquals(screenshotsOverdriveSwitch.screenshotsFilesIDs.length, 4);
+  assertEquals(screenshotsOverdriveSwitch.platform, "Nintendo Switch");
   assertEquals(screenshotsOverdriveSwitch.title, "80's Overdrive");
 
   const screenshotsBayonetta: VideoGameScreeshotsToShare =
     pickerService.pick() as VideoGameScreeshotsToShare;
-  assertEquals(screenshotsBayonetta.files.length, 2);
-  assertEquals(screenshotsBayonetta.platform.length, "PC");
+  assertEquals(screenshotsBayonetta.screenshotsFilesIDs.length, 2);
+  assertEquals(screenshotsBayonetta.platform, "PC");
   assertEquals(screenshotsBayonetta.title, "8-Bit Bayonetta");
 
   const possibleTitles = ["80's Overdrive", "Absolver", "Control"];
@@ -131,9 +133,7 @@ Deno.test(async function pick() {
     absolverLinks[0],
     controlLinks.find(
       (l) =>
-        !screenshotsOverdriveSwitch.files
-          .map((f) => f.uuid)
-          .includes(l.imageID),
+        !screenshotsOverdriveSwitch.screenshotsFilesIDs.includes(l.imageID),
     ) as VideoGameRelationImageRepositoryEntity,
   ];
 
@@ -142,9 +142,9 @@ Deno.test(async function pick() {
   assertEquals(screenshotsPick4.platform, "PC");
   const pick4index: number = possibleTitles.indexOf(screenshotsPick4.title);
   assert(pick4index >= 0);
-  assertEquals(screenshotsPick4.files.length, 1);
+  assertEquals(screenshotsPick4.screenshotsFilesIDs.length, 1);
   assertEquals(
-    screenshotsPick4.files[0].uuid,
+    screenshotsPick4.screenshotsFilesIDs[0],
     possibleLinks[pick4index].imageID,
   );
   possibleTitles.splice(pick4index, 1);
@@ -155,9 +155,9 @@ Deno.test(async function pick() {
   assertEquals(screenshotsPick5.platform, "PC");
   const pick5index: number = possibleTitles.indexOf(screenshotsPick5.title);
   assert(pick5index >= 0);
-  assertEquals(screenshotsPick5.files.length, 1);
+  assertEquals(screenshotsPick5.screenshotsFilesIDs.length, 1);
   assertEquals(
-    screenshotsPick5.files[0].uuid,
+    screenshotsPick5.screenshotsFilesIDs[0],
     possibleLinks[pick5index].imageID,
   );
   possibleTitles.splice(pick5index, 1);
@@ -168,9 +168,9 @@ Deno.test(async function pick() {
   assertEquals(screenshotsPick6.platform, "PC");
   const pick6index: number = possibleTitles.indexOf(screenshotsPick6.title);
   assert(pick6index >= 0);
-  assertEquals(screenshotsPick6.files.length, 1);
+  assertEquals(screenshotsPick6.screenshotsFilesIDs.length, 1);
   assertEquals(
-    screenshotsPick6.files[0].uuid,
+    screenshotsPick6.screenshotsFilesIDs[0],
     possibleLinks[pick6index].imageID,
   );
   possibleTitles.splice(pick6index, 1);
