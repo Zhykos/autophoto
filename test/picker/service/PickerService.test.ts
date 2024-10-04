@@ -1,11 +1,11 @@
 import { unique } from "@radashi-org/radashi";
 import { assert, assertEquals } from "@std/assert";
-import { pathExists } from "../../../src/common/utils/file.ts";
 import { PickerService } from "../../../src/picker/service/PickerService.ts";
 import { runScanner } from "../../../src/scan.ts";
 import type { ImageRepositoryRepositoryEntity } from "../../../src/scanner/repository/entity/ImageRepositoryRepositoryEntity.ts";
 import type { VideoGameRelationImageRepositoryEntity } from "../../../src/scanner/repository/entity/VideoGameRelationImageRepositoryEntity.ts";
 import type { VideoGameRepositoryEntity } from "../../../src/scanner/repository/entity/VideoGameRepositoryEntity.ts";
+import { pathExists } from "../../../src/utils/file.ts";
 import { getAllImagesFromRepository } from "../../common/repository/getAllImagesFromRepository.ts";
 import { getAllRelationsFromRepository } from "../../common/repository/getAllRelationsFromRepository.ts";
 import { getAllVideoGamesFromRepository } from "../../common/repository/getAllVideoGamesFromRepository.ts";

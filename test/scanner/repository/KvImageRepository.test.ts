@@ -1,8 +1,8 @@
 import { assert, assertEquals, assertRejects } from "@std/assert";
 import { KvDriver } from "../../../src/common/dbdriver/KvDriver.ts";
-import { pathExists } from "../../../src/common/utils/file.ts";
 import { KvImageRepository } from "../../../src/scanner/repository/ImageRepository.ts";
 import type { ImageRepositoryRepositoryEntity } from "../../../src/scanner/repository/entity/ImageRepositoryRepositoryEntity.ts";
+import { pathExists } from "../../../src/utils/file.ts";
 import { getAllImagesFromRepository } from "../../common/repository/getAllImagesFromRepository.ts";
 import { getAllRelationsFromRepository } from "../../common/repository/getAllRelationsFromRepository.ts";
 import { getAllVideoGamesFromRepository } from "../../common/repository/getAllVideoGamesFromRepository.ts";

@@ -1,7 +1,7 @@
 import { type Args, parseArgs } from "@std/cli/parse-args";
 import { File } from "../../common/domain/valueobject/File.ts";
 import { Path } from "../../common/domain/valueobject/Path.ts";
-import { pathExists } from "../../common/utils/file.ts";
+import { pathExists } from "../../utils/file.ts";
 import { CLI } from "../domain/aggregate/CLI.ts";
 
 export class CLIService {

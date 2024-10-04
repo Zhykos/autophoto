@@ -1,5 +1,5 @@
 import { crypto, type DigestAlgorithm } from "@std/crypto/crypto";
-import { isFile } from "../../utils/file.ts";
+import { isFile } from "../../../utils/file.ts";
 import { DomainError } from "../DomainError.ts";
 import type { ValueObject } from "../ValueObject.ts";
 import type { Path } from "./Path.ts";
