@@ -1,17 +1,17 @@
 import { unique } from "@radashi-org/radashi";
 import { assert, assertEquals } from "@std/assert";
+import { KvDriver } from "../../../src/common/dbdriver/KvDriver.ts";
 import type { ImageRepositoryRepositoryEntity } from "../../../src/common/repository/entity/ImageRepositoryRepositoryEntity.ts";
 import type { VideoGameRelationImageRepositoryEntity } from "../../../src/common/repository/entity/VideoGameRelationImageRepositoryEntity.ts";
 import type { VideoGameRepositoryEntity } from "../../../src/common/repository/entity/VideoGameRepositoryEntity.ts";
+import type { VideoGameScreeshotsToShare } from "../../../src/picker/domain/aggregate/VideoGameScreeshotsToShare.ts";
+import { KvRelationRepository } from "../../../src/picker/repository/RelationRepository.ts";
 import { PickerService } from "../../../src/picker/service/PickerService.ts";
 import { runScanner } from "../../../src/scan.ts";
 import { pathExists } from "../../../src/utils/file.ts";
 import { getAllImagesFromRepository } from "../../test-utils/getAllImagesFromRepository.ts";
 import { getAllRelationsFromRepository } from "../../test-utils/getAllRelationsFromRepository.ts";
 import { getAllVideoGamesFromRepository } from "../../test-utils/getAllVideoGamesFromRepository.ts";
-import type { VideoGameScreeshotsToShare } from "../domain/aggregate/VideoGameScreeshotsToShare.ts";
-import { KvDriver } from "../../../src/common/dbdriver/KvDriver.ts";
-import { KvRelationRepository } from "../../../src/scanner/repository/RelationRepository.ts";
 
 const tempDatabaseFilePath = "./test/it-database.sqlite3";
 
@@ -124,11 +124,12 @@ Deno.test(async function pick() {
       ...overdriveLinks.filter((l) => l.platform === "Nintendo Switch"),
       ...controlLinks,
     ];
+    let possibleLinks1ImageIDs: string[] = possibleLinks1.map((l) => l.imageID);
 
     assertEquals(possibleLinks1.length, 9);
 
     const screenshotsPick1: VideoGameScreeshotsToShare =
-      pickerService.pick() as VideoGameScreeshotsToShare;
+      (await pickerService.pick()) as VideoGameScreeshotsToShare;
     assertEquals(screenshotsPick1.screenshotsFilesIDs.length, 4);
 
     const pick1index: number = possibleTitles1.indexOf(screenshotsPick1.title);
@@ -136,20 +137,36 @@ Deno.test(async function pick() {
 
     if (pick1index === 0) {
       assert(
-        possibleLinks1.indexOf(screenshotsPick1.screenshotsFilesIDs[0]) >= 0 &&
-          possibleLinks1.indexOf(screenshotsPick1.screenshotsFilesIDs[0]) < 4,
+        possibleLinks1ImageIDs.indexOf(
+          screenshotsPick1.screenshotsFilesIDs[0],
+        ) >= 0 &&
+          possibleLinks1ImageIDs.indexOf(
+            screenshotsPick1.screenshotsFilesIDs[0],
+          ) < 4,
       );
       assert(
-        possibleLinks1.indexOf(screenshotsPick1.screenshotsFilesIDs[1]) >= 0 &&
-          possibleLinks1.indexOf(screenshotsPick1.screenshotsFilesIDs[1]) < 4,
+        possibleLinks1ImageIDs.indexOf(
+          screenshotsPick1.screenshotsFilesIDs[1],
+        ) >= 0 &&
+          possibleLinks1ImageIDs.indexOf(
+            screenshotsPick1.screenshotsFilesIDs[1],
+          ) < 4,
       );
       assert(
-        possibleLinks1.indexOf(screenshotsPick1.screenshotsFilesIDs[2]) >= 0 &&
-          possibleLinks1.indexOf(screenshotsPick1.screenshotsFilesIDs[2]) < 4,
+        possibleLinks1ImageIDs.indexOf(
+          screenshotsPick1.screenshotsFilesIDs[2],
+        ) >= 0 &&
+          possibleLinks1ImageIDs.indexOf(
+            screenshotsPick1.screenshotsFilesIDs[2],
+          ) < 4,
       );
       assert(
-        possibleLinks1.indexOf(screenshotsPick1.screenshotsFilesIDs[3]) >= 0 &&
-          possibleLinks1.indexOf(screenshotsPick1.screenshotsFilesIDs[3]) < 4,
+        possibleLinks1ImageIDs.indexOf(
+          screenshotsPick1.screenshotsFilesIDs[3],
+        ) >= 0 &&
+          possibleLinks1ImageIDs.indexOf(
+            screenshotsPick1.screenshotsFilesIDs[3],
+          ) < 4,
       );
 
       assertEquals(screenshotsPick1.platform, "Nintendo Switch");
@@ -158,16 +175,24 @@ Deno.test(async function pick() {
       possibleTitles1.splice(0, 1);
     } else {
       assert(
-        possibleLinks1.indexOf(screenshotsPick1.screenshotsFilesIDs[0]) >= 4,
+        possibleLinks1ImageIDs.indexOf(
+          screenshotsPick1.screenshotsFilesIDs[0],
+        ) >= 4,
       );
       assert(
-        possibleLinks1.indexOf(screenshotsPick1.screenshotsFilesIDs[1]) >= 4,
+        possibleLinks1ImageIDs.indexOf(
+          screenshotsPick1.screenshotsFilesIDs[1],
+        ) >= 4,
       );
       assert(
-        possibleLinks1.indexOf(screenshotsPick1.screenshotsFilesIDs[2]) >= 4,
+        possibleLinks1ImageIDs.indexOf(
+          screenshotsPick1.screenshotsFilesIDs[2],
+        ) >= 4,
       );
       assert(
-        possibleLinks1.indexOf(screenshotsPick1.screenshotsFilesIDs[3]) >= 4,
+        possibleLinks1ImageIDs.indexOf(
+          screenshotsPick1.screenshotsFilesIDs[3],
+        ) >= 4,
       );
 
       assertEquals(screenshotsPick1.platform, "PC");
@@ -176,25 +201,27 @@ Deno.test(async function pick() {
       possibleTitles1.splice(1, 1);
     }
 
-    possibleLinks1.splice(
-      possibleLinks1.indexOf(screenshotsPick1.screenshotsFilesIDs[0]),
+    possibleLinks1ImageIDs.splice(
+      possibleLinks1ImageIDs.indexOf(screenshotsPick1.screenshotsFilesIDs[0]),
       1,
     );
-    possibleLinks1.splice(
-      possibleLinks1.indexOf(screenshotsPick1.screenshotsFilesIDs[1]),
+    possibleLinks1ImageIDs.splice(
+      possibleLinks1ImageIDs.indexOf(screenshotsPick1.screenshotsFilesIDs[1]),
       1,
     );
-    possibleLinks1.splice(
-      possibleLinks1.indexOf(screenshotsPick1.screenshotsFilesIDs[2]),
+    possibleLinks1ImageIDs.splice(
+      possibleLinks1ImageIDs.indexOf(screenshotsPick1.screenshotsFilesIDs[2]),
       1,
     );
-    possibleLinks1.splice(
-      possibleLinks1.indexOf(screenshotsPick1.screenshotsFilesIDs[3]),
+    possibleLinks1ImageIDs.splice(
+      possibleLinks1ImageIDs.indexOf(screenshotsPick1.screenshotsFilesIDs[3]),
       1,
     );
 
+    possibleLinks1ImageIDs = possibleLinks1.map((l) => l.imageID);
+
     const screenshotsPick2: VideoGameScreeshotsToShare =
-      pickerService.pick() as VideoGameScreeshotsToShare;
+      (await pickerService.pick()) as VideoGameScreeshotsToShare;
     assertEquals(screenshotsPick2.screenshotsFilesIDs.length, 4);
     assertEquals(screenshotsPick2.title, possibleTitles1[0]);
     assertEquals(
@@ -203,37 +230,41 @@ Deno.test(async function pick() {
     );
 
     assert(
-      possibleLinks1.indexOf(screenshotsPick1.screenshotsFilesIDs[0]) >= 4,
+      possibleLinks1ImageIDs.indexOf(screenshotsPick1.screenshotsFilesIDs[0]) <
+        4,
     );
     assert(
-      possibleLinks1.indexOf(screenshotsPick1.screenshotsFilesIDs[1]) >= 4,
+      possibleLinks1ImageIDs.indexOf(screenshotsPick1.screenshotsFilesIDs[1]) <
+        4,
     );
     assert(
-      possibleLinks1.indexOf(screenshotsPick1.screenshotsFilesIDs[2]) >= 4,
+      possibleLinks1ImageIDs.indexOf(screenshotsPick1.screenshotsFilesIDs[2]) <
+        4,
     );
     assert(
-      possibleLinks1.indexOf(screenshotsPick1.screenshotsFilesIDs[3]) >= 4,
+      possibleLinks1ImageIDs.indexOf(screenshotsPick1.screenshotsFilesIDs[3]) <
+        4,
     );
 
-    possibleLinks1.splice(
-      possibleLinks1.indexOf(screenshotsPick1.screenshotsFilesIDs[0]),
+    possibleLinks1ImageIDs.splice(
+      possibleLinks1ImageIDs.indexOf(screenshotsPick1.screenshotsFilesIDs[0]),
       1,
     );
-    possibleLinks1.splice(
-      possibleLinks1.indexOf(screenshotsPick1.screenshotsFilesIDs[1]),
+    possibleLinks1ImageIDs.splice(
+      possibleLinks1ImageIDs.indexOf(screenshotsPick1.screenshotsFilesIDs[1]),
       1,
     );
-    possibleLinks1.splice(
-      possibleLinks1.indexOf(screenshotsPick1.screenshotsFilesIDs[2]),
+    possibleLinks1ImageIDs.splice(
+      possibleLinks1ImageIDs.indexOf(screenshotsPick1.screenshotsFilesIDs[2]),
       1,
     );
-    possibleLinks1.splice(
-      possibleLinks1.indexOf(screenshotsPick1.screenshotsFilesIDs[3]),
+    possibleLinks1ImageIDs.splice(
+      possibleLinks1ImageIDs.indexOf(screenshotsPick1.screenshotsFilesIDs[3]),
       1,
     );
 
     const screenshotsBayonetta: VideoGameScreeshotsToShare =
-      pickerService.pick() as VideoGameScreeshotsToShare;
+      (await pickerService.pick()) as VideoGameScreeshotsToShare;
     assertEquals(screenshotsBayonetta.screenshotsFilesIDs.length, 2);
     assertEquals(screenshotsBayonetta.platform, "PC");
     assertEquals(screenshotsBayonetta.title, "8-Bit Bayonetta");
@@ -248,7 +279,7 @@ Deno.test(async function pick() {
     ];
 
     const screenshotsPick4: VideoGameScreeshotsToShare =
-      pickerService.pick() as VideoGameScreeshotsToShare;
+      (await pickerService.pick()) as VideoGameScreeshotsToShare;
     assertEquals(screenshotsPick4.platform, "PC");
     const pick4index: number = possibleTitles2.indexOf(screenshotsPick4.title);
     assert(pick4index >= 0);
@@ -261,7 +292,7 @@ Deno.test(async function pick() {
     possibleLinks2.splice(pick4index, 1);
 
     const screenshotsPick5: VideoGameScreeshotsToShare =
-      pickerService.pick() as VideoGameScreeshotsToShare;
+      (await pickerService.pick()) as VideoGameScreeshotsToShare;
     assertEquals(screenshotsPick5.platform, "PC");
     const pick5index: number = possibleTitles2.indexOf(screenshotsPick5.title);
     assert(pick5index >= 0);
@@ -274,7 +305,7 @@ Deno.test(async function pick() {
     possibleLinks2.splice(pick5index, 1);
 
     const screenshotsPick6: VideoGameScreeshotsToShare =
-      pickerService.pick() as VideoGameScreeshotsToShare;
+      (await pickerService.pick()) as VideoGameScreeshotsToShare;
     assertEquals(screenshotsPick6.platform, "PC");
     const pick6index: number = possibleTitles2.indexOf(screenshotsPick6.title);
     assert(pick6index >= 0);
@@ -288,7 +319,7 @@ Deno.test(async function pick() {
 
     assertEquals(possibleTitles2, []);
     assertEquals(possibleLinks2, []);
-    assertEquals(pickerService.pick(), undefined);
+    assertEquals(await pickerService.pick(), undefined);
   } finally {
     kvDriver.close();
   }
