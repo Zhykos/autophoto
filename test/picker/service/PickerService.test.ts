@@ -6,6 +6,8 @@ import type { VideoGameRelationImageRepositoryEntity } from "../../../src/common
 import type { VideoGameRepositoryEntity } from "../../../src/common/repository/entity/VideoGameRepositoryEntity.ts";
 import type { VideoGameScreeshotsToShare } from "../../../src/picker/domain/aggregate/VideoGameScreeshotsToShare.ts";
 import { KvRelationRepository } from "../../../src/picker/repository/RelationRepository.ts";
+import { KvImageRepository } from "../../../src/picker/repository/ImageRepository.ts";
+import { KvVideoGameRepository } from "../../../src/picker/repository/VideoGameRepository.ts";
 import { PickerService } from "../../../src/picker/service/PickerService.ts";
 import { runScanner } from "../../../src/scan.ts";
 import { pathExists } from "../../../src/utils/file.ts";
@@ -117,7 +119,11 @@ Deno.test(async function pick() {
   const kvDriver = new KvDriver(tempDatabaseFilePath);
 
   try {
-    const pickerService = new PickerService(new KvRelationRepository(kvDriver));
+    const pickerService = new PickerService(
+      new KvRelationRepository(kvDriver),
+      new KvVideoGameRepository(kvDriver),
+      new KvImageRepository(kvDriver),
+    );
 
     const possibleTitles1 = ["80's Overdrive", "Control"];
     const possibleLinks1: VideoGameRelationImageRepositoryEntity[] = [

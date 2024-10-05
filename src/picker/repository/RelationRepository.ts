@@ -1,10 +1,11 @@
 import type { KvDriver } from "../../common/dbdriver/KvDriver.ts";
 import { CommonKvRelationRepository } from "../../common/repository/CommonKvRelationRepository.ts";
 import type { VideoGameRelationImageRepositoryEntity } from "../../common/repository/entity/VideoGameRelationImageRepositoryEntity.ts";
+import { UnpublishedVideoGameScreenshotRelation } from "../domain/entity/UnpublishedVideoGameScreenshotRelation.ts";
 
 export interface RelationRepository {
   getUnpublishedVideoGameRelations(): Promise<
-    VideoGameRelationImageRepositoryEntity[]
+    UnpublishedVideoGameScreenshotRelation[]
   >;
 }
 
@@ -16,10 +17,20 @@ export class KvRelationRepository implements RelationRepository {
   }
 
   async getUnpublishedVideoGameRelations(): Promise<
-    VideoGameRelationImageRepositoryEntity[]
+    UnpublishedVideoGameScreenshotRelation[]
   > {
     const allRelations: VideoGameRelationImageRepositoryEntity[] =
       await this.commonRepository.getAllVideoGameRelations();
-    return allRelations.filter((relation) => !relation.published); // TODO map to entity
+
+    return allRelations
+      .filter((relation) => !relation.published)
+      .map(
+        (relation) =>
+          new UnpublishedVideoGameScreenshotRelation(
+            relation.uuid,
+            relation.imageID,
+            relation.videoGameID,
+          ),
+      );
   }
 }
