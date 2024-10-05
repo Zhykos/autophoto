@@ -30,6 +30,7 @@ export class KvRelationRepository implements RelationRepository {
             relation.uuid,
             relation.imageID,
             relation.videoGameID,
+            relation.platform,
           ),
       );
   }

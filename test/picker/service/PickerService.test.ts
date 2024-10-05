@@ -5,8 +5,8 @@ import type { ImageRepositoryRepositoryEntity } from "../../../src/common/reposi
 import type { VideoGameRelationImageRepositoryEntity } from "../../../src/common/repository/entity/VideoGameRelationImageRepositoryEntity.ts";
 import type { VideoGameRepositoryEntity } from "../../../src/common/repository/entity/VideoGameRepositoryEntity.ts";
 import type { VideoGameScreeshotsToShare } from "../../../src/picker/domain/aggregate/VideoGameScreeshotsToShare.ts";
-import { KvRelationRepository } from "../../../src/picker/repository/RelationRepository.ts";
 import { KvImageRepository } from "../../../src/picker/repository/ImageRepository.ts";
+import { KvRelationRepository } from "../../../src/picker/repository/RelationRepository.ts";
 import { KvVideoGameRepository } from "../../../src/picker/repository/VideoGameRepository.ts";
 import { PickerService } from "../../../src/picker/service/PickerService.ts";
 import { runScanner } from "../../../src/scan.ts";

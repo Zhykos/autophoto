@@ -5,6 +5,7 @@ export class UnpublishedVideoGameScreenshotRelation extends Entity {
     public readonly uuid: string,
     public readonly imageID: string,
     public readonly videoGameID: string,
+    public readonly platform: string,
   ) {
     super(uuid);
   }

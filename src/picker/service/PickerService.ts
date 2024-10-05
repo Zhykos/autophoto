@@ -1,5 +1,5 @@
 import { unique } from "@radashi-org/radashi";
-import { UnpublishedVideoGamesScreenshots } from "../domain/aggregate/UnpublishedVideoGamesScreenshots.ts";
+import { UnpublishedVideoGamesScreenshot } from "../domain/aggregate/UnpublishedVideoGamesScreenshot.ts";
 import { VideoGameScreeshotsToShare } from "../domain/aggregate/VideoGameScreeshotsToShare.ts";
 import type { Image } from "../domain/entity/Image.ts";
 import type { UnpublishedVideoGameScreenshotRelation } from "../domain/entity/UnpublishedVideoGameScreenshotRelation.ts";
@@ -16,12 +16,14 @@ export class PickerService {
   ) {}
 
   public async pick(): Promise<VideoGameScreeshotsToShare | undefined> {
-    const unpublishedVideoGamesScreenshots: UnpublishedVideoGamesScreenshots =
+    const unpublishedVideoGamesScreenshots: UnpublishedVideoGamesScreenshot[] =
       await this.getUnpublishedVideoGamesScreenshots();
     return new VideoGameScreeshotsToShare("8-Bit Bayonetta", "PC", ["1", "2"]);
   }
 
-  private async getUnpublishedVideoGamesScreenshots(): Promise<UnpublishedVideoGamesScreenshots> {
+  private async getUnpublishedVideoGamesScreenshots(): Promise<
+    UnpublishedVideoGamesScreenshot[]
+  > {
     const unpublishedScreenshotRelations: UnpublishedVideoGameScreenshotRelation[] =
       await this.relationRepository.getUnpublishedVideoGameRelations();
     const unpublishedVideoGamesIDs: string[] = unique(
@@ -34,7 +36,7 @@ export class PickerService {
     );
     const unpublishedImages: Image[] =
       await this.imageRepository.getVideoGameScreenshots(unpublishedImagesIDs);
-    return new UnpublishedVideoGamesScreenshots(
+    return UnpublishedVideoGamesScreenshot.buildAll(
       unpublishedScreenshotRelations,
       unpublishedVideoGames,
       unpublishedImages,
