@@ -1,12 +1,11 @@
 import { diff, unique } from "@radashi-org/radashi";
 import { assert, assertEquals, assertNotEquals } from "@std/assert";
-import { CLI } from "../../../src/cli/domain/aggregate/CLI.ts";
 import { KvDriver } from "../../../src/common/dbdriver/KvDriver.ts";
-import { File } from "../../../src/common/domain/valueobject/File.ts";
-import { Path } from "../../../src/common/domain/valueobject/Path.ts";
 import type { ImageRepositoryRepositoryEntity } from "../../../src/common/repository/entity/ImageRepositoryRepositoryEntity.ts";
 import type { VideoGameRelationImageRepositoryEntity } from "../../../src/common/repository/entity/VideoGameRelationImageRepositoryEntity.ts";
 import type { VideoGameRepositoryEntity } from "../../../src/common/repository/entity/VideoGameRepositoryEntity.ts";
+import type { Configuration } from "../../../src/configuration/domain/aggregate/Configuration.ts";
+import { ConfigurationService } from "../../../src/configuration/service/ConfigurationService.ts";
 import type { VideoGameScreeshotsToShare } from "../../../src/picker/domain/aggregate/VideoGameScreeshotsToShare.ts";
 import { KvImageRepository } from "../../../src/picker/repository/ImageRepository.ts";
 import { KvRelationRepository } from "../../../src/picker/repository/RelationRepository.ts";
@@ -29,6 +28,16 @@ async function beforeEach() {
   assertEquals(await getAllImagesFromRepository(tempDatabaseFilePath), []);
   assertEquals(await getAllVideoGamesFromRepository(tempDatabaseFilePath), []);
   assertEquals(await getAllRelationsFromRepository(tempDatabaseFilePath), []);
+
+  const kvDriver = new KvDriver(tempDatabaseFilePath);
+  try {
+    const configuration: Configuration = new ConfigurationService().loadFile(
+      "./test/resources/config3.yml",
+    );
+    await runScanner(configuration, kvDriver);
+  } finally {
+    kvDriver.close();
+  }
 }
 
 Deno.test(async function pickSeveralTimes() {
@@ -43,14 +52,6 @@ Deno.test(async function pickSeveralTimes() {
 });
 
 async function pick() {
-  await runScanner(
-    new CLI(
-      new File(new Path("./test/resources/config3.yml")),
-      "SCAN",
-      tempDatabaseFilePath,
-    ),
-  );
-
   const filesAfterScan: ImageRepositoryRepositoryEntity[] =
     await getAllImagesFromRepository(tempDatabaseFilePath);
   filesAfterScan.sort((a, b) => a.path.localeCompare(b.path));

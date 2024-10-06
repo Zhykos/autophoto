@@ -1,32 +1,23 @@
-import type { CLI } from "./cli/domain/aggregate/CLI.ts";
-import { KvDriver } from "./common/dbdriver/KvDriver.ts";
+import type { KvDriver } from "./common/dbdriver/KvDriver.ts";
 import type { Configuration } from "./configuration/domain/aggregate/Configuration.ts";
 import type { ConfigurationScanWithPattern } from "./configuration/domain/valueobject/ConfigurationScanWithPattern.ts";
-import { ConfigurationService } from "./configuration/service/ConfigurationService.ts";
 import { ImageDirectory } from "./scanner/domain/aggregate/ImageDirectory.ts";
 import { KvImageRepository } from "./scanner/repository/ImageRepository.ts";
 import { KvRelationRepository } from "./scanner/repository/RelationRepository.ts";
 import { KvVideoGameRepository } from "./scanner/repository/VideoGameRepository.ts";
 import { Scanner } from "./scanner/service/Scanner.ts";
 
-export const runScanner = async (cli: CLI) => {
-  const kvDriver = new KvDriver(cli.databaseFilepath);
+export const runScanner = async (
+  configuration: Configuration,
+  kvDriver: KvDriver,
+): Promise<void> => {
+  const scanner = new Scanner(
+    new KvImageRepository(kvDriver),
+    new KvVideoGameRepository(kvDriver),
+    new KvRelationRepository(kvDriver),
+  );
 
-  try {
-    const scanner = new Scanner(
-      new KvImageRepository(kvDriver),
-      new KvVideoGameRepository(kvDriver),
-      new KvRelationRepository(kvDriver),
-    );
-
-    const configuration: Configuration = new ConfigurationService().loadFile(
-      cli.configuration.path.value,
-    );
-
-    await scan(scanner, configuration.scans);
-  } finally {
-    kvDriver.close();
-  }
+  await scan(scanner, configuration.scans);
 };
 
 export async function scan(
