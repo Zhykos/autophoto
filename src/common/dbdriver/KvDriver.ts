@@ -18,11 +18,8 @@ export class KvDriver {
   }
 
   public async list<T>(keys: string[], _: T): Promise<T[]> {
-    return KvDriver.list(await this.getKv(), keys, _);
-  }
-
-  public static async list<T>(kv: Deno.Kv, keys: string[], _: T): Promise<T[]> {
     const result: T[] = [];
+    const kv: Deno.Kv = await this.getKv();
     const entries = kv.list({ prefix: keys });
     for await (const entry of entries) {
       const encoder = new TextDecoder();
@@ -30,6 +27,18 @@ export class KvDriver {
       result.push(JSON.parse(fileData) as T);
     }
     return result;
+  }
+
+  public async get<T>(keys: string[], _: T): Promise<T | undefined> {
+    const kv: Deno.Kv = await this.getKv();
+    const data = await kv.get(keys);
+    if (data === undefined) {
+      return undefined;
+    }
+
+    const encoder = new TextDecoder();
+    const fileData = encoder.decode(data.value as BufferSource);
+    return JSON.parse(fileData) as T;
   }
 
   public close(): void {
