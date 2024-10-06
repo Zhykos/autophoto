@@ -32,7 +32,19 @@ export class PickerService {
       return this.pickScreenshotsToShare(possibilitiesPriority);
     }
 
-    return this.pickScreenshotsToShare(unpublishedVideoGamesScreenshots);
+    const mapByLength = new Map<number, UnpublishedVideoGamesScreenshot[]>();
+    for (const screenshot of unpublishedVideoGamesScreenshots) {
+      const length: number = screenshot.images.length;
+      if (!mapByLength.has(length)) {
+        mapByLength.set(length, []);
+      }
+      mapByLength.get(length)?.push(screenshot);
+    }
+    return this.pickScreenshotsToShare(
+      mapByLength.get(3) ??
+        mapByLength.get(2) ??
+        (mapByLength.get(1) as UnpublishedVideoGamesScreenshot[]),
+    );
   }
 
   private pickScreenshotsToShare(

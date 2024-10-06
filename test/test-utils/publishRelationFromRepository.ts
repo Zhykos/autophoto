@@ -1,4 +1,5 @@
 import { KvDriver } from "../../src/common/dbdriver/KvDriver.ts";
+import { CommonKvRelationRepository } from "../../src/common/repository/CommonKvRelationRepository.ts";
 import type { VideoGameRelationImageRepositoryEntity } from "../../src/common/repository/entity/VideoGameRelationImageRepositoryEntity.ts";
 
 export async function publishRelationFromRepository(
@@ -7,23 +8,28 @@ export async function publishRelationFromRepository(
 ): Promise<void> {
   const kvDriver = new KvDriver(databaseFilePath);
   try {
-    const relations: VideoGameRelationImageRepositoryEntity[] =
-      await kvDriver.list(
+    const relation: VideoGameRelationImageRepositoryEntity | undefined =
+      await kvDriver.get(
         ["relation", id],
         {} as VideoGameRelationImageRepositoryEntity,
       );
 
-    if (relations.length === 0) {
-      throw new Error(`No relations found for id: ${id}`);
+    if (relation === undefined) {
+      const allRelations: VideoGameRelationImageRepositoryEntity[] =
+        await new CommonKvRelationRepository(
+          kvDriver,
+        ).getAllVideoGameRelations();
+      throw new Error(
+        `No relations found for id: ${id} - All relations IDs: ${allRelations
+          .map((rel) => rel.uuid)
+          .sort()
+          .join(", ")})}`,
+      );
     }
 
-    if (relations.length > 1) {
-      throw new Error(`Multiple relations found for id: ${id}`);
-    }
+    relation.published = true;
 
-    relations[0].published = true;
-
-    await kvDriver.save(["relation", id], relations[0]);
+    await kvDriver.save(["relation", id], relation);
   } finally {
     kvDriver.close();
   }
