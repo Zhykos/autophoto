@@ -28,9 +28,18 @@ async function beforeEach() {
   assertEquals(await getAllRelationsFromRepository(tempDatabaseFilePath), []);
 }
 
-Deno.test(async function pick() {
-  await beforeEach();
+Deno.test(async function pickSeveralTimes() {
+  // Due to the random nature of the picker, we need to run it several times.
+  // We hope that after 30 runs, we will have tested all possible scenarios.
+  const numberOfRuns = 30;
+  for (let i = 0; i < numberOfRuns; i++) {
+    console.log(`Run pick ${i + 1} / ${numberOfRuns}`);
+    await beforeEach();
+    await pick();
+  }
+});
 
+async function pick() {
   await runScanner([
     `--database=${tempDatabaseFilePath}`,
     "./test/resources/config3.yml",
@@ -142,7 +151,7 @@ Deno.test(async function pick() {
   } finally {
     kvDriver.close();
   }
-});
+}
 
 async function pick1And2(
   pickerService: PickerService,
@@ -192,7 +201,7 @@ async function pickOverdriveSwitch(
   possibleLinksImageIDs: VideoGameRelationImageRepositoryEntity[],
   pick: VideoGameScreeshotsToShare,
 ): Promise<void> {
-  console.log("80s Overdrive picked");
+  console.log("80s Overdrive Switch picked");
 
   assertEquals(
     pick.screenshotsFilesIDs.map((s) => s.id).sort(),
@@ -278,11 +287,11 @@ async function pick4and5and6(
   assertNotEquals(pick5index, pick4index);
 
   if (pick5index === 0) {
-    await pickOverdrivePC(overdriveLink, screenshotsPick4);
+    await pickOverdrivePC(overdriveLink, screenshotsPick5);
   } else if (pick5index === 1) {
-    await pickAbsolver(absolverLink, screenshotsPick4);
+    await pickAbsolver(absolverLink, screenshotsPick5);
   } else {
-    await pickRemainingControl(controlLink, screenshotsPick4);
+    await pickRemainingControl(controlLink, screenshotsPick5);
   }
 
   const screenshotsPick6: VideoGameScreeshotsToShare =
@@ -309,7 +318,7 @@ async function pickOverdrivePC(
   assertEquals(pick.screenshotsFilesIDs.length, 1);
   assertEquals(pick.screenshotsFilesIDs[0].id, possibleLink.imageID);
   assertEquals(pick.platform, "PC");
-  assertEquals(pick.title, "80s Overdrive");
+  assertEquals(pick.title, "80's Overdrive");
   await publishLink(possibleLink);
 }
 
