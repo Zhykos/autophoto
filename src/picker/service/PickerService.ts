@@ -1,4 +1,4 @@
-import { unique } from "@radashi-org/radashi";
+import { shuffle, unique } from "@radashi-org/radashi";
 import { UnpublishedVideoGamesScreenshot } from "../domain/aggregate/UnpublishedVideoGamesScreenshot.ts";
 import { VideoGameScreeshotsToShare } from "../domain/aggregate/VideoGameScreeshotsToShare.ts";
 import type { Image } from "../domain/entity/Image.ts";
@@ -18,7 +18,36 @@ export class PickerService {
   public async pick(): Promise<VideoGameScreeshotsToShare | undefined> {
     const unpublishedVideoGamesScreenshots: UnpublishedVideoGamesScreenshot[] =
       await this.getUnpublishedVideoGamesScreenshots();
-    return new VideoGameScreeshotsToShare("8-Bit Bayonetta", "PC", ["1", "2"]);
+
+    if (unpublishedVideoGamesScreenshots.length === 0) {
+      return undefined;
+    }
+
+    const possibilitiesPriority: UnpublishedVideoGamesScreenshot[] =
+      unpublishedVideoGamesScreenshots.filter(
+        (screenshot) => screenshot.images.length >= 4,
+      );
+
+    if (possibilitiesPriority.length > 0) {
+      return this.pickScreenshotsToShare(possibilitiesPriority);
+    }
+
+    return this.pickScreenshotsToShare(unpublishedVideoGamesScreenshots);
+  }
+
+  private pickScreenshotsToShare(
+    unpublishedVideoGamesScreenshots: UnpublishedVideoGamesScreenshot[],
+  ): VideoGameScreeshotsToShare {
+    const picked: UnpublishedVideoGamesScreenshot =
+      unpublishedVideoGamesScreenshots[
+        Math.floor(Math.random() * unpublishedVideoGamesScreenshots.length)
+      ];
+
+    return new VideoGameScreeshotsToShare(
+      picked.videoGame.title,
+      picked.platform,
+      shuffle(picked.images).slice(0, 4),
+    );
   }
 
   private async getUnpublishedVideoGamesScreenshots(): Promise<

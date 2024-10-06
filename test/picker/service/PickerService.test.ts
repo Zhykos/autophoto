@@ -1,5 +1,5 @@
-import { unique } from "@radashi-org/radashi";
-import { assert, assertEquals } from "@std/assert";
+import { diff, unique } from "@radashi-org/radashi";
+import { assert, assertEquals, assertNotEquals } from "@std/assert";
 import { KvDriver } from "../../../src/common/dbdriver/KvDriver.ts";
 import type { ImageRepositoryRepositoryEntity } from "../../../src/common/repository/entity/ImageRepositoryRepositoryEntity.ts";
 import type { VideoGameRelationImageRepositoryEntity } from "../../../src/common/repository/entity/VideoGameRelationImageRepositoryEntity.ts";
@@ -14,6 +14,7 @@ import { pathExists } from "../../../src/utils/file.ts";
 import { getAllImagesFromRepository } from "../../test-utils/getAllImagesFromRepository.ts";
 import { getAllRelationsFromRepository } from "../../test-utils/getAllRelationsFromRepository.ts";
 import { getAllVideoGamesFromRepository } from "../../test-utils/getAllVideoGamesFromRepository.ts";
+import { publishRelationFromRepository } from "../../test-utils/publishRelationFromRepository.ts";
 
 const tempDatabaseFilePath = "./test/it-database.sqlite3";
 
@@ -125,208 +126,227 @@ Deno.test(async function pick() {
       new KvImageRepository(kvDriver),
     );
 
-    const possibleTitles1 = ["80's Overdrive", "Control"];
-    const possibleLinks1: VideoGameRelationImageRepositoryEntity[] = [
-      ...overdriveLinks.filter((l) => l.platform === "Nintendo Switch"),
-      ...controlLinks,
-    ];
-    let possibleLinks1ImageIDs: string[] = possibleLinks1.map((l) => l.imageID);
-
-    assertEquals(possibleLinks1.length, 9);
-
-    const screenshotsPick1: VideoGameScreeshotsToShare =
-      (await pickerService.pick()) as VideoGameScreeshotsToShare;
-    assertEquals(screenshotsPick1.screenshotsFilesIDs.length, 4);
-
-    const pick1index: number = possibleTitles1.indexOf(screenshotsPick1.title);
-    assert(pick1index >= 0);
-
-    if (pick1index === 0) {
-      assert(
-        possibleLinks1ImageIDs.indexOf(
-          screenshotsPick1.screenshotsFilesIDs[0],
-        ) >= 0 &&
-          possibleLinks1ImageIDs.indexOf(
-            screenshotsPick1.screenshotsFilesIDs[0],
-          ) < 4,
-      );
-      assert(
-        possibleLinks1ImageIDs.indexOf(
-          screenshotsPick1.screenshotsFilesIDs[1],
-        ) >= 0 &&
-          possibleLinks1ImageIDs.indexOf(
-            screenshotsPick1.screenshotsFilesIDs[1],
-          ) < 4,
-      );
-      assert(
-        possibleLinks1ImageIDs.indexOf(
-          screenshotsPick1.screenshotsFilesIDs[2],
-        ) >= 0 &&
-          possibleLinks1ImageIDs.indexOf(
-            screenshotsPick1.screenshotsFilesIDs[2],
-          ) < 4,
-      );
-      assert(
-        possibleLinks1ImageIDs.indexOf(
-          screenshotsPick1.screenshotsFilesIDs[3],
-        ) >= 0 &&
-          possibleLinks1ImageIDs.indexOf(
-            screenshotsPick1.screenshotsFilesIDs[3],
-          ) < 4,
-      );
-
-      assertEquals(screenshotsPick1.platform, "Nintendo Switch");
-      assertEquals(screenshotsPick1.title, "80's Overdrive");
-
-      possibleTitles1.splice(0, 1);
-    } else {
-      assert(
-        possibleLinks1ImageIDs.indexOf(
-          screenshotsPick1.screenshotsFilesIDs[0],
-        ) >= 4,
-      );
-      assert(
-        possibleLinks1ImageIDs.indexOf(
-          screenshotsPick1.screenshotsFilesIDs[1],
-        ) >= 4,
-      );
-      assert(
-        possibleLinks1ImageIDs.indexOf(
-          screenshotsPick1.screenshotsFilesIDs[2],
-        ) >= 4,
-      );
-      assert(
-        possibleLinks1ImageIDs.indexOf(
-          screenshotsPick1.screenshotsFilesIDs[3],
-        ) >= 4,
-      );
-
-      assertEquals(screenshotsPick1.platform, "PC");
-      assertEquals(screenshotsPick1.title, "Control");
-
-      possibleTitles1.splice(1, 1);
-    }
-
-    possibleLinks1ImageIDs.splice(
-      possibleLinks1ImageIDs.indexOf(screenshotsPick1.screenshotsFilesIDs[0]),
-      1,
-    );
-    possibleLinks1ImageIDs.splice(
-      possibleLinks1ImageIDs.indexOf(screenshotsPick1.screenshotsFilesIDs[1]),
-      1,
-    );
-    possibleLinks1ImageIDs.splice(
-      possibleLinks1ImageIDs.indexOf(screenshotsPick1.screenshotsFilesIDs[2]),
-      1,
-    );
-    possibleLinks1ImageIDs.splice(
-      possibleLinks1ImageIDs.indexOf(screenshotsPick1.screenshotsFilesIDs[3]),
-      1,
-    );
-
-    possibleLinks1ImageIDs = possibleLinks1.map((l) => l.imageID);
-
-    const screenshotsPick2: VideoGameScreeshotsToShare =
-      (await pickerService.pick()) as VideoGameScreeshotsToShare;
-    assertEquals(screenshotsPick2.screenshotsFilesIDs.length, 4);
-    assertEquals(screenshotsPick2.title, possibleTitles1[0]);
-    assertEquals(
-      screenshotsPick2.platform,
-      possibleTitles1[0] === "80's Overdrive" ? "Nintendo Switch" : "PC",
-    );
-
-    assert(
-      possibleLinks1ImageIDs.indexOf(screenshotsPick1.screenshotsFilesIDs[0]) <
-        4,
-    );
-    assert(
-      possibleLinks1ImageIDs.indexOf(screenshotsPick1.screenshotsFilesIDs[1]) <
-        4,
-    );
-    assert(
-      possibleLinks1ImageIDs.indexOf(screenshotsPick1.screenshotsFilesIDs[2]) <
-        4,
-    );
-    assert(
-      possibleLinks1ImageIDs.indexOf(screenshotsPick1.screenshotsFilesIDs[3]) <
-        4,
-    );
-
-    possibleLinks1ImageIDs.splice(
-      possibleLinks1ImageIDs.indexOf(screenshotsPick1.screenshotsFilesIDs[0]),
-      1,
-    );
-    possibleLinks1ImageIDs.splice(
-      possibleLinks1ImageIDs.indexOf(screenshotsPick1.screenshotsFilesIDs[1]),
-      1,
-    );
-    possibleLinks1ImageIDs.splice(
-      possibleLinks1ImageIDs.indexOf(screenshotsPick1.screenshotsFilesIDs[2]),
-      1,
-    );
-    possibleLinks1ImageIDs.splice(
-      possibleLinks1ImageIDs.indexOf(screenshotsPick1.screenshotsFilesIDs[3]),
-      1,
-    );
-
-    const screenshotsBayonetta: VideoGameScreeshotsToShare =
-      (await pickerService.pick()) as VideoGameScreeshotsToShare;
-    assertEquals(screenshotsBayonetta.screenshotsFilesIDs.length, 2);
-    assertEquals(screenshotsBayonetta.platform, "PC");
-    assertEquals(screenshotsBayonetta.title, "8-Bit Bayonetta");
-
-    const possibleTitles2 = ["80's Overdrive", "Absolver", "Control"];
-    const possibleLinks2: VideoGameRelationImageRepositoryEntity[] = [
+    const unusedControlImage: VideoGameRelationImageRepositoryEntity =
+      await pick1And2(pickerService, overdriveLinks, controlLinks);
+    await pick3Bayonetta(pickerService, bayonettaLinks);
+    await pick4and5and6(
+      pickerService,
       overdriveLinks.find(
         (l) => l.platform === "PC",
       ) as VideoGameRelationImageRepositoryEntity,
       absolverLinks[0],
-      possibleLinks1[0],
-    ];
-
-    const screenshotsPick4: VideoGameScreeshotsToShare =
-      (await pickerService.pick()) as VideoGameScreeshotsToShare;
-    assertEquals(screenshotsPick4.platform, "PC");
-    const pick4index: number = possibleTitles2.indexOf(screenshotsPick4.title);
-    assert(pick4index >= 0);
-    assertEquals(screenshotsPick4.screenshotsFilesIDs.length, 1);
-    assertEquals(
-      screenshotsPick4.screenshotsFilesIDs[0],
-      possibleLinks2[pick4index].imageID,
+      unusedControlImage,
     );
-    possibleTitles2.splice(pick4index, 1);
-    possibleLinks2.splice(pick4index, 1);
 
-    const screenshotsPick5: VideoGameScreeshotsToShare =
-      (await pickerService.pick()) as VideoGameScreeshotsToShare;
-    assertEquals(screenshotsPick5.platform, "PC");
-    const pick5index: number = possibleTitles2.indexOf(screenshotsPick5.title);
-    assert(pick5index >= 0);
-    assertEquals(screenshotsPick5.screenshotsFilesIDs.length, 1);
-    assertEquals(
-      screenshotsPick5.screenshotsFilesIDs[0],
-      possibleLinks2[pick5index].imageID,
-    );
-    possibleTitles2.splice(pick5index, 1);
-    possibleLinks2.splice(pick5index, 1);
-
-    const screenshotsPick6: VideoGameScreeshotsToShare =
-      (await pickerService.pick()) as VideoGameScreeshotsToShare;
-    assertEquals(screenshotsPick6.platform, "PC");
-    const pick6index: number = possibleTitles2.indexOf(screenshotsPick6.title);
-    assert(pick6index >= 0);
-    assertEquals(screenshotsPick6.screenshotsFilesIDs.length, 1);
-    assertEquals(
-      screenshotsPick6.screenshotsFilesIDs[0],
-      possibleLinks2[pick6index].imageID,
-    );
-    possibleTitles2.splice(pick6index, 1);
-    possibleLinks2.splice(pick6index, 1);
-
-    assertEquals(possibleTitles2, []);
-    assertEquals(possibleLinks2, []);
     assertEquals(await pickerService.pick(), undefined);
   } finally {
     kvDriver.close();
   }
 });
+
+async function pick1And2(
+  pickerService: PickerService,
+  allOverdriveLinks: VideoGameRelationImageRepositoryEntity[],
+  controlLinks: VideoGameRelationImageRepositoryEntity[],
+): Promise<VideoGameRelationImageRepositoryEntity> {
+  const possibleTitles = ["80's Overdrive", "Control"];
+  const overdriveLinks: VideoGameRelationImageRepositoryEntity[] =
+    allOverdriveLinks.filter((l) => l.platform === "Nintendo Switch");
+
+  assertEquals(overdriveLinks.length, 4);
+  assertEquals(controlLinks.length, 5);
+
+  const screenshotsPick1: VideoGameScreeshotsToShare =
+    (await pickerService.pick()) as VideoGameScreeshotsToShare;
+  assertEquals(screenshotsPick1.screenshotsFilesIDs.length, 4);
+
+  const pick1index: number = possibleTitles.indexOf(screenshotsPick1.title);
+  assert(pick1index >= 0);
+
+  let unusedControlImage: VideoGameRelationImageRepositoryEntity | undefined =
+    undefined;
+
+  if (pick1index === 0) {
+    await pickOverdriveSwitch(overdriveLinks, screenshotsPick1);
+    possibleTitles.splice(0, 1);
+  } else {
+    unusedControlImage = await pickControl(controlLinks, screenshotsPick1);
+    possibleTitles.splice(1, 1);
+  }
+
+  const screenshotsPick2: VideoGameScreeshotsToShare =
+    (await pickerService.pick()) as VideoGameScreeshotsToShare;
+  assertEquals(screenshotsPick2.screenshotsFilesIDs.length, 4);
+  assertEquals(screenshotsPick2.title, possibleTitles[0]);
+
+  if (pick1index === 0) {
+    unusedControlImage = await pickControl(controlLinks, screenshotsPick2);
+  } else {
+    await pickOverdriveSwitch(overdriveLinks, screenshotsPick2);
+  }
+
+  return unusedControlImage as VideoGameRelationImageRepositoryEntity;
+}
+
+async function pickOverdriveSwitch(
+  possibleLinksImageIDs: VideoGameRelationImageRepositoryEntity[],
+  pick: VideoGameScreeshotsToShare,
+): Promise<void> {
+  console.log("80s Overdrive picked");
+
+  assertEquals(
+    pick.screenshotsFilesIDs.map((s) => s.id).sort(),
+    possibleLinksImageIDs.map((l) => l.imageID).sort(),
+  );
+  assertEquals(pick.platform, "Nintendo Switch");
+  assertEquals(pick.title, "80's Overdrive");
+
+  await publishLinks(possibleLinksImageIDs);
+}
+
+async function pickControl(
+  possibleLinksImageIDs: VideoGameRelationImageRepositoryEntity[],
+  pick: VideoGameScreeshotsToShare,
+): Promise<VideoGameRelationImageRepositoryEntity> {
+  console.log("Control picked");
+
+  const notUsedImageIds: string[] = diff(
+    possibleLinksImageIDs.map((l) => l.imageID),
+    pick.screenshotsFilesIDs.map((l) => l.id),
+  );
+
+  assertEquals(notUsedImageIds.length, 1);
+  assert(
+    possibleLinksImageIDs.map((l) => l.imageID).includes(notUsedImageIds[0]),
+  );
+
+  assertEquals(pick.platform, "PC");
+  assertEquals(pick.title, "Control");
+
+  const linksToPublish: VideoGameRelationImageRepositoryEntity[] =
+    possibleLinksImageIDs.filter((l) => l.imageID !== notUsedImageIds[0]);
+  assertEquals(linksToPublish.length, 4);
+
+  await publishLinks(linksToPublish);
+
+  return possibleLinksImageIDs.find(
+    (l) => l.imageID === notUsedImageIds[0],
+  ) as VideoGameRelationImageRepositoryEntity;
+}
+
+async function pick3Bayonetta(
+  pickerService: PickerService,
+  bayonettaLinks: VideoGameRelationImageRepositoryEntity[],
+): Promise<void> {
+  const screenshotsBayonetta: VideoGameScreeshotsToShare =
+    (await pickerService.pick()) as VideoGameScreeshotsToShare;
+  assertEquals(screenshotsBayonetta.screenshotsFilesIDs.length, 2);
+  assertEquals(
+    screenshotsBayonetta.screenshotsFilesIDs.map((f) => f.id).sort(),
+    bayonettaLinks.map((l) => l.imageID).sort(),
+  );
+  assertEquals(screenshotsBayonetta.platform, "PC");
+  assertEquals(screenshotsBayonetta.title, "8-Bit Bayonetta");
+  await publishLinks(bayonettaLinks);
+}
+
+async function pick4and5and6(
+  pickerService: PickerService,
+  overdriveLink: VideoGameRelationImageRepositoryEntity,
+  absolverLink: VideoGameRelationImageRepositoryEntity,
+  controlLink: VideoGameRelationImageRepositoryEntity,
+) {
+  const possibleTitles = ["80's Overdrive", "Absolver", "Control"];
+
+  const screenshotsPick4: VideoGameScreeshotsToShare =
+    (await pickerService.pick()) as VideoGameScreeshotsToShare;
+  const pick4index: number = possibleTitles.indexOf(screenshotsPick4.title);
+  assert(pick4index >= 0);
+
+  if (pick4index === 0) {
+    await pickOverdrivePC(overdriveLink, screenshotsPick4);
+  } else if (pick4index === 1) {
+    await pickAbsolver(absolverLink, screenshotsPick4);
+  } else {
+    await pickRemainingControl(controlLink, screenshotsPick4);
+  }
+
+  const screenshotsPick5: VideoGameScreeshotsToShare =
+    (await pickerService.pick()) as VideoGameScreeshotsToShare;
+  const pick5index: number = possibleTitles.indexOf(screenshotsPick5.title);
+  assert(pick5index >= 0);
+  assertNotEquals(pick5index, pick4index);
+
+  if (pick5index === 0) {
+    await pickOverdrivePC(overdriveLink, screenshotsPick4);
+  } else if (pick5index === 1) {
+    await pickAbsolver(absolverLink, screenshotsPick4);
+  } else {
+    await pickRemainingControl(controlLink, screenshotsPick4);
+  }
+
+  const screenshotsPick6: VideoGameScreeshotsToShare =
+    (await pickerService.pick()) as VideoGameScreeshotsToShare;
+  const pick6index: number = possibleTitles.indexOf(screenshotsPick6.title);
+  assert(pick6index >= 0);
+  assertNotEquals(pick6index, pick4index);
+  assertNotEquals(pick6index, pick5index);
+
+  if (pick6index === 0) {
+    await pickOverdrivePC(overdriveLink, screenshotsPick6);
+  } else if (pick6index === 1) {
+    await pickAbsolver(absolverLink, screenshotsPick6);
+  } else {
+    await pickRemainingControl(controlLink, screenshotsPick6);
+  }
+}
+
+async function pickOverdrivePC(
+  possibleLink: VideoGameRelationImageRepositoryEntity,
+  pick: VideoGameScreeshotsToShare,
+): Promise<void> {
+  console.log("80s Overdrive PC picked");
+  assertEquals(pick.screenshotsFilesIDs.length, 1);
+  assertEquals(pick.screenshotsFilesIDs[0].id, possibleLink.imageID);
+  assertEquals(pick.platform, "PC");
+  assertEquals(pick.title, "80s Overdrive");
+  await publishLink(possibleLink);
+}
+
+async function pickAbsolver(
+  possibleLink: VideoGameRelationImageRepositoryEntity,
+  pick: VideoGameScreeshotsToShare,
+): Promise<void> {
+  console.log("Absolver picked");
+  assertEquals(pick.screenshotsFilesIDs.length, 1);
+  assertEquals(pick.screenshotsFilesIDs[0].id, possibleLink.imageID);
+  assertEquals(pick.platform, "PC");
+  assertEquals(pick.title, "Absolver");
+  await publishLink(possibleLink);
+}
+
+async function pickRemainingControl(
+  controlLink: VideoGameRelationImageRepositoryEntity,
+  pick: VideoGameScreeshotsToShare,
+): Promise<void> {
+  console.log("Control picked");
+  assertEquals(pick.screenshotsFilesIDs.length, 1);
+  assertEquals(pick.screenshotsFilesIDs[0].id, controlLink.imageID);
+  assertEquals(pick.platform, "PC");
+  assertEquals(pick.title, "Control");
+  await publishLink(controlLink);
+}
+
+async function publishLinks(
+  links: VideoGameRelationImageRepositoryEntity[],
+): Promise<void> {
+  for (const link of links) {
+    await publishLink(link);
+  }
+}
+
+async function publishLink(
+  link: VideoGameRelationImageRepositoryEntity,
+): Promise<void> {
+  await publishRelationFromRepository(tempDatabaseFilePath, link.uuid);
+}
