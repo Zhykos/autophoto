@@ -1,5 +1,4 @@
 import type { CLI } from "./cli/domain/aggregate/CLI.ts";
-import { CLIService } from "./cli/service/CLIService.ts";
 import { KvDriver } from "./common/dbdriver/KvDriver.ts";
 import type { Configuration } from "./configuration/domain/aggregate/Configuration.ts";
 import type { ConfigurationScanWithPattern } from "./configuration/domain/valueobject/ConfigurationScanWithPattern.ts";
@@ -10,8 +9,7 @@ import { KvRelationRepository } from "./scanner/repository/RelationRepository.ts
 import { KvVideoGameRepository } from "./scanner/repository/VideoGameRepository.ts";
 import { Scanner } from "./scanner/service/Scanner.ts";
 
-export const runScanner = async (args: string[]) => {
-  const cli: CLI = new CLIService().read(args);
+export const runScanner = async (cli: CLI) => {
   const kvDriver = new KvDriver(cli.databaseFilepath);
 
   try {

@@ -29,19 +29,33 @@ Deno.test(function argMustBeExistingPath() {
 });
 
 Deno.test(function argMustBeFile() {
-  const error = assertThrows(() => new CLIService().read(["src"]));
+  const error = assertThrows(() => new CLIService().read(["--scan", "src"]));
   assert(error instanceof Error);
   assertEquals(error.message, 'Path is not a file: "src"');
 });
 
-Deno.test(function readOK() {
-  const cliResult: CLI = new CLIService().read(["README.md"]);
+Deno.test(function argMissingAction() {
+  const error = assertThrows(() => new CLIService().read(["README.md"]));
+  assert(error instanceof Error);
+  assertEquals(error.message, 'Missing option: "--scan" or "--publish"');
+});
+
+Deno.test(function readScanOK() {
+  const cliResult: CLI = new CLIService().read(["--scan", "README.md"]);
   assertEquals(cliResult.configuration.path.value, "README.md");
+  assertEquals(cliResult.action, "SCAN");
+});
+
+Deno.test(function readPublishOK() {
+  const cliResult: CLI = new CLIService().read(["--publish", "README.md"]);
+  assertEquals(cliResult.configuration.path.value, "README.md");
+  assertEquals(cliResult.action, "PUBLISH");
 });
 
 Deno.test(function newDatabaseFile() {
   const cliResult: CLI = new CLIService().read([
     "--database=new.db",
+    "--scan",
     "README.md",
   ]);
   assertEquals(cliResult.configuration.path.value, "README.md");

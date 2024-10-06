@@ -7,21 +7,22 @@ import { CLI } from "../domain/aggregate/CLI.ts";
 export class CLIService {
   read(cliArgs: string[]): CLI {
     const args: Args = parseArgs(cliArgs, {
-      string: ["cron", "database"],
+      boolean: ["publish", "scan"],
+      string: ["database"],
     });
 
-    const configFiles: (string | number)[] = args._;
+    const cliParameters: (string | number)[] = args._;
 
-    if (configFiles.length !== 1) {
+    if (cliParameters.length !== 1) {
       throw new Error(
-        `Command line must have only one argument: "${configFiles}"`,
+        `Command line must have only one argument: "${cliParameters}"`,
       );
     }
 
-    const filepath = configFiles[0] as string;
+    const filepath = cliParameters[0] as string;
     if (!pathExists(filepath)) {
       throw new Error(
-        `Command line argument must be an existing path: "${configFiles}"`,
+        `Command line argument must be an existing path: "${cliParameters}"`,
       );
     }
 
@@ -36,6 +37,15 @@ export class CLIService {
       }
     }
 
-    return new CLI(new File(new Path(filepath)), databaseFilepath);
+    let action: "SCAN" | "PUBLISH";
+    if (args.publish) {
+      action = "PUBLISH";
+    } else if (args.scan) {
+      action = "SCAN";
+    } else {
+      throw new Error('Missing option: "--scan" or "--publish"');
+    }
+
+    return new CLI(new File(new Path(filepath)), action, databaseFilepath);
   }
 }

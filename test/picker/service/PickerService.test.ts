@@ -1,6 +1,9 @@
 import { diff, unique } from "@radashi-org/radashi";
 import { assert, assertEquals, assertNotEquals } from "@std/assert";
+import { CLI } from "../../../src/cli/domain/aggregate/CLI.ts";
 import { KvDriver } from "../../../src/common/dbdriver/KvDriver.ts";
+import { File } from "../../../src/common/domain/valueobject/File.ts";
+import { Path } from "../../../src/common/domain/valueobject/Path.ts";
 import type { ImageRepositoryRepositoryEntity } from "../../../src/common/repository/entity/ImageRepositoryRepositoryEntity.ts";
 import type { VideoGameRelationImageRepositoryEntity } from "../../../src/common/repository/entity/VideoGameRelationImageRepositoryEntity.ts";
 import type { VideoGameRepositoryEntity } from "../../../src/common/repository/entity/VideoGameRepositoryEntity.ts";
@@ -40,10 +43,13 @@ Deno.test(async function pickSeveralTimes() {
 });
 
 async function pick() {
-  await runScanner([
-    `--database=${tempDatabaseFilePath}`,
-    "./test/resources/config3.yml",
-  ]);
+  await runScanner(
+    new CLI(
+      new File(new Path("./test/resources/config3.yml")),
+      "SCAN",
+      tempDatabaseFilePath,
+    ),
+  );
 
   const filesAfterScan: ImageRepositoryRepositoryEntity[] =
     await getAllImagesFromRepository(tempDatabaseFilePath);

@@ -22,7 +22,7 @@ async function beforeEach() {
 Deno.test(async function noArgs() {
   await beforeEach();
 
-  await import("../src/main-run-scan.ts");
+  await import("../src/main.ts");
 
   const filesAfterScan: ImageRepositoryRepositoryEntity[] =
     await getAllImagesFromRepository(tempDatabaseFilePath);
