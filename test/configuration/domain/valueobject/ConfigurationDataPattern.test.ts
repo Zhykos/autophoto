@@ -1,4 +1,4 @@
-import { assert, assertFalse } from "jsr:@std/assert";
+import { assert, assertFalse } from "@std/assert";
 import { ConfigurationDataPattern } from "../../../../src/configuration/domain/valueobject/ConfigurationDataPattern.ts";
 
 Deno.test(function equals() {

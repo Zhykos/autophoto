@@ -1,5 +1,5 @@
 import { crypto, type DigestAlgorithm } from "@std/crypto/crypto";
-import { isFile } from "../../utils/file.ts";
+import { isFile } from "../../../utils/file.ts";
 import { DomainError } from "../DomainError.ts";
 import type { ValueObject } from "../ValueObject.ts";
 import type { Path } from "./Path.ts";
@@ -26,9 +26,17 @@ export class File implements ValueObject {
 
   public equals(other: unknown): boolean {
     if (other instanceof File) {
-      return this.getChecksum() === other.getChecksum();
+      return (
+        this.path.equals(other.path) &&
+        this.getChecksum() === other.getChecksum()
+      );
     }
     return false;
+  }
+
+  public getExtension(): string {
+    const split: string[] = this.path.value.split(".");
+    return split.length > 1 ? split[split.length - 1] : "";
   }
 
   private computeChecksum(digestAlgorithm: DigestAlgorithm): void {
@@ -40,5 +48,9 @@ export class File implements ValueObject {
     this.checksum = hashArray
       .map((b) => b.toString(16).padStart(2, "0"))
       .join("");
+  }
+
+  public makeRelativeToPath(directory: Path): string {
+    return this.path.value.replace(directory.value, "").substring(1);
   }
 }

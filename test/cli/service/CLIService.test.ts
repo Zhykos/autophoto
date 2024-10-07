@@ -1,4 +1,4 @@
-import { assert, assertEquals, assertThrows } from "jsr:@std/assert";
+import { assert, assertEquals, assertThrows } from "@std/assert";
 import type { CLI } from "../../../src/cli/domain/aggregate/CLI.ts";
 import { CLIService } from "../../../src/cli/service/CLIService.ts";
 
@@ -29,35 +29,33 @@ Deno.test(function argMustBeExistingPath() {
 });
 
 Deno.test(function argMustBeFile() {
-  const error = assertThrows(() => new CLIService().read(["src"]));
+  const error = assertThrows(() => new CLIService().read(["--scan", "src"]));
   assert(error instanceof Error);
   assertEquals(error.message, 'Path is not a file: "src"');
 });
 
-Deno.test(function readOK() {
-  const cliResult: CLI = new CLIService().read(["README.md"]);
-  assertEquals(cliResult.configuration.path.value, "README.md");
-});
-
-Deno.test(function cronOK() {
-  const cliResult: CLI = new CLIService().read([
-    "--cron=*/1 * * * *",
-    "README.md",
-  ]);
-  assertEquals(cliResult.configuration.path.value, "README.md");
-});
-
-Deno.test(function wrongCron() {
-  const error = assertThrows(() =>
-    new CLIService().read(["--cron=*/1 *", "README.md"]),
-  );
+Deno.test(function argMissingAction() {
+  const error = assertThrows(() => new CLIService().read(["README.md"]));
   assert(error instanceof Error);
-  assertEquals(error.message, 'Invalid cron expression: "*/1 *"');
+  assertEquals(error.message, 'Missing option: "--scan" or "--publish"');
+});
+
+Deno.test(function readScanOK() {
+  const cliResult: CLI = new CLIService().read(["--scan", "README.md"]);
+  assertEquals(cliResult.configuration.path.value, "README.md");
+  assertEquals(cliResult.action, "SCAN");
+});
+
+Deno.test(function readPublishOK() {
+  const cliResult: CLI = new CLIService().read(["--publish", "README.md"]);
+  assertEquals(cliResult.configuration.path.value, "README.md");
+  assertEquals(cliResult.action, "PUBLISH");
 });
 
 Deno.test(function newDatabaseFile() {
   const cliResult: CLI = new CLIService().read([
     "--database=new.db",
+    "--scan",
     "README.md",
   ]);
   assertEquals(cliResult.configuration.path.value, "README.md");

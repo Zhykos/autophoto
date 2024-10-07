@@ -29,6 +29,18 @@ export class KvDriver {
     return result;
   }
 
+  public async get<T>(keys: string[], _: T): Promise<T | undefined> {
+    const kv: Deno.Kv = await this.getKv();
+    const data: Deno.KvEntryMaybe<unknown> = await kv.get(keys);
+    if (data.value === null) {
+      return undefined;
+    }
+
+    const encoder = new TextDecoder();
+    const fileData = encoder.decode(data.value as BufferSource);
+    return JSON.parse(fileData) as T;
+  }
+
   public close(): void {
     if (this.kvSingleton) {
       this.kvSingleton.close();

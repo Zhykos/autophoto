@@ -1,16 +1,16 @@
 import { crypto } from "@std/crypto/crypto";
 
 export abstract class Entity {
-  public readonly uuid: string;
+  public readonly id: string;
 
-  constructor(uuid?: string) {
-    this.uuid = uuid || crypto.randomUUID();
+  constructor(id?: string) {
+    this.id = id || crypto.randomUUID();
   }
 
-  /* XXX Why not use this method?
-  public equals(other: unknown): boolean {
+  /* NOT USED
+public equals(other: unknown): boolean {
     if (other instanceof Entity) {
-      return this.uuid === other.uuid;
+      return this.id === other.id;
     }
     return false;
   }*/

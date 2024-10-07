@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@radashi-org/radashi": "npm:@jsr/radashi-org__radashi@^12.2.0-beta.649f0d1"
+  }
+}
