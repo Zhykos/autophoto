@@ -6,20 +6,23 @@ import { ConfigurationService } from "./configuration/service/ConfigurationServi
 import { publish } from "./publish.ts";
 import { runScanner } from "./scan.ts";
 
-const cli: CLI = new CLIService().read(Deno.args);
+await main(Deno.args);
 
-const kvDriver = new KvDriver(cli.databaseFilepath);
+export async function main(cliArgs: string[]): Promise<void> {
+  const cli: CLI = new CLIService().read(cliArgs);
+  const kvDriver = new KvDriver(cli.databaseFilepath);
 
-const configuration: Configuration = new ConfigurationService().loadFile(
-  cli.configuration.path.value,
-);
+  try {
+    const configuration: Configuration = new ConfigurationService().loadFile(
+      cli.configuration.path.value,
+    );
 
-try {
-  if (cli.action === "SCAN") {
-    await runScanner(configuration, kvDriver);
-  } else {
-    await publish(configuration, kvDriver);
+    if (cli.action === "SCAN") {
+      await runScanner(configuration, kvDriver);
+    } else {
+      await publish(configuration, kvDriver);
+    }
+  } finally {
+    kvDriver.close();
   }
-} finally {
-  kvDriver.close();
 }

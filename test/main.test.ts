@@ -2,6 +2,8 @@ import { assertEquals } from "@std/assert";
 import type { ImageRepositoryRepositoryEntity } from "../src/common/repository/entity/ImageRepositoryRepositoryEntity.ts";
 import type { VideoGameRelationImageRepositoryEntity } from "../src/common/repository/entity/VideoGameRelationImageRepositoryEntity.ts";
 import type { VideoGameRepositoryEntity } from "../src/common/repository/entity/VideoGameRepositoryEntity.ts";
+import { main } from "../src/main.ts";
+import { publish } from "../src/publish.ts";
 import { pathExists } from "../src/utils/file.ts";
 import { getAllImagesFromRepository } from "./test-utils/getAllImagesFromRepository.ts";
 import { getAllRelationsFromRepository } from "./test-utils/getAllRelationsFromRepository.ts";
@@ -19,10 +21,10 @@ async function beforeEach() {
   assertEquals(await getAllRelationsFromRepository(tempDatabaseFilePath), []);
 }
 
-Deno.test(async function noArgs() {
+Deno.test(async function runScan() {
   await beforeEach();
 
-  await import("../src/main.ts");
+  await main(["config.yml", "--database=./test/it-database.sqlite3", "--scan"]);
 
   const filesAfterScan: ImageRepositoryRepositoryEntity[] =
     await getAllImagesFromRepository(tempDatabaseFilePath);
@@ -35,4 +37,16 @@ Deno.test(async function noArgs() {
   const allLinks: VideoGameRelationImageRepositoryEntity[] =
     await getAllRelationsFromRepository(tempDatabaseFilePath);
   assertEquals(allLinks.length, 5);
+});
+
+Deno.test(async function runPublish() {
+  await beforeEach();
+
+  await main([
+    "config.yml",
+    "--database=./test/it-database.sqlite3",
+    "--publish",
+  ]);
+
+  // TODO check if the files are published
 });

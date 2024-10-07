@@ -33,7 +33,7 @@ class MockErrorImageRepository extends MockImageRepository {
   }
 }
 
-Deno.test(async function noArgs() {
+Deno.test(async function runScan() {
   await beforeEach();
 
   const scanner = new Scanner(

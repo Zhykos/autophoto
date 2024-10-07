@@ -31,8 +31,8 @@ export class KvDriver {
 
   public async get<T>(keys: string[], _: T): Promise<T | undefined> {
     const kv: Deno.Kv = await this.getKv();
-    const data = await kv.get(keys);
-    if (data === undefined) {
+    const data: Deno.KvEntryMaybe<unknown> = await kv.get(keys);
+    if (data.value === null) {
       return undefined;
     }
 
