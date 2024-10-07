@@ -2,27 +2,19 @@
   "version": "3",
   "packages": {
     "specifiers": {
-      "jsr:@p4sca1/cron-schedule@^5.0.3": "jsr:@p4sca1/cron-schedule@5.0.3",
       "jsr:@std/assert": "jsr:@std/assert@1.0.5",
       "jsr:@std/assert@^1.0.5": "jsr:@std/assert@1.0.6",
       "jsr:@std/assert@^1.0.6": "jsr:@std/assert@1.0.6",
       "jsr:@std/cli@^1.0.6": "jsr:@std/cli@1.0.6",
       "jsr:@std/crypto@^1.0.3": "jsr:@std/crypto@1.0.3",
-      "jsr:@std/data-structures@^1.0.4": "jsr:@std/data-structures@1.0.4",
-      "jsr:@std/fs@^1.0.4": "jsr:@std/fs@1.0.4",
       "jsr:@std/internal@^1.0.3": "jsr:@std/internal@1.0.3",
       "jsr:@std/internal@^1.0.4": "jsr:@std/internal@1.0.4",
       "jsr:@std/media-types@^1.0.3": "jsr:@std/media-types@1.0.3",
-      "jsr:@std/path@^1.0.6": "jsr:@std/path@1.0.6",
-      "jsr:@std/testing@^1.0.3": "jsr:@std/testing@1.0.3",
       "jsr:@std/yaml@^1.0.5": "jsr:@std/yaml@1.0.5",
       "npm:@biomejs/biome": "npm:@biomejs/biome@1.9.2",
       "npm:@jsr/radashi-org__radashi@^12.2.0-beta.649f0d1": "npm:@jsr/radashi-org__radashi@12.2.0-beta.649f0d1"
     },
     "jsr": {
-      "@p4sca1/cron-schedule@5.0.3": {
-        "integrity": "8272d8afe9169f38d870e66c59da9b1173fd9c644293f26d8e5e0b20d88cbf1f"
-      },
       "@std/assert@1.0.5": {
         "integrity": "e37da8e4033490ce613eec4ac1d78dba1faf5b02a3f6c573a28f15365b9b440f",
         "dependencies": [
@@ -41,15 +33,6 @@
       "@std/crypto@1.0.3": {
         "integrity": "a2a32f51ddef632d299e3879cd027c630dcd4d1d9a5285d6e6788072f4e51e7f"
       },
-      "@std/data-structures@1.0.4": {
-        "integrity": "fa0e20c11eb9ba673417450915c750a0001405a784e2a4e0c3725031681684a0"
-      },
-      "@std/fs@1.0.4": {
-        "integrity": "2907d32d8d1d9e540588fd5fe0ec21ee638134bd51df327ad4e443aaef07123c",
-        "dependencies": [
-          "jsr:@std/path@^1.0.6"
-        ]
-      },
       "@std/internal@1.0.3": {
         "integrity": "208e9b94a3d5649bd880e9ca38b885ab7651ab5b5303a56ed25de4755fb7b11e"
       },
@@ -58,19 +41,6 @@
       },
       "@std/media-types@1.0.3": {
         "integrity": "b12d30a7852f7578f4d210622df713bbfd1cbdd9b4ec2eaf5c1845ab70bab159"
-      },
-      "@std/path@1.0.6": {
-        "integrity": "ab2c55f902b380cf28e0eec501b4906e4c1960d13f00e11cfbcd21de15f18fed"
-      },
-      "@std/testing@1.0.3": {
-        "integrity": "f98c2bee53860a5916727d7e7d3abe920dd6f9edace022e2d059f00d05c2cf42",
-        "dependencies": [
-          "jsr:@std/assert@^1.0.6",
-          "jsr:@std/data-structures@^1.0.4",
-          "jsr:@std/fs@^1.0.4",
-          "jsr:@std/internal@^1.0.4",
-          "jsr:@std/path@^1.0.6"
-        ]
       },
       "@std/yaml@1.0.5": {
         "integrity": "71ba3d334305ee2149391931508b2c293a8490f94a337eef3a09cade1a2a2742"
@@ -164,12 +134,10 @@
   },
   "workspace": {
     "dependencies": [
-      "jsr:@p4sca1/cron-schedule@^5.0.3",
       "jsr:@std/assert@^1.0.5",
       "jsr:@std/cli@^1.0.6",
       "jsr:@std/crypto@^1.0.3",
       "jsr:@std/media-types@^1.0.3",
-      "jsr:@std/testing@^1.0.3",
       "jsr:@std/yaml@^1.0.5"
     ],
     "packageJson": {
