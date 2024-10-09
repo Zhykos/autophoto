@@ -1,5 +1,5 @@
-import { diff, unique } from "@radashi-org/radashi";
 import { assert, assertEquals, assertNotEquals } from "@std/assert";
+import { distinct, withoutAll } from "@std/collections";
 import { KvDriver } from "../../../src/common/dbdriver/KvDriver.ts";
 import type { ImageRepositoryRepositoryEntity } from "../../../src/common/repository/entity/ImageRepositoryRepositoryEntity.ts";
 import type { VideoGameRelationImageRepositoryEntity } from "../../../src/common/repository/entity/VideoGameRelationImageRepositoryEntity.ts";
@@ -78,7 +78,7 @@ async function pick() {
   const bayonettaLinks: VideoGameRelationImageRepositoryEntity[] =
     allLinks.filter((link) => link.videoGameID === bayonetta.uuid);
   assertEquals(bayonettaLinks.length, 2);
-  assertEquals(unique(bayonettaLinks.map((l) => l.platform)), ["PC"]);
+  assertEquals(distinct(bayonettaLinks.map((l) => l.platform)), ["PC"]);
 
   // ============= 1 image for 80's Overdrive on PC =============
   // ============= 4 images for 80's Overdrive on Switch =============
@@ -114,7 +114,7 @@ async function pick() {
   const controlLinks: VideoGameRelationImageRepositoryEntity[] =
     allLinks.filter((link) => link.videoGameID === control.uuid);
   assertEquals(controlLinks.length, 5);
-  assertEquals(unique(controlLinks.map((l) => l.platform)), ["PC"]);
+  assertEquals(distinct(controlLinks.map((l) => l.platform)), ["PC"]);
 
   // ============= Check picker ===================================
   // ============= 1) and 2) 4/5 images for Control on PC =========
@@ -226,7 +226,7 @@ async function pickControl(
 ): Promise<VideoGameRelationImageRepositoryEntity> {
   console.log("Control picked");
 
-  const notUsedImageIds: string[] = diff(
+  const notUsedImageIds: string[] = withoutAll(
     possibleLinksImageIDs.map((l) => l.imageID),
     pick.screenshotsFilesIDs.map((l) => l.id),
   );

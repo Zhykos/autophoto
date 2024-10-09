@@ -6,13 +6,14 @@
       "jsr:@std/assert@^1.0.5": "jsr:@std/assert@1.0.6",
       "jsr:@std/assert@^1.0.6": "jsr:@std/assert@1.0.6",
       "jsr:@std/cli@^1.0.6": "jsr:@std/cli@1.0.6",
+      "jsr:@std/collections@^1.0.7": "jsr:@std/collections@1.0.7",
       "jsr:@std/crypto@^1.0.3": "jsr:@std/crypto@1.0.3",
       "jsr:@std/internal@^1.0.3": "jsr:@std/internal@1.0.3",
       "jsr:@std/internal@^1.0.4": "jsr:@std/internal@1.0.4",
       "jsr:@std/media-types@^1.0.3": "jsr:@std/media-types@1.0.3",
+      "jsr:@std/random@^0.1.0": "jsr:@std/random@0.1.0",
       "jsr:@std/yaml@^1.0.5": "jsr:@std/yaml@1.0.5",
-      "npm:@biomejs/biome": "npm:@biomejs/biome@1.9.2",
-      "npm:@jsr/radashi-org__radashi@^12.2.0-beta.649f0d1": "npm:@jsr/radashi-org__radashi@12.2.0-beta.649f0d1"
+      "npm:@biomejs/biome": "npm:@biomejs/biome@1.9.2"
     },
     "jsr": {
       "@std/assert@1.0.5": {
@@ -30,6 +31,9 @@
       "@std/cli@1.0.6": {
         "integrity": "d22d8b38c66c666d7ad1f2a66c5b122da1704f985d3c47f01129f05abb6c5d3d"
       },
+      "@std/collections@1.0.7": {
+        "integrity": "6cff6949907372564735e25a5c6a7945d67cc31913b1b4d1278d08c2a5a3291d"
+      },
       "@std/crypto@1.0.3": {
         "integrity": "a2a32f51ddef632d299e3879cd027c630dcd4d1d9a5285d6e6788072f4e51e7f"
       },
@@ -41,6 +45,9 @@
       },
       "@std/media-types@1.0.3": {
         "integrity": "b12d30a7852f7578f4d210622df713bbfd1cbdd9b4ec2eaf5c1845ab70bab159"
+      },
+      "@std/random@0.1.0": {
+        "integrity": "70a006be0ffb77d036bab54aa8ae6bd0119ba77ace0f2f56f63273d4262a5667"
       },
       "@std/yaml@1.0.5": {
         "integrity": "71ba3d334305ee2149391931508b2c293a8490f94a337eef3a09cade1a2a2742"
@@ -91,10 +98,6 @@
       "@biomejs/cli-win32-x64@1.9.2": {
         "integrity": "sha512-JC3XvdYcjmu1FmAehVwVV0SebLpeNTnO2ZaMdGCSOdS7f8O9Fq14T2P1gTG1Q29Q8Dt1S03hh0IdVpIZykOL8g==",
         "dependencies": {}
-      },
-      "@jsr/radashi-org__radashi@12.2.0-beta.649f0d1": {
-        "integrity": "sha512-a2bLw6Vr9exAUqogPcWcXAbKAjRrRCqASMKeaizrAcO685db60c7DMkwvz8RiaSnIgCzNleP71MdoYxm2KF4hw==",
-        "dependencies": {}
       }
     }
   },
@@ -136,14 +139,11 @@
     "dependencies": [
       "jsr:@std/assert@^1.0.5",
       "jsr:@std/cli@^1.0.6",
+      "jsr:@std/collections@^1.0.7",
       "jsr:@std/crypto@^1.0.3",
       "jsr:@std/media-types@^1.0.3",
+      "jsr:@std/random@^0.1.0",
       "jsr:@std/yaml@^1.0.5"
-    ],
-    "packageJson": {
-      "dependencies": [
-        "npm:@jsr/radashi-org__radashi@^12.2.0-beta.649f0d1"
-      ]
-    }
+    ]
   }
 }
