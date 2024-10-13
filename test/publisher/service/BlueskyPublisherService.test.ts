@@ -9,15 +9,6 @@ import { BlueskyPublisherService } from "../../../src/publisher/service/BlueskyP
 import { MockAtpAgent } from "../../mock/agent/MockAtpAgent.ts";
 
 Deno.test(async function publish() {
-  //const network = await TestNetworkNoAppView.create({
-  // dbPostgresSchema: "bsky_agent",
-  //});
-
-  //const network = await TestNetwork.create({
-  //dbPostgresSchema: "bsky_views_likes",
-  //});
-  //agent = network.bsky.getClient()
-
   const result: string | undefined =
     await new BlueskyPublisherService().publish(
       new BlueskyPublication(
