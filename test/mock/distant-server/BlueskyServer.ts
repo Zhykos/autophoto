@@ -1,6 +1,6 @@
-import { BlobRef } from "@atproto/api";
 import { CID } from "multiformats/cid";
-import { sha256 } from "multiformats/hashes/sha2";
+import { createFakeBlobRef } from "../../test-utils/createFakeBlobRef.ts";
+import { createFakeHashDigest } from "../../test-utils/createFakeHashDigest.ts";
 
 export class BlueskyServer {
   private server: Deno.HttpServer<Deno.NetAddr>;
@@ -40,16 +40,15 @@ export class BlueskyServer {
 
   private async uploadBlobResponse(): Promise<Response> {
     console.log("/com.atproto.repo.uploadBlob");
-    const hash = await sha256.digest(new Uint8Array([1, 2, 3, 4, 5]));
     const body: string = JSON.stringify({
-      blob: new BlobRef(CID.create(0, 112, hash), "", 0),
+      blob: await createFakeBlobRef(),
     });
     return this.createResponse(body);
   }
 
   private async createRecordResponse(): Promise<Response> {
     console.log("/com.atproto.repo.createRecord");
-    const hash = await sha256.digest(new Uint8Array([1, 2, 3, 4, 5]));
+    const hash = await createFakeHashDigest();
     const body: string = JSON.stringify({
       uri: "at://did:zhykos:1",
       cid: CID.create(0, 112, hash).toString(),
