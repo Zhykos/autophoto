@@ -2,13 +2,13 @@ import { type Args, parseArgs } from "@std/cli/parse-args";
 import { File } from "../../common/domain/valueobject/File.ts";
 import { Path } from "../../common/domain/valueobject/Path.ts";
 import { pathExists } from "../../utils/file.ts";
-import { CLI } from "../domain/aggregate/CLI.ts";
+import { CLI, type CLIBuilder } from "../domain/aggregate/CLI.ts";
 
 export class CLIService {
   read(cliArgs: string[]): CLI {
     const args: Args = parseArgs(cliArgs, {
       boolean: ["publish", "scan"],
-      string: ["database"],
+      string: ["database", "bluesky_login", "bluesky_passord"],
     });
 
     const cliParameters: (string | number)[] = args._;
@@ -37,15 +37,18 @@ export class CLIService {
       }
     }
 
-    let action: "SCAN" | "PUBLISH";
+    const cliBuilder: CLIBuilder = CLI.builder()
+      .withConfiguration(new File(new Path(filepath)))
+      .withDatabaseFilepath(databaseFilepath);
+
     if (args.publish) {
-      action = "PUBLISH";
+      cliBuilder.withBluesky(args.bluesky_login, args.bluesky_password);
     } else if (args.scan) {
-      action = "SCAN";
+      cliBuilder.withScanner();
     } else {
       throw new Error('Missing option: "--scan" or "--publish"');
     }
 
-    return new CLI(new File(new Path(filepath)), action, databaseFilepath);
+    return cliBuilder.build();
   }
 }

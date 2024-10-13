@@ -3,7 +3,6 @@ import type { ImageRepositoryRepositoryEntity } from "../src/common/repository/e
 import type { VideoGameRelationImageRepositoryEntity } from "../src/common/repository/entity/VideoGameRelationImageRepositoryEntity.ts";
 import type { VideoGameRepositoryEntity } from "../src/common/repository/entity/VideoGameRepositoryEntity.ts";
 import { main } from "../src/main.ts";
-import { publish } from "../src/publish.ts";
 import { pathExists } from "../src/utils/file.ts";
 import { getAllImagesFromRepository } from "./test-utils/getAllImagesFromRepository.ts";
 import { getAllRelationsFromRepository } from "./test-utils/getAllRelationsFromRepository.ts";
@@ -46,6 +45,8 @@ Deno.test(async function runPublish() {
     "config.yml",
     "--database=./test/it-database.sqlite3",
     "--publish",
+    "--bluesky_login=login",
+    "--bluesky_password=password",
   ]);
 
   // TODO check if the files are published

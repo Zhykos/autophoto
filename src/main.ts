@@ -17,7 +17,7 @@ export async function main(cliArgs: string[]): Promise<void> {
       cli.configuration.path.value,
     );
 
-    if (cli.action === "SCAN") {
+    if (cli.action.isScan()) {
       await runScanner(configuration, kvDriver);
     } else {
       await publish(configuration, kvDriver);
