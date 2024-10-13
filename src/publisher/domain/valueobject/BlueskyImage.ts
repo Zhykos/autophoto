@@ -1,4 +1,5 @@
 import type { BlobRef } from "@atproto/api";
+import { DomainError } from "../../../common/domain/DomainError.ts";
 import type { ValueObject } from "../../../common/domain/ValueObject.ts";
 import type { File } from "../../../common/domain/valueobject/File.ts";
 
@@ -13,7 +14,7 @@ export class BlueskyImage implements ValueObject {
 
   validateObjectProperties(): void {
     if (this.alt.trim().length === 0) {
-      throw new Error("Alt is empty!");
+      throw new DomainError("Alt is empty!");
     }
   }
 

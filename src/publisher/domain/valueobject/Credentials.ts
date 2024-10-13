@@ -1,3 +1,4 @@
+import { DomainError } from "../../../common/domain/DomainError.ts";
 import type { ValueObject } from "../../../common/domain/ValueObject.ts";
 
 export class Credentials implements ValueObject {
@@ -10,7 +11,7 @@ export class Credentials implements ValueObject {
 
   validateObjectProperties(): void {
     if (this.identifier.trim().length === 0) {
-      throw new Error("Identifier is empty!");
+      throw new DomainError("Identifier is empty!");
     }
 
     if (this.password === "") {
