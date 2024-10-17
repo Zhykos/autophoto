@@ -45,6 +45,7 @@ Deno.test(async function runPublish() {
     "config.yml",
     "--database=./test/it-database.sqlite3",
     "--publish",
+    "--bluesky_host=http://localhost:8099",
     "--bluesky_login=login",
     "--bluesky_password=password",
   ]);

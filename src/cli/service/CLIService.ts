@@ -8,7 +8,7 @@ export class CLIService {
   read(cliArgs: string[]): CLI {
     const args: Args = parseArgs(cliArgs, {
       boolean: ["publish", "scan"],
-      string: ["database", "bluesky_login", "bluesky_passord"],
+      string: ["database", "bluesky_host", "bluesky_login", "bluesky_passord"],
     });
 
     const cliParameters: (string | number)[] = args._;
@@ -42,7 +42,13 @@ export class CLIService {
       .withDatabaseFilepath(databaseFilepath);
 
     if (args.publish) {
-      cliBuilder.withBluesky(args.bluesky_login, args.bluesky_password);
+      cliBuilder.withBluesky(
+        args.bluesky_host
+          ? new URL(args.bluesky_host)
+          : new URL("https://bsky.social"),
+        args.bluesky_login,
+        args.bluesky_password,
+      );
     } else if (args.scan) {
       cliBuilder.withScanner();
     } else {

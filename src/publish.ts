@@ -33,7 +33,7 @@ export const publish = async (
   return new BlueskyPublisherService().publish(
     new BlueskyPublication(
       new AtpAgent({
-        service: "https://bsky.social",
+        service: blueskyCredentials.host.toString(),
       }),
       new Credentials(blueskyCredentials.login, blueskyCredentials.password),
       new Publication(

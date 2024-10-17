@@ -25,7 +25,14 @@ Deno.test(async function runPublish() {
   const driver = new KvDriver("./test/it-database.sqlite3");
 
   try {
-    await publish(new BlueskyCredentials("login", "password"), driver);
+    await publish(
+      new BlueskyCredentials(
+        new URL("http://localhost:8099"),
+        "login",
+        "password",
+      ),
+      driver,
+    );
 
     assertEquals("TODO", "DONE"); // TODO check if the files are published
   } finally {

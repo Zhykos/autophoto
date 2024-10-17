@@ -40,8 +40,8 @@ export class CLIBuilder {
     return this;
   }
 
-  withBluesky(login: string, password: string) {
-    this.action = new BlueskyCredentials(login, password);
+  withBluesky(host: URL, login: string, password: string) {
+    this.action = new BlueskyCredentials(host, login, password);
     return this;
   }
 
