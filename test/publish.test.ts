@@ -1,7 +1,6 @@
 import { assertEquals } from "@std/assert";
+import { BlueskyCredentials } from "../src/cli/domain/valueobject/BlueskyCredentials.ts";
 import { KvDriver } from "../src/common/dbdriver/KvDriver.ts";
-import type { Configuration } from "../src/configuration/domain/aggregate/Configuration.ts";
-import { ConfigurationService } from "../src/configuration/service/ConfigurationService.ts";
 import { publish } from "../src/publish.ts";
 import { pathExists } from "../src/utils/file.ts";
 import { getAllImagesFromRepository } from "./test-utils/getAllImagesFromRepository.ts";
@@ -26,13 +25,9 @@ Deno.test(async function runPublish() {
   const driver = new KvDriver("./test/it-database.sqlite3");
 
   try {
-    const configuration: Configuration = new ConfigurationService().loadFile(
-      "./test/resources/config3.yml",
-    );
+    await publish(new BlueskyCredentials("login", "password"), driver);
 
-    await publish(configuration, driver);
-
-    // TODO check if the files are published
+    assertEquals("TODO", "DONE"); // TODO check if the files are published
   } finally {
     driver.close();
   }

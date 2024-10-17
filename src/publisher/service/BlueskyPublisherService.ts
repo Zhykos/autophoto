@@ -9,9 +9,7 @@ import { BlueskyImage } from "../domain/valueobject/BlueskyImage.ts";
 import type { PublisherService } from "./PublisherService.ts";
 
 export class BlueskyPublisherService implements PublisherService {
-  async publish(
-    blueskyPublication: BlueskyPublication,
-  ): Promise<string | undefined> {
+  async publish(blueskyPublication: BlueskyPublication): Promise<string> {
     const loginResponse: ComAtprotoServerCreateSession.Response =
       await blueskyPublication.agent.login({
         identifier: blueskyPublication.credentials.identifier,

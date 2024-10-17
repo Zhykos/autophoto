@@ -59,6 +59,7 @@ export class PickerService {
     return new VideoGameScreeshotsToShare(
       picked.videoGame.title,
       picked.platform,
+      picked.videoGame.releaseYear,
       shuffle(picked.images).slice(0, 4),
     );
   }

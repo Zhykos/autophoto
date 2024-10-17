@@ -49,5 +49,5 @@ Deno.test(async function runPublish() {
     "--bluesky_password=password",
   ]);
 
-  // TODO check if the files are published
+  assertEquals("TODO", "DONE"); // TODO check if the files are published
 });

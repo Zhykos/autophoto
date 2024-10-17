@@ -174,7 +174,7 @@ async function pick1And2(
 
   const screenshotsPick1: VideoGameScreeshotsToShare =
     (await pickerService.pick()) as VideoGameScreeshotsToShare;
-  assertEquals(screenshotsPick1.screenshotsFilesIDs.length, 4);
+  assertEquals(screenshotsPick1.screenshots.length, 4);
 
   const pick1index: number = possibleTitles.indexOf(screenshotsPick1.title);
   assert(pick1index >= 0);
@@ -192,7 +192,7 @@ async function pick1And2(
 
   const screenshotsPick2: VideoGameScreeshotsToShare =
     (await pickerService.pick()) as VideoGameScreeshotsToShare;
-  assertEquals(screenshotsPick2.screenshotsFilesIDs.length, 4);
+  assertEquals(screenshotsPick2.screenshots.length, 4);
   assertEquals(screenshotsPick2.title, possibleTitles[0]);
 
   if (pick1index === 0) {
@@ -211,7 +211,7 @@ async function pickOverdriveSwitch(
   console.log("80s Overdrive Switch picked");
 
   assertEquals(
-    pick.screenshotsFilesIDs.map((s) => s.id).sort(),
+    pick.screenshots.map((s) => s.id).sort(),
     possibleLinksImageIDs.map((l) => l.imageID).sort(),
   );
   assertEquals(pick.platform, "Nintendo Switch");
@@ -228,7 +228,7 @@ async function pickControl(
 
   const notUsedImageIds: string[] = withoutAll(
     possibleLinksImageIDs.map((l) => l.imageID),
-    pick.screenshotsFilesIDs.map((l) => l.id),
+    pick.screenshots.map((l) => l.id),
   );
 
   assertEquals(notUsedImageIds.length, 1);
@@ -256,9 +256,9 @@ async function pick3Bayonetta(
 ): Promise<void> {
   const screenshotsBayonetta: VideoGameScreeshotsToShare =
     (await pickerService.pick()) as VideoGameScreeshotsToShare;
-  assertEquals(screenshotsBayonetta.screenshotsFilesIDs.length, 2);
+  assertEquals(screenshotsBayonetta.screenshots.length, 2);
   assertEquals(
-    screenshotsBayonetta.screenshotsFilesIDs.map((f) => f.id).sort(),
+    screenshotsBayonetta.screenshots.map((f) => f.id).sort(),
     bayonettaLinks.map((l) => l.imageID).sort(),
   );
   assertEquals(screenshotsBayonetta.platform, "PC");
@@ -322,8 +322,8 @@ async function pickOverdrivePC(
   pick: VideoGameScreeshotsToShare,
 ): Promise<void> {
   console.log("80s Overdrive PC picked");
-  assertEquals(pick.screenshotsFilesIDs.length, 1);
-  assertEquals(pick.screenshotsFilesIDs[0].id, possibleLink.imageID);
+  assertEquals(pick.screenshots.length, 1);
+  assertEquals(pick.screenshots[0].id, possibleLink.imageID);
   assertEquals(pick.platform, "PC");
   assertEquals(pick.title, "80's Overdrive");
   await publishLink(possibleLink);
@@ -334,8 +334,8 @@ async function pickAbsolver(
   pick: VideoGameScreeshotsToShare,
 ): Promise<void> {
   console.log("Absolver picked");
-  assertEquals(pick.screenshotsFilesIDs.length, 1);
-  assertEquals(pick.screenshotsFilesIDs[0].id, possibleLink.imageID);
+  assertEquals(pick.screenshots.length, 1);
+  assertEquals(pick.screenshots[0].id, possibleLink.imageID);
   assertEquals(pick.platform, "PC");
   assertEquals(pick.title, "Absolver");
   await publishLink(possibleLink);
@@ -346,8 +346,8 @@ async function pickRemainingControl(
   pick: VideoGameScreeshotsToShare,
 ): Promise<void> {
   console.log("Control picked");
-  assertEquals(pick.screenshotsFilesIDs.length, 1);
-  assertEquals(pick.screenshotsFilesIDs[0].id, controlLink.imageID);
+  assertEquals(pick.screenshots.length, 1);
+  assertEquals(pick.screenshots[0].id, controlLink.imageID);
   assertEquals(pick.platform, "PC");
   assertEquals(pick.title, "Control");
   await publishLink(controlLink);

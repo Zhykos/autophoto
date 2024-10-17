@@ -6,7 +6,7 @@ export class BlueskyServer {
   private server: Deno.HttpServer<Deno.NetAddr>;
 
   constructor(port: number) {
-    this.server = Deno.serve({ port }, async (_req) => {
+    this.server = Deno.serve({ port }, async (_req: Request) => {
       if (_req.url.endsWith("/com.atproto.server.createSession")) {
         return this.createSessionResponse();
       }
@@ -16,7 +16,7 @@ export class BlueskyServer {
       }
 
       if (_req.url.endsWith("/com.atproto.repo.createRecord")) {
-        return await this.createRecordResponse();
+        return await this.createRecordResponse(_req.json());
       }
 
       throw new Error(`URL not found: ${_req.url}`);
@@ -46,8 +46,9 @@ export class BlueskyServer {
     return this.createResponse(body);
   }
 
-  private async createRecordResponse(): Promise<Response> {
+  private async createRecordResponse(reqJson: unknown): Promise<Response> {
     console.log("/com.atproto.repo.createRecord");
+    console.log(reqJson);
     const hash = await createFakeHashDigest();
     const body: string = JSON.stringify({
       uri: "at://did:zhykos:1",
