@@ -5,6 +5,8 @@ import { createFakeHashDigest } from "../../test-utils/createFakeHashDigest.ts";
 export class BlueskyServer {
   private server: Deno.HttpServer<Deno.NetAddr>;
 
+  public lastRecord?: BlueskyRecord;
+
   constructor(port: number) {
     this.server = Deno.serve({ port }, async (_req: Request) => {
       if (_req.url.endsWith("/com.atproto.server.createSession")) {
@@ -16,7 +18,7 @@ export class BlueskyServer {
       }
 
       if (_req.url.endsWith("/com.atproto.repo.createRecord")) {
-        return await this.createRecordResponse(_req.json());
+        return await this.createRecordResponse(_req);
       }
 
       throw new Error(`URL not found: ${_req.url}`);
@@ -46,9 +48,10 @@ export class BlueskyServer {
     return this.createResponse(body);
   }
 
-  private async createRecordResponse(reqJson: unknown): Promise<Response> {
+  private async createRecordResponse(req: Request): Promise<Response> {
     console.log("/com.atproto.repo.createRecord");
-    console.log(reqJson);
+    this.lastRecord = (await req.json()).record;
+
     const hash = await createFakeHashDigest();
     const body: string = JSON.stringify({
       uri: "at://did:zhykos:1",
@@ -66,3 +69,18 @@ export class BlueskyServer {
     });
   }
 }
+
+export type BlueskyRecord = {
+  text: string;
+  embed: BlueskyRecordEmbed;
+  createdAt: string;
+};
+
+type BlueskyRecordEmbed = {
+  images: BlueskyRecordEmbedImage[];
+};
+
+type BlueskyRecordEmbedImage = {
+  alt: string;
+  image: unknown;
+};

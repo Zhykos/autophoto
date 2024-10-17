@@ -1,5 +1,10 @@
 import { AtpAgent } from "@atproto/api";
-import { assert, assertEquals, assertRejects } from "@std/assert";
+import {
+  assert,
+  assertEquals,
+  assertNotEquals,
+  assertRejects,
+} from "@std/assert";
 import { File } from "../../../src/common/domain/valueobject/File.ts";
 import { Path } from "../../../src/common/domain/valueobject/Path.ts";
 import { BlueskyPublication } from "../../../src/publisher/domain/aggregate/BlueskyPublication.ts";
@@ -11,7 +16,7 @@ import { BlueskyServer } from "../../mock/distant-server/BlueskyServer.ts";
 
 Deno.test(async function publish() {
   const serverPort = 8099;
-  const mockeBlueskyServer = new BlueskyServer(serverPort);
+  const mockedBlueskyServer = new BlueskyServer(serverPort);
 
   try {
     const result: string | undefined =
@@ -30,9 +35,21 @@ Deno.test(async function publish() {
           ]),
         ),
       );
+
     assertEquals(result, "at://did:zhykos:1");
+    assertNotEquals(mockedBlueskyServer.lastRecord, undefined);
+    assertEquals(mockedBlueskyServer.lastRecord?.text, "message");
+    assertEquals(mockedBlueskyServer.lastRecord?.embed.images.length, 1);
+    assertEquals(
+      mockedBlueskyServer.lastRecord?.embed.images[0].alt,
+      "Video game screenshot, alt text is under construction.",
+    );
+    assertNotEquals(
+      mockedBlueskyServer.lastRecord?.embed.images[0].image,
+      undefined,
+    );
   } finally {
-    mockeBlueskyServer.stop();
+    mockedBlueskyServer.stop();
   }
 });
 
