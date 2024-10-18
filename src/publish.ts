@@ -30,8 +30,6 @@ export const publish = async (
     return undefined;
   }
 
-  const message = `Screenshots from video game "${pickedVideoGameScreeshots.title}" (${pickedVideoGameScreeshots.releaseYear}) taken on ${pickedVideoGameScreeshots.platform}`;
-
   return new BlueskyPublisherService().publish(
     new BlueskyPublication(
       new AtpAgent({
@@ -39,12 +37,13 @@ export const publish = async (
       }),
       new Credentials(blueskyCredentials.login, blueskyCredentials.password),
       new Publication(
-        message,
+        `Screenshots from video game "${pickedVideoGameScreeshots.title}" (${pickedVideoGameScreeshots.releaseYear}) taken on ${pickedVideoGameScreeshots.platform}`,
         pickedVideoGameScreeshots.screenshots.map(
           (s) => new File(new Path(s.path)),
         ),
         pickedVideoGameScreeshots.screenshots.map(
-          (_) => `${message} (no more details given by the bot)`, // TODO
+          (_) =>
+            `Screenshot from video game ${pickedVideoGameScreeshots.title} (no more details given by the bot)`, // TODO
         ),
       ),
     ),

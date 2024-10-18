@@ -54,7 +54,7 @@ Deno.test(async function runPublish() {
     assertEquals(mockedBlueskyServer.lastRecord?.embed.images.length, 4);
     assertEquals(
       mockedBlueskyServer.lastRecord?.embed.images[0].alt,
-      'Screenshots from video game "80\'s Overdrive" (2017) taken on Nintendo Switch (no more details given by the bot)',
+      "Screenshot from video game 80's Overdrive (no more details given by the bot)",
     );
     assertNotEquals(
       mockedBlueskyServer.lastRecord?.embed.images[0].image,
