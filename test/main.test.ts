@@ -71,7 +71,7 @@ Deno.test(async function runPublishViaMain() {
     assertEquals(mockedBlueskyServer.lastRecord?.embed.images.length, 4);
     assertEquals(
       mockedBlueskyServer.lastRecord?.embed.images[0].alt,
-      "Video game screenshot, alt text is under construction.",
+      "Screenshot from video game 80's Overdrive (no more details given by the bot)",
     );
     assertNotEquals(
       mockedBlueskyServer.lastRecord?.embed.images[0].image,

@@ -26,3 +26,35 @@ Deno.test(function notEquals() {
   const obj2 = "string";
   assertFalse(obj1.equals(obj2));
 });
+
+Deno.test(function tooMuchImages() {
+  const error = assertThrows(
+    () =>
+      new Publication("foo", [
+        new File(new Path("README.md")),
+        new File(new Path("README.md")),
+        new File(new Path("README.md")),
+        new File(new Path("README.md")),
+        new File(new Path("README.md")),
+      ]),
+  );
+  assert(error instanceof Error);
+  assertEquals(error.message, "Too many images!");
+});
+
+Deno.test(function noEnoughAlts() {
+  const error = assertThrows(
+    () =>
+      new Publication("foo", [new File(new Path("README.md"))], ["alt", "alt"]),
+  );
+  assert(error instanceof Error);
+  assertEquals(error.message, "Alts length does not match images length!");
+});
+
+Deno.test(function emptyAlt() {
+  const error = assertThrows(
+    () => new Publication("foo", [new File(new Path("README.md"))], [""]),
+  );
+  assert(error instanceof Error);
+  assertEquals(error.message, "An alt is empty!");
+});
