@@ -22,12 +22,20 @@ export class BlueskyPublisherService implements PublisherService {
 
     const images: BlueskyImage[] = [];
 
-    for (const image of blueskyPublication.publication.images) {
+    for (
+      let index = 0;
+      index < blueskyPublication.publication.images.length;
+      index++
+    ) {
+      const imageFile: File = blueskyPublication.publication.images[index];
+      const alt: string | undefined =
+        blueskyPublication.publication.alts?.at(index);
+
       const blob: BlobRef = await this.uploadImage(
         blueskyPublication.agent,
-        image,
+        imageFile,
       );
-      const blueskyImage = BlueskyImage.fromFile(image, blob);
+      const blueskyImage = BlueskyImage.fromFile(imageFile, blob, alt);
       images.push(blueskyImage);
     }
 

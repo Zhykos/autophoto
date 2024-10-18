@@ -25,10 +25,14 @@ export class BlueskyImage implements ValueObject {
     return false;
   }
 
-  public static fromFile(file: File, blob: BlobRef): BlueskyImage {
+  public static fromFile(
+    file: File,
+    blob: BlobRef,
+    alt?: string,
+  ): BlueskyImage {
     return new BlueskyImage(
       file,
-      "Video game screenshot, alt text is under construction.", // TODO
+      alt ?? "Video game screenshot, no more information available.",
       blob,
     );
   }

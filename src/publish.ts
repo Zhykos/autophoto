@@ -23,12 +23,14 @@ export const publish = async (
     new KvImageRepository(kvDriver),
   );
 
-  const pick: VideoGameScreeshotsToShare | undefined =
+  const pickedVideoGameScreeshots: VideoGameScreeshotsToShare | undefined =
     await pickerService.pick();
 
-  if (!pick) {
+  if (!pickedVideoGameScreeshots) {
     return undefined;
   }
+
+  const message = `Screenshots from video game "${pickedVideoGameScreeshots.title}" (${pickedVideoGameScreeshots.releaseYear}) taken on ${pickedVideoGameScreeshots.platform}`;
 
   return new BlueskyPublisherService().publish(
     new BlueskyPublication(
@@ -37,8 +39,13 @@ export const publish = async (
       }),
       new Credentials(blueskyCredentials.login, blueskyCredentials.password),
       new Publication(
-        `Screenshots from video game "${pick.title}" (${pick.releaseYear}) taken on ${pick.platform}`,
-        pick.screenshots.map((s) => new File(new Path(s.path))),
+        message,
+        pickedVideoGameScreeshots.screenshots.map(
+          (s) => new File(new Path(s.path)),
+        ),
+        pickedVideoGameScreeshots.screenshots.map(
+          (_) => `${message} (no more details given by the bot)`, // TODO
+        ),
       ),
     ),
   );

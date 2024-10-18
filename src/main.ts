@@ -21,7 +21,11 @@ export async function main(cliArgs: string[]): Promise<void> {
     if (cli.action.isScan()) {
       await runScanner(configuration, kvDriver);
     } else {
-      await publish(cli.action as BlueskyCredentials, kvDriver);
+      const result: string | undefined = await publish(
+        cli.action as BlueskyCredentials,
+        kvDriver,
+      );
+      console.log("Publication result:", result);
     }
   } finally {
     kvDriver.close();
