@@ -12,10 +12,6 @@ export class BlueskyCredentials implements ValueObject, Action {
   }
 
   validateObjectProperties(): void {
-    if (!this.host || this.host.toString().length === 0) {
-      throw new DomainError("Host is required");
-    }
-
     if (!this.login || this.login.length === 0) {
       throw new DomainError("Login is required");
     }
