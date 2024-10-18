@@ -1,4 +1,4 @@
-import { assert, assertEquals, assertThrows } from "@std/assert";
+import { assert, assertEquals, assertFalse, assertThrows } from "@std/assert";
 import type { CLI } from "../../../src/cli/domain/aggregate/CLI.ts";
 import { CLIService } from "../../../src/cli/service/CLIService.ts";
 
@@ -43,13 +43,18 @@ Deno.test(function argMissingAction() {
 Deno.test(function readScanOK() {
   const cliResult: CLI = new CLIService().read(["--scan", "README.md"]);
   assertEquals(cliResult.configuration.path.value, "README.md");
-  assertEquals(cliResult.action, "SCAN");
+  assert(cliResult.action.isScan());
 });
 
 Deno.test(function readPublishOK() {
-  const cliResult: CLI = new CLIService().read(["--publish", "README.md"]);
+  const cliResult: CLI = new CLIService().read([
+    "--publish",
+    "--bluesky_login=login",
+    "--bluesky_password=password",
+    "README.md",
+  ]);
   assertEquals(cliResult.configuration.path.value, "README.md");
-  assertEquals(cliResult.action, "PUBLISH");
+  assertFalse(cliResult.action.isScan());
 });
 
 Deno.test(function newDatabaseFile() {

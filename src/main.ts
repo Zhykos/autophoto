@@ -1,4 +1,5 @@
 import type { CLI } from "./cli/domain/aggregate/CLI.ts";
+import type { BlueskyCredentials } from "./cli/domain/valueobject/BlueskyCredentials.ts";
 import { CLIService } from "./cli/service/CLIService.ts";
 import { KvDriver } from "./common/dbdriver/KvDriver.ts";
 import type { Configuration } from "./configuration/domain/aggregate/Configuration.ts";
@@ -17,10 +18,10 @@ export async function main(cliArgs: string[]): Promise<void> {
       cli.configuration.path.value,
     );
 
-    if (cli.action === "SCAN") {
+    if (cli.action.isScan()) {
       await runScanner(configuration, kvDriver);
     } else {
-      await publish(configuration, kvDriver);
+      await publish(cli.action as BlueskyCredentials, kvDriver);
     }
   } finally {
     kvDriver.close();

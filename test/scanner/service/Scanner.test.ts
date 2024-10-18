@@ -1,5 +1,5 @@
-import { unique } from "@radashi-org/radashi";
 import { assertEquals } from "@std/assert";
+import { distinct } from "@std/collections";
 import { KvDriver } from "../../../src/common/dbdriver/KvDriver.ts";
 import { Directory } from "../../../src/common/domain/valueobject/Directory.ts";
 import { Path } from "../../../src/common/domain/valueobject/Path.ts";
@@ -68,7 +68,7 @@ Deno.test(async function scanAndSaveNewImages() {
       await getAllImagesFromRepository(tempDatabaseFilePath);
     filesAfterScan.sort((a, b) => a.path.localeCompare(b.path));
     assertEquals(filesAfterScan.length, 8);
-    assertEquals(unique(filesAfterScan.map((f) => f.uuid)).length, 8);
+    assertEquals(distinct(filesAfterScan.map((f) => f.uuid)).length, 8);
 
     assertEquals(
       filesAfterScan[0].path,
@@ -190,7 +190,7 @@ Deno.test(async function scanAndSaveNewImages() {
 
     const allLinks: VideoGameRelationImageRepositoryEntity[] =
       await getAllRelationsFromRepository(tempDatabaseFilePath);
-    const linksVideoGameIds = unique(allLinks.map((l) => l.videoGameID));
+    const linksVideoGameIds = distinct(allLinks.map((l) => l.videoGameID));
     assertEquals(allLinks.length, 8);
     assertEquals(new Set(allLinks.map((l) => l.uuid)).size, 8);
     assertEquals(new Set(allLinks.map((l) => l.imageID)).size, 8);

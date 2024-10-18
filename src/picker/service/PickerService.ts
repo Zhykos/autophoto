@@ -1,4 +1,5 @@
-import { shuffle, unique } from "@radashi-org/radashi";
+import { distinct } from "@std/collections";
+import { shuffle } from "@std/random";
 import { UnpublishedVideoGamesScreenshot } from "../domain/aggregate/UnpublishedVideoGamesScreenshot.ts";
 import { VideoGameScreeshotsToShare } from "../domain/aggregate/VideoGameScreeshotsToShare.ts";
 import type { Image } from "../domain/entity/Image.ts";
@@ -58,6 +59,7 @@ export class PickerService {
     return new VideoGameScreeshotsToShare(
       picked.videoGame.title,
       picked.platform,
+      picked.videoGame.releaseYear,
       shuffle(picked.images).slice(0, 4),
     );
   }
@@ -67,12 +69,12 @@ export class PickerService {
   > {
     const unpublishedScreenshotRelations: UnpublishedVideoGameScreenshotRelation[] =
       await this.relationRepository.getUnpublishedVideoGameRelations();
-    const unpublishedVideoGamesIDs: string[] = unique(
+    const unpublishedVideoGamesIDs: string[] = distinct(
       unpublishedScreenshotRelations.map((rel) => rel.videoGameID),
     );
     const unpublishedVideoGames: VideoGame[] =
       await this.videoGameRepository.getVideoGames(unpublishedVideoGamesIDs);
-    const unpublishedImagesIDs: string[] = unique(
+    const unpublishedImagesIDs: string[] = distinct(
       unpublishedScreenshotRelations.map((rel) => rel.imageID),
     );
     const unpublishedImages: Image[] =

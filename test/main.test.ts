@@ -1,10 +1,11 @@
 import { assertEquals } from "@std/assert";
+import { assertNotEquals } from "@std/assert/not-equals";
 import type { ImageRepositoryRepositoryEntity } from "../src/common/repository/entity/ImageRepositoryRepositoryEntity.ts";
 import type { VideoGameRelationImageRepositoryEntity } from "../src/common/repository/entity/VideoGameRelationImageRepositoryEntity.ts";
 import type { VideoGameRepositoryEntity } from "../src/common/repository/entity/VideoGameRepositoryEntity.ts";
 import { main } from "../src/main.ts";
-import { publish } from "../src/publish.ts";
 import { pathExists } from "../src/utils/file.ts";
+import { MockBlueskyServer } from "./mock/distant-server/MockBlueskyServer.ts";
 import { getAllImagesFromRepository } from "./test-utils/getAllImagesFromRepository.ts";
 import { getAllRelationsFromRepository } from "./test-utils/getAllRelationsFromRepository.ts";
 import { getAllVideoGamesFromRepository } from "./test-utils/getAllVideoGamesFromRepository.ts";
@@ -39,14 +40,64 @@ Deno.test(async function runScan() {
   assertEquals(allLinks.length, 5);
 });
 
-Deno.test(async function runPublish() {
+Deno.test(async function runPublishViaMain() {
   await beforeEach();
 
+  await main(["config.yml", "--database=./test/it-database.sqlite3", "--scan"]);
+
   await main([
-    "config.yml",
+    "./test/resources/config2.yml",
     "--database=./test/it-database.sqlite3",
-    "--publish",
+    "--scan",
   ]);
 
-  // TODO check if the files are published
+  const mockedBlueskyServer = new MockBlueskyServer(9002);
+
+  try {
+    await main([
+      "config.yml",
+      "--database=./test/it-database.sqlite3",
+      "--publish",
+      "--bluesky_host=http://localhost:9002",
+      "--bluesky_login=login",
+      "--bluesky_password=password",
+    ]);
+
+    assertNotEquals(mockedBlueskyServer.lastRecord, undefined);
+    assertEquals(
+      mockedBlueskyServer.lastRecord?.text,
+      'Screenshots from video game "80\'s Overdrive" (2017) taken on Nintendo Switch',
+    );
+    assertEquals(mockedBlueskyServer.lastRecord?.embed.images.length, 4);
+    assertEquals(
+      mockedBlueskyServer.lastRecord?.embed.images[0].alt,
+      "Video game screenshot, alt text is under construction.",
+    );
+    assertNotEquals(
+      mockedBlueskyServer.lastRecord?.embed.images[0].image,
+      undefined,
+    );
+  } finally {
+    await mockedBlueskyServer.stop();
+  }
+});
+
+Deno.test(async function runPublishViaMainButNothingInTheDatabase() {
+  await beforeEach();
+  const mockedBlueskyServer = new MockBlueskyServer(9003);
+
+  try {
+    await main([
+      "config.yml",
+      "--database=./test/it-database.sqlite3",
+      "--publish",
+      "--bluesky_host=http://localhost:9003",
+      "--bluesky_login=login",
+      "--bluesky_password=password",
+    ]);
+
+    assertEquals(mockedBlueskyServer.lastRecord, undefined);
+  } finally {
+    await mockedBlueskyServer.stop();
+  }
 });

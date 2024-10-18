@@ -4,6 +4,7 @@ export class VideoGameScreeshotsToShare {
   constructor(
     public readonly title: string,
     public readonly platform: string,
-    public readonly screenshotsFilesIDs: Image[],
+    public readonly releaseYear: number,
+    public readonly screenshots: Image[],
   ) {}
 }
