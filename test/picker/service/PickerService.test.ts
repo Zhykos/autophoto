@@ -34,7 +34,7 @@ async function beforeEach() {
     const configuration: Configuration = new ConfigurationService().loadFile(
       "./test/resources/config3.yml",
     );
-    await runScanner(configuration, kvDriver);
+    await runScanner(configuration, kvDriver, false);
   } finally {
     kvDriver.close();
   }

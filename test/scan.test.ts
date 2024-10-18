@@ -1,10 +1,13 @@
 import { assert, assertEquals, assertRejects } from "@std/assert";
+import { KvDriver } from "../src/common/dbdriver/KvDriver.ts";
 import { Directory } from "../src/common/domain/valueobject/Directory.ts";
 import { Path } from "../src/common/domain/valueobject/Path.ts";
+import type { Configuration } from "../src/configuration/domain/aggregate/Configuration.ts";
 import { ConfigurationDataPattern } from "../src/configuration/domain/valueobject/ConfigurationDataPattern.ts";
 import { ConfigurationScanWithPattern } from "../src/configuration/domain/valueobject/ConfigurationScanWithPattern.ts";
 import { DirectoryType } from "../src/configuration/domain/valueobject/DirectoryType.ts";
-import { scan } from "../src/scan.ts";
+import { ConfigurationService } from "../src/configuration/service/ConfigurationService.ts";
+import { debugDatabaseInformation, runScanner, scan } from "../src/scan.ts";
 import type { VideoGameScreenshot } from "../src/scanner/domain/entity/VideoGameScreenshot.ts";
 import { Scanner } from "../src/scanner/service/Scanner.ts";
 import { pathExists } from "../src/utils/file.ts";
@@ -33,7 +36,7 @@ class MockErrorImageRepository extends MockImageRepository {
   }
 }
 
-Deno.test(async function runScan() {
+Deno.test(async function errorScan() {
   await beforeEach();
 
   const scanner = new Scanner(
@@ -54,4 +57,22 @@ Deno.test(async function runScan() {
 
   assert(error instanceof Error);
   assertEquals(error.message, "An error occurred while scanning.");
+});
+
+Deno.test(async function debugScan() {
+  await beforeEach();
+
+  const kvDriver = new KvDriver(tempDatabaseFilePath);
+
+  try {
+    const configuration: Configuration = new ConfigurationService().loadFile(
+      "./test/resources/config3.yml",
+    );
+    await runScanner(configuration, kvDriver, true);
+
+    const debug: string = await debugDatabaseInformation();
+    assertEquals(debug, "");
+  } finally {
+    kvDriver.close();
+  }
 });

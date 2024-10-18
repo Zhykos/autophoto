@@ -16,6 +16,7 @@ import { BlueskyPublisherService } from "./publisher/service/BlueskyPublisherSer
 export const publish = async (
   blueskyCredentials: BlueskyCredentials,
   kvDriver: KvDriver,
+  debugDatabase: boolean,
 ): Promise<string | undefined> => {
   const pickerService = new PickerService(
     new KvRelationRepository(kvDriver),
@@ -30,7 +31,7 @@ export const publish = async (
     return undefined;
   }
 
-  return new BlueskyPublisherService().publish(
+  const resultPublication: string = await new BlueskyPublisherService().publish(
     new BlueskyPublication(
       new AtpAgent({
         service: blueskyCredentials.host.toString(),
@@ -48,4 +49,16 @@ export const publish = async (
       ),
     ),
   );
+
+  if (debugDatabase) {
+    const debug: string = await debugDatabaseInformation();
+    console.log("Debug database information:", debug);
+  }
+
+  return resultPublication;
 };
+
+export async function debugDatabaseInformation(): Promise<string> {
+  // TODO
+  return "TODO";
+}

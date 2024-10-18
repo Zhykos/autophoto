@@ -10,6 +10,7 @@ import { Scanner } from "./scanner/service/Scanner.ts";
 export const runScanner = async (
   configuration: Configuration,
   kvDriver: KvDriver,
+  debugDatabase: boolean,
 ): Promise<void> => {
   const scanner = new Scanner(
     new KvImageRepository(kvDriver),
@@ -18,7 +19,17 @@ export const runScanner = async (
   );
 
   await scan(scanner, configuration.scans);
+
+  if (debugDatabase) {
+    const debug: string = await debugDatabaseInformation();
+    console.log("Debug database information:", debug);
+  }
 };
+
+export async function debugDatabaseInformation(): Promise<string> {
+  // TODO
+  return "TODO";
+}
 
 export async function scan(
   scanner: Scanner,

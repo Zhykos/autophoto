@@ -7,6 +7,7 @@ export class CLI {
     public readonly configuration: File,
     public readonly action: Action,
     public readonly databaseFilepath = "./db.autophoto.sqlite3",
+    public readonly debugDatabase = false,
   ) {}
 
   static builder() {
@@ -24,6 +25,7 @@ export class CLIBuilder {
   private configuration: File | undefined;
   private action: Action | undefined;
   private databaseFilepath: string | undefined;
+  private debugDatabase = false;
 
   withConfiguration(configuration: File) {
     this.configuration = configuration;
@@ -45,6 +47,11 @@ export class CLIBuilder {
     return this;
   }
 
+  withDebugDatabase() {
+    this.debugDatabase = true;
+    return this;
+  }
+
   build() {
     if (!this.configuration) {
       throw new Error("Configuration is required");
@@ -54,6 +61,11 @@ export class CLIBuilder {
       throw new Error("Action is required: scanner or bluesky publisher");
     }
 
-    return new CLI(this.configuration, this.action, this.databaseFilepath);
+    return new CLI(
+      this.configuration,
+      this.action,
+      this.databaseFilepath,
+      this.debugDatabase,
+    );
   }
 }

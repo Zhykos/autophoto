@@ -2,7 +2,7 @@ import { assertEquals, assertNotEquals } from "@std/assert";
 import { BlueskyCredentials } from "../src/cli/domain/valueobject/BlueskyCredentials.ts";
 import { KvDriver } from "../src/common/dbdriver/KvDriver.ts";
 import { main } from "../src/main.ts";
-import { publish } from "../src/publish.ts";
+import { debugDatabaseInformation, publish } from "../src/publish.ts";
 import { pathExists } from "../src/utils/file.ts";
 import { MockBlueskyServer } from "./mock/distant-server/MockBlueskyServer.ts";
 import { getAllImagesFromRepository } from "./test-utils/getAllImagesFromRepository.ts";
@@ -44,6 +44,7 @@ Deno.test(async function runPublish() {
         "password",
       ),
       driver,
+      false,
     );
 
     assertNotEquals(mockedBlueskyServer.lastRecord, undefined);
@@ -60,6 +61,40 @@ Deno.test(async function runPublish() {
       mockedBlueskyServer.lastRecord?.embed.images[0].image,
       undefined,
     );
+  } finally {
+    driver.close();
+    await mockedBlueskyServer.stop();
+  }
+});
+
+Deno.test(async function debugPublish() {
+  await beforeEach();
+
+  await main(["config.yml", "--database=./test/it-database.sqlite3", "--scan"]);
+
+  const mockedBlueskyServer = new MockBlueskyServer(9005);
+
+  const driver = new KvDriver("./test/it-database.sqlite3");
+
+  try {
+    await publish(
+      new BlueskyCredentials(
+        new URL("http://localhost:9005"),
+        "login",
+        "password",
+      ),
+      driver,
+      true,
+    );
+
+    assertEquals(
+      mockedBlueskyServer.lastRecord?.text,
+      'Screenshots from video game "80\'s Overdrive" (2017) taken on Nintendo Switch',
+    );
+    assertEquals(mockedBlueskyServer.lastRecord?.embed.images.length, 4);
+
+    const debug: string = await debugDatabaseInformation();
+    assertEquals(debug, "");
   } finally {
     driver.close();
     await mockedBlueskyServer.stop();

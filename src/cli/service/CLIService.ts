@@ -7,8 +7,8 @@ import { CLI, type CLIBuilder } from "../domain/aggregate/CLI.ts";
 export class CLIService {
   read(cliArgs: string[]): CLI {
     const args: Args = parseArgs(cliArgs, {
-      boolean: ["publish", "scan"],
-      string: ["database", "bluesky_host", "bluesky_login", "bluesky_passord"],
+      boolean: ["debug-database", "publish", "scan"],
+      string: ["bluesky_host", "bluesky_login", "bluesky_passord", "database"],
     });
 
     const cliParameters: (string | number)[] = args._;
