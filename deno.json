@@ -5,7 +5,9 @@
     "test": "deno test --allow-read --allow-write --trace-leaks --unstable-kv --allow-env --allow-net -- config.yml --database=./test/it-database.sqlite3 --scan",
     "coverage": "rm -fr coverage && deno test --allow-read --allow-write --unstable-kv --allow-env --allow-net --coverage -- config.yml --database=./test/it-database.sqlite3 --scan && deno coverage --html --exclude=\"/test/\" && open coverage/html/index.html",
     "lint": "deno lint && deno run -A npm:@biomejs/biome lint",
-    "format": "deno run -A npm:@biomejs/biome check --write"
+    "format": "deno run -A npm:@biomejs/biome check --write",
+    "e2e:scan": "deno run --allow-read --allow-write --unstable-kv src/main.ts config.yml --scan --database=./test/e2e-debug.sqlite3 && deno run --allow-read --allow-write --unstable-kv src/main.ts ./test/resources/config2.yml --scan --database=./test/e2e-debug.sqlite3",
+    "e2e:publish": "deno run --allow-read --allow-write --allow-net --unstable-kv src/main.ts --publish --bluesky_login=$LOGIN --bluesky_password=$PASSWORD config.yml"
   },
   "imports": {
     "@atproto/api": "npm:@atproto/api@^0.13.11",
