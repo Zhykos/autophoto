@@ -12,18 +12,17 @@ import { Credentials } from "../../../src/publisher/domain/valueobject/Credentia
 import { Publication } from "../../../src/publisher/domain/valueobject/Publication.ts";
 import { BlueskyPublisherService } from "../../../src/publisher/service/BlueskyPublisherService.ts";
 import { MockAtpAgent } from "../../mock/agent/MockAtpAgent.ts";
-import { BlueskyServer } from "../../mock/distant-server/BlueskyServer.ts";
+import { MockBlueskyServer } from "../../mock/distant-server/MockBlueskyServer.ts";
 
 Deno.test(async function publish() {
-  const serverPort = 8099;
-  const mockedBlueskyServer = new BlueskyServer(serverPort);
+  const mockedBlueskyServer = new MockBlueskyServer(9001);
 
   try {
     const result: string | undefined =
       await new BlueskyPublisherService().publish(
         new BlueskyPublication(
           new AtpAgent({
-            service: `http://localhost:${serverPort}`,
+            service: "http://localhost:9001",
           }),
           new Credentials("l", "p"),
           new Publication("message", [
@@ -49,7 +48,7 @@ Deno.test(async function publish() {
       undefined,
     );
   } finally {
-    mockedBlueskyServer.stop();
+    await mockedBlueskyServer.stop();
   }
 });
 

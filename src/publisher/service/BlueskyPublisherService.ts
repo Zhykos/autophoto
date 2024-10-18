@@ -20,20 +20,16 @@ export class BlueskyPublisherService implements PublisherService {
       throw new Error("Failed to login!");
     }
 
-    const imagesMap = new Map<BlueskyImage, BlobRef>();
+    const images: BlueskyImage[] = [];
 
-    const imagesPromises: Promise<BlueskyImage>[] =
-      blueskyPublication.publication.images.map(async (image) => {
-        const blob: BlobRef = await this.uploadImage(
-          blueskyPublication.agent,
-          image,
-        );
-        const blueskyImage = BlueskyImage.fromFile(image, blob);
-        imagesMap.set(blueskyImage, blob);
-        return blueskyImage;
-      });
-
-    const images: BlueskyImage[] = await Promise.all(imagesPromises);
+    for (const image of blueskyPublication.publication.images) {
+      const blob: BlobRef = await this.uploadImage(
+        blueskyPublication.agent,
+        image,
+      );
+      const blueskyImage = BlueskyImage.fromFile(image, blob);
+      images.push(blueskyImage);
+    }
 
     const postResponse: {
       uri: string;

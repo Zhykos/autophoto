@@ -2,7 +2,7 @@ import { CID } from "multiformats/cid";
 import { createFakeBlobRef } from "../../test-utils/createFakeBlobRef.ts";
 import { createFakeHashDigest } from "../../test-utils/createFakeHashDigest.ts";
 
-export class BlueskyServer {
+export class MockBlueskyServer {
   private server: Deno.HttpServer<Deno.NetAddr>;
 
   public lastRecord?: BlueskyRecord;
@@ -21,12 +21,16 @@ export class BlueskyServer {
         return await this.createRecordResponse(_req);
       }
 
+      console.error(`URL not found: ${_req.url}`);
       throw new Error(`URL not found: ${_req.url}`);
     });
   }
 
-  stop(): Promise<void> {
-    return this.server.shutdown();
+  async stop(): Promise<void> {
+    await this.server.shutdown();
+
+    // XXX That's crap but it's the only way to wait for the server to stop and prevent "broken pipe" errors
+    await new Promise((resolve) => setTimeout(resolve, 5000));
   }
 
   private createSessionResponse() {
