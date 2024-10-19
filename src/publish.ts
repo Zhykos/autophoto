@@ -45,7 +45,7 @@ export const publish = async (
       }),
       new Credentials(blueskyCredentials.login, blueskyCredentials.password),
       new Publication(
-        `Screenshots from video game "${pickedVideoGameScreeshots.title}" (${pickedVideoGameScreeshots.releaseYear}) taken on ${pickedVideoGameScreeshots.platform}`,
+        `${pluralFinalS(pickedVideoGameScreeshots.screenshots.length, "Screenshot", false)} from video game "${pickedVideoGameScreeshots.title}" (${pickedVideoGameScreeshots.releaseYear}) taken on ${pickedVideoGameScreeshots.platform}`,
         pickedVideoGameScreeshots.screenshots.map(
           (s) => new File(new Path(s.path)),
         ),
