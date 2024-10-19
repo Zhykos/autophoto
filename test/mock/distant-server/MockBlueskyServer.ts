@@ -12,20 +12,32 @@ export class MockBlueskyServer {
     this.host = `http://localhost:${port}`;
 
     this.server = Deno.serve({ port }, async (_req: Request) => {
-      if (_req.url.endsWith("/com.atproto.server.createSession")) {
-        return this.createSessionResponse();
-      }
+      try {
+        if (_req.url.endsWith("/com.atproto.server.createSession")) {
+          return this.createSessionResponse();
+        }
 
-      if (_req.url.endsWith("/com.atproto.repo.uploadBlob")) {
-        return await this.uploadBlobResponse();
-      }
+        if (_req.url.endsWith("/com.atproto.repo.uploadBlob")) {
+          return await this.uploadBlobResponse();
+        }
 
-      if (_req.url.endsWith("/com.atproto.repo.createRecord")) {
-        return await this.createRecordResponse(_req);
-      }
+        if (_req.url.endsWith("/com.atproto.repo.createRecord")) {
+          return await this.createRecordResponse(_req);
+        }
 
-      console.error(`URL not found: ${_req.url}`);
-      throw new Error(`URL not found: ${_req.url}`);
+        console.error(`URL not found: ${_req.url}`);
+
+        return new Response(`URL not found: ${_req.url}`, {
+          status: 404,
+        });
+      } catch (e) {
+        console.error("Error on MockBlueskyServer");
+        console.error(e);
+
+        return new Response(`Error on MockBlueskyServer: ${e}`, {
+          status: 500,
+        });
+      }
     });
   }
 
