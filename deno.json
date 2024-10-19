@@ -17,6 +17,7 @@
     "@std/crypto": "jsr:@std/crypto@^1.0.3",
     "@std/media-types": "jsr:@std/media-types@^1.0.3",
     "@std/random": "jsr:@std/random@^0.1.0",
+    "@std/testing": "jsr:@std/testing@^1.0.3",
     "@std/yaml": "jsr:@std/yaml@^1.0.5",
     "multiformats": "npm:multiformats@^13.3.0"
   }

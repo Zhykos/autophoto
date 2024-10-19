@@ -1,4 +1,5 @@
 import { assert, assertEquals, assertRejects } from "@std/assert";
+import { beforeEach, describe, it } from "@std/testing/bdd";
 import { KvDriver } from "../src/common/dbdriver/KvDriver.ts";
 import { Directory } from "../src/common/domain/valueobject/Directory.ts";
 import { Path } from "../src/common/domain/valueobject/Path.ts";
@@ -20,59 +21,60 @@ import { getAllVideoGamesFromRepository } from "./test-utils/getAllVideoGamesFro
 
 const tempDatabaseFilePath = "./test/it-database.sqlite3";
 
-async function beforeEach() {
-  if (pathExists(tempDatabaseFilePath)) {
-    Deno.removeSync(tempDatabaseFilePath);
-  }
-
-  assertEquals(await getAllImagesFromRepository(tempDatabaseFilePath), []);
-  assertEquals(await getAllVideoGamesFromRepository(tempDatabaseFilePath), []);
-  assertEquals(await getAllRelationsFromRepository(tempDatabaseFilePath), []);
-}
-
 class MockErrorImageRepository extends MockImageRepository {
   getAllVideoGameScreenshots(): Promise<VideoGameScreenshot[]> {
     throw new Error("MockErrorImageRepository.getAllVideoGameScreenshots");
   }
 }
 
-Deno.test(async function errorScan() {
-  await beforeEach();
+describe("main scanner", () => {
+  beforeEach(async () => {
+    if (pathExists(tempDatabaseFilePath)) {
+      Deno.removeSync(tempDatabaseFilePath);
+    }
 
-  const scanner = new Scanner(
-    new MockErrorImageRepository(),
-    new MockVideoGameRepository(),
-    new MockRelationRepository(),
-  );
-
-  const scanData = new ConfigurationScanWithPattern(
-    new Directory(new Path("src")),
-    DirectoryType["video-game"],
-    new ConfigurationDataPattern(/foo/, []),
-  );
-
-  const error = await assertRejects(
-    async () => await scan(scanner, [scanData]),
-  );
-
-  assert(error instanceof Error);
-  assertEquals(error.message, "An error occurred while scanning.");
-});
-
-Deno.test(async function debugScan() {
-  await beforeEach();
-
-  const kvDriver = new KvDriver(tempDatabaseFilePath);
-
-  try {
-    const configuration: Configuration = new ConfigurationService().loadFile(
-      "./test/resources/config3.yml",
+    assertEquals(await getAllImagesFromRepository(tempDatabaseFilePath), []);
+    assertEquals(
+      await getAllVideoGamesFromRepository(tempDatabaseFilePath),
+      [],
     );
-    await runScanner(configuration, kvDriver, true);
+    assertEquals(await getAllRelationsFromRepository(tempDatabaseFilePath), []);
+  });
 
-    const debug: string = await debugDatabaseInformation();
-    assertEquals(debug, "");
-  } finally {
-    kvDriver.close();
-  }
+  it("should fails during scan", async () => {
+    const scanner = new Scanner(
+      new MockErrorImageRepository(),
+      new MockVideoGameRepository(),
+      new MockRelationRepository(),
+    );
+
+    const scanData = new ConfigurationScanWithPattern(
+      new Directory(new Path("src")),
+      DirectoryType["video-game"],
+      new ConfigurationDataPattern(/foo/, []),
+    );
+
+    const error = await assertRejects(
+      async () => await scan(scanner, [scanData]),
+    );
+
+    assert(error instanceof Error);
+    assertEquals(error.message, "An error occurred while scanning.");
+  });
+
+  it("should debug scan", async () => {
+    const kvDriver = new KvDriver(tempDatabaseFilePath);
+
+    try {
+      const configuration: Configuration = new ConfigurationService().loadFile(
+        "./test/resources/config3.yml",
+      );
+      await runScanner(configuration, kvDriver, true);
+
+      const debug: string = await debugDatabaseInformation();
+      assertEquals(debug, "");
+    } finally {
+      kvDriver.close();
+    }
+  });
 });

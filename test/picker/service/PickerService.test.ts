@@ -1,5 +1,6 @@
 import { assert, assertEquals, assertNotEquals } from "@std/assert";
 import { distinct, withoutAll } from "@std/collections";
+import { beforeEach, describe, it } from "@std/testing/bdd";
 import { KvDriver } from "../../../src/common/dbdriver/KvDriver.ts";
 import type { ImageRepositoryRepositoryEntity } from "../../../src/common/repository/entity/ImageRepositoryRepositoryEntity.ts";
 import type { VideoGameRelationImageRepositoryEntity } from "../../../src/common/repository/entity/VideoGameRelationImageRepositoryEntity.ts";
@@ -20,38 +21,74 @@ import { publishRelationFromRepository } from "../../test-utils/publishRelationF
 
 const tempDatabaseFilePath = "./test/it-database.sqlite3";
 
-async function beforeEach() {
-  if (pathExists(tempDatabaseFilePath)) {
-    Deno.removeSync(tempDatabaseFilePath);
-  }
+describe("PickerService", () => {
+  beforeEach(async () => {
+    if (pathExists(tempDatabaseFilePath)) {
+      Deno.removeSync(tempDatabaseFilePath);
+    }
 
-  assertEquals(await getAllImagesFromRepository(tempDatabaseFilePath), []);
-  assertEquals(await getAllVideoGamesFromRepository(tempDatabaseFilePath), []);
-  assertEquals(await getAllRelationsFromRepository(tempDatabaseFilePath), []);
-
-  const kvDriver = new KvDriver(tempDatabaseFilePath);
-  try {
-    const configuration: Configuration = new ConfigurationService().loadFile(
-      "./test/resources/config3.yml",
+    assertEquals(await getAllImagesFromRepository(tempDatabaseFilePath), []);
+    assertEquals(
+      await getAllVideoGamesFromRepository(tempDatabaseFilePath),
+      [],
     );
-    await runScanner(configuration, kvDriver, false);
-  } finally {
-    kvDriver.close();
-  }
-}
+    assertEquals(await getAllRelationsFromRepository(tempDatabaseFilePath), []);
 
-Deno.test(async function pickSeveralTimes() {
+    const kvDriver = new KvDriver(tempDatabaseFilePath);
+    try {
+      const configuration: Configuration = new ConfigurationService().loadFile(
+        "./test/resources/config3.yml",
+      );
+      await runScanner(configuration, kvDriver, false);
+    } finally {
+      kvDriver.close();
+    }
+  });
+
   // Due to the random nature of the picker, we need to run it several times.
-  // We hope that after 30 runs, we will have tested all possible scenarios.
-  const numberOfRuns = 30;
-  for (let i = 0; i < numberOfRuns; i++) {
-    console.log(`Run pick ${i + 1} / ${numberOfRuns}`);
-    await beforeEach();
-    await pick();
-  }
+
+  it("should pick correct photos - execution 01", async () => {
+    await pickEveryPhotos();
+  });
+
+  it("should pick correct photos - execution 02", async () => {
+    await pickEveryPhotos();
+  });
+
+  it("should pick correct photos - execution 03", async () => {
+    await pickEveryPhotos();
+  });
+
+  it("should pick correct photos - execution 04", async () => {
+    await pickEveryPhotos();
+  });
+
+  it("should pick correct photos - execution 05", async () => {
+    await pickEveryPhotos();
+  });
+
+  it("should pick correct photos - execution 06", async () => {
+    await pickEveryPhotos();
+  });
+
+  it("should pick correct photos - execution 07", async () => {
+    await pickEveryPhotos();
+  });
+
+  it("should pick correct photos - execution 08", async () => {
+    await pickEveryPhotos();
+  });
+
+  it("should pick correct photos - execution 09", async () => {
+    await pickEveryPhotos();
+  });
+
+  it("should pick correct photos - execution 10", async () => {
+    await pickEveryPhotos();
+  });
 });
 
-async function pick() {
+async function pickEveryPhotos() {
   const filesAfterScan: ImageRepositoryRepositoryEntity[] =
     await getAllImagesFromRepository(tempDatabaseFilePath);
   filesAfterScan.sort((a, b) => a.path.localeCompare(b.path));

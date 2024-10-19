@@ -5,9 +5,12 @@ import { createFakeHashDigest } from "../../test-utils/createFakeHashDigest.ts";
 export class MockBlueskyServer {
   private server: Deno.HttpServer<Deno.NetAddr>;
 
+  public readonly host: string;
   public lastRecord?: BlueskyRecord;
 
   constructor(port: number) {
+    this.host = `http://localhost:${port}`;
+
     this.server = Deno.serve({ port }, async (_req: Request) => {
       if (_req.url.endsWith("/com.atproto.server.createSession")) {
         return this.createSessionResponse();
@@ -26,11 +29,17 @@ export class MockBlueskyServer {
     });
   }
 
+  reset(): void {
+    this.lastRecord = undefined;
+  }
+
   async stop(): Promise<void> {
     await this.server.shutdown();
 
     // XXX That's crap but it's the only way to wait for the server to stop and prevent "broken pipe" errors
-    await new Promise((resolve) => setTimeout(resolve, 5000));
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    return this.server.finished;
   }
 
   private createSessionResponse() {
