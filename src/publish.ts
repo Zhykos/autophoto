@@ -16,6 +16,7 @@ import { BlueskyPublication } from "./publisher/domain/aggregate/BlueskyPublicat
 import { Credentials } from "./publisher/domain/valueobject/Credentials.ts";
 import { Publication } from "./publisher/domain/valueobject/Publication.ts";
 import { BlueskyPublisherService } from "./publisher/service/BlueskyPublisherService.ts";
+import { pluralFinalS } from "./utils/plural-final-s.ts";
 
 export const publish = async (
   blueskyCredentials: BlueskyCredentials,
@@ -80,11 +81,11 @@ export async function debugDatabaseInformation(
 
   return `Publication done for video game "${publishedVideoGameScreeshots.title}" (${publishedVideoGameScreeshots.releaseYear} - ${publishedVideoGameScreeshots.platform}).
 
-${publishedVideoGameScreeshots.screenshots.length} image${publishedVideoGameScreeshots.screenshots.length > 1 ? "s" : ""} published:
+${pluralFinalS(publishedVideoGameScreeshots.screenshots.length, "image")} published:
 ${publishedVideoGameScreeshots.screenshots
   .map((s) => `  - ${s.path}`)
   .sort()
   .join("\n")}
 
-${unpublishedVideoGameRelations.length} image${unpublishedVideoGameRelations.length > 1 ? "s" : ""} not published yet: it may take ${possibleRemainingDays} another publication${possibleRemainingDays > 1 ? "s" : ""} to publish them (if 1 publication per day).`;
+${pluralFinalS(unpublishedVideoGameRelations.length, "image")} not published yet: it may take another ${pluralFinalS(possibleRemainingDays, "publication")} to publish them (if 1 publication per day).`;
 }

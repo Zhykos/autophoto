@@ -15,6 +15,7 @@ import {
   type VideoGameRepository,
 } from "./scanner/repository/VideoGameRepository.ts";
 import { Scanner } from "./scanner/service/Scanner.ts";
+import { pluralFinalS } from "./utils/plural-final-s.ts";
 
 export const runScanner = async (
   configuration: Configuration,
@@ -61,7 +62,7 @@ export async function debugDatabaseInformation(
       (relation) => relation.published,
     ).length;
 
-    return `  - ${videoGame.title.value} (${videoGame.releaseYear.year}) : ${relations.length} screenshot${relations.length > 1 ? "s" : ""} (${publishedScreenshotsNumber} already published)`;
+    return `  - ${videoGame.title.value} (${videoGame.releaseYear.year}) : ${pluralFinalS(relations.length, "screenshot")} (${publishedScreenshotsNumber} already published)`;
   });
 
   const remainingScreenshotsNumber: number = allRelations.filter(
@@ -75,7 +76,7 @@ export async function debugDatabaseInformation(
 Video games and platforms:
 ${details.sort().join("\n")}
 
-${allRelations.length} screenshot${allRelations.length > 1 ? "s" : ""} in database, ${remainingScreenshotsNumber} to be published: it may take ${remainingDays} day${remainingDays > 1 ? "s" : ""} to publish all screenshots (if you execute the command everyday).`;
+${pluralFinalS(allRelations.length, "screenshot")} in database, ${remainingScreenshotsNumber} to be published: it may take ${pluralFinalS(remainingDays, "day")} to publish all screenshots (if you execute the command everyday).`;
 }
 
 export async function scan(

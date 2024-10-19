@@ -58,6 +58,31 @@ describe("BlueskyPublisherService", () => {
     );
   });
 
+  it("should publish with alt", async () => {
+    await new BlueskyPublisherService().publish(
+      new BlueskyPublication(
+        new AtpAgent({
+          service: mockedBlueskyServer.host,
+        }),
+        new Credentials("l", "p"),
+        new Publication(
+          "message",
+          [
+            new File(
+              new Path(
+                "./test/resources/video-game/8-Bit Bayonetta (2015)/PC/8-Bit Bayonetta - 00001.webp",
+              ),
+            ),
+          ],
+          ["alt"],
+        ),
+      ),
+    );
+
+    assertEquals(mockedBlueskyServer.lastRecord?.embed.images.length, 1);
+    assertEquals(mockedBlueskyServer.lastRecord?.embed.images[0].alt, "alt");
+  });
+
   it("should fails during login", async () => {
     const error = await assertRejects(
       async () =>

@@ -44,6 +44,7 @@ Deno.test(function readScanOK() {
   const cliResult: CLI = new CLIService().read(["--scan", "README.md"]);
   assertEquals(cliResult.configuration.path.value, "README.md");
   assert(cliResult.action.isScan());
+  assertFalse(cliResult.debugDatabase);
 });
 
 Deno.test(function readPublishOK() {
@@ -65,4 +66,13 @@ Deno.test(function newDatabaseFile() {
   ]);
   assertEquals(cliResult.configuration.path.value, "README.md");
   assertEquals(cliResult.databaseFilepath, "new.db");
+});
+
+Deno.test(function debug() {
+  const cliResult: CLI = new CLIService().read([
+    "--debug-database",
+    "--scan",
+    "README.md",
+  ]);
+  assert(cliResult.debugDatabase);
 });
