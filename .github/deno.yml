@@ -2,7 +2,12 @@ name: "CI: checks and tests"
 
 on:
   push:
-    branches: ["develop", "main", "feature/**", "bugfix/**", "hotfix/**"]
+    branches:
+      - develop
+      - main
+      - feature/**
+      - bugfix/**
+      - hotfix/**
 
 permissions:
   contents: read
