@@ -10,6 +10,8 @@ import { runScanner } from "./scan.ts";
 await main(Deno.args);
 
 export async function main(cliArgs: string[]): Promise<void> {
+  console.log("Starting Autophoto...");
+
   const cli: CLI = new CLIService().read(cliArgs);
   const kvDriver = new KvDriver(cli.databaseFilepath);
 
@@ -19,16 +21,19 @@ export async function main(cliArgs: string[]): Promise<void> {
     );
 
     if (cli.action.isScan()) {
+      console.log("Scanning...");
       await runScanner(configuration, kvDriver, cli.debugDatabase);
     } else {
+      console.log("Publishing...");
       const result: string | undefined = await publish(
         cli.action as BlueskyCredentials,
         kvDriver,
         cli.debugDatabase,
       );
-      console.log("Publication result:", result);
+      console.log("Publication result:", result ?? "Nothing to publish.");
     }
   } finally {
     kvDriver.close();
+    console.log("Autophoto finished.");
   }
 }
