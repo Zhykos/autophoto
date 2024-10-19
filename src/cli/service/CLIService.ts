@@ -7,8 +7,8 @@ import { CLI, type CLIBuilder } from "../domain/aggregate/CLI.ts";
 export class CLIService {
   read(cliArgs: string[]): CLI {
     const args: Args = parseArgs(cliArgs, {
-      boolean: ["publish", "scan"],
-      string: ["database", "bluesky_host", "bluesky_login", "bluesky_passord"],
+      boolean: ["debug-database", "publish", "scan"],
+      string: ["bluesky_host", "bluesky_login", "bluesky_passord", "database"],
     });
 
     const cliParameters: (string | number)[] = args._;
@@ -41,7 +41,11 @@ export class CLIService {
       .withConfiguration(new File(new Path(filepath)))
       .withDatabaseFilepath(databaseFilepath);
 
-    if (args.publish) {
+    if (args["debug-database"] === true) {
+      cliBuilder.withDebugDatabase();
+    }
+
+    if (args.publish === true) {
       cliBuilder.withBluesky(
         args.bluesky_host
           ? new URL(args.bluesky_host)
@@ -49,7 +53,7 @@ export class CLIService {
         args.bluesky_login,
         args.bluesky_password,
       );
-    } else if (args.scan) {
+    } else if (args.scan === true) {
       cliBuilder.withScanner();
     } else {
       throw new Error('Missing option: "--scan" or "--publish"');

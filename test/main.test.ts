@@ -1,5 +1,12 @@
 import { assertEquals } from "@std/assert";
 import { assertNotEquals } from "@std/assert/not-equals";
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  it,
+} from "@std/testing/bdd";
 import type { ImageRepositoryRepositoryEntity } from "../src/common/repository/entity/ImageRepositoryRepositoryEntity.ts";
 import type { VideoGameRelationImageRepositoryEntity } from "../src/common/repository/entity/VideoGameRelationImageRepositoryEntity.ts";
 import type { VideoGameRepositoryEntity } from "../src/common/repository/entity/VideoGameRepositoryEntity.ts";
@@ -12,53 +19,62 @@ import { getAllVideoGamesFromRepository } from "./test-utils/getAllVideoGamesFro
 
 const tempDatabaseFilePath = "./test/it-database.sqlite3";
 
-async function beforeEach() {
-  if (pathExists(tempDatabaseFilePath)) {
-    Deno.removeSync(tempDatabaseFilePath);
-  }
+describe("main publish", () => {
+  let mockedBlueskyServer: MockBlueskyServer;
 
-  assertEquals(await getAllImagesFromRepository(tempDatabaseFilePath), []);
-  assertEquals(await getAllVideoGamesFromRepository(tempDatabaseFilePath), []);
-  assertEquals(await getAllRelationsFromRepository(tempDatabaseFilePath), []);
-}
+  beforeAll(() => {
+    mockedBlueskyServer = new MockBlueskyServer(1312);
+  });
 
-Deno.test(async function runScan() {
-  await beforeEach();
+  beforeEach(async () => {
+    if (pathExists(tempDatabaseFilePath)) {
+      Deno.removeSync(tempDatabaseFilePath);
+    }
 
-  await main(["config.yml", "--database=./test/it-database.sqlite3", "--scan"]);
+    assertEquals(await getAllImagesFromRepository(tempDatabaseFilePath), []);
+    assertEquals(
+      await getAllVideoGamesFromRepository(tempDatabaseFilePath),
+      [],
+    );
+    assertEquals(await getAllRelationsFromRepository(tempDatabaseFilePath), []);
 
-  const filesAfterScan: ImageRepositoryRepositoryEntity[] =
-    await getAllImagesFromRepository(tempDatabaseFilePath);
-  assertEquals(filesAfterScan.length, 5);
+    mockedBlueskyServer.reset();
+  });
 
-  const videoGamesAfterScan: VideoGameRepositoryEntity[] =
-    await getAllVideoGamesFromRepository(tempDatabaseFilePath);
-  assertEquals(videoGamesAfterScan.length, 2);
+  afterAll(async () => {
+    await mockedBlueskyServer.stop();
+  });
 
-  const allLinks: VideoGameRelationImageRepositoryEntity[] =
-    await getAllRelationsFromRepository(tempDatabaseFilePath);
-  assertEquals(allLinks.length, 5);
-});
+  it("should scan", async () => {
+    await main(["config.yml", `--database=${tempDatabaseFilePath}`, "--scan"]);
 
-Deno.test(async function runPublishViaMain() {
-  await beforeEach();
+    const filesAfterScan: ImageRepositoryRepositoryEntity[] =
+      await getAllImagesFromRepository(tempDatabaseFilePath);
+    assertEquals(filesAfterScan.length, 5);
 
-  await main(["config.yml", "--database=./test/it-database.sqlite3", "--scan"]);
+    const videoGamesAfterScan: VideoGameRepositoryEntity[] =
+      await getAllVideoGamesFromRepository(tempDatabaseFilePath);
+    assertEquals(videoGamesAfterScan.length, 2);
 
-  await main([
-    "./test/resources/config2.yml",
-    "--database=./test/it-database.sqlite3",
-    "--scan",
-  ]);
+    const allLinks: VideoGameRelationImageRepositoryEntity[] =
+      await getAllRelationsFromRepository(tempDatabaseFilePath);
+    assertEquals(allLinks.length, 5);
+  });
 
-  const mockedBlueskyServer = new MockBlueskyServer(9002);
+  it("should publish", async () => {
+    await main(["config.yml", `--database=${tempDatabaseFilePath}`, "--scan"]);
 
-  try {
+    await main([
+      "./test/resources/config2.yml",
+      `--database=${tempDatabaseFilePath}`,
+      "--scan",
+    ]);
+
     await main([
       "config.yml",
-      "--database=./test/it-database.sqlite3",
+      `--database=${tempDatabaseFilePath}`,
       "--publish",
-      "--bluesky_host=http://localhost:9002",
+      `--bluesky_host=${mockedBlueskyServer.host}`,
       "--bluesky_login=login",
       "--bluesky_password=password",
     ]);
@@ -77,27 +93,18 @@ Deno.test(async function runPublishViaMain() {
       mockedBlueskyServer.lastRecord?.embed.images[0].image,
       undefined,
     );
-  } finally {
-    await mockedBlueskyServer.stop();
-  }
-});
+  });
 
-Deno.test(async function runPublishViaMainButNothingInTheDatabase() {
-  await beforeEach();
-  const mockedBlueskyServer = new MockBlueskyServer(9003);
-
-  try {
+  it("should publish nothing because database is empty", async () => {
     await main([
       "config.yml",
-      "--database=./test/it-database.sqlite3",
+      `--database=${tempDatabaseFilePath}`,
       "--publish",
-      "--bluesky_host=http://localhost:9003",
+      `--bluesky_host=${mockedBlueskyServer.host}`,
       "--bluesky_login=login",
       "--bluesky_password=password",
     ]);
 
     assertEquals(mockedBlueskyServer.lastRecord, undefined);
-  } finally {
-    await mockedBlueskyServer.stop();
-  }
+  });
 });

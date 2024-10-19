@@ -5,6 +5,7 @@ import {
   assertNotEquals,
   assertRejects,
 } from "@std/assert";
+import { afterAll, beforeAll, describe, it } from "@std/testing/bdd";
 import { File } from "../../../src/common/domain/valueobject/File.ts";
 import { Path } from "../../../src/common/domain/valueobject/Path.ts";
 import { BlueskyPublication } from "../../../src/publisher/domain/aggregate/BlueskyPublication.ts";
@@ -14,15 +15,23 @@ import { BlueskyPublisherService } from "../../../src/publisher/service/BlueskyP
 import { MockAtpAgent } from "../../mock/agent/MockAtpAgent.ts";
 import { MockBlueskyServer } from "../../mock/distant-server/MockBlueskyServer.ts";
 
-Deno.test(async function publish() {
-  const mockedBlueskyServer = new MockBlueskyServer(9001);
+describe("BlueskyPublisherService", () => {
+  let mockedBlueskyServer: MockBlueskyServer;
 
-  try {
+  beforeAll(() => {
+    mockedBlueskyServer = new MockBlueskyServer(1312);
+  });
+
+  afterAll(async () => {
+    await mockedBlueskyServer.stop();
+  });
+
+  it("should publish", async () => {
     const result: string | undefined =
       await new BlueskyPublisherService().publish(
         new BlueskyPublication(
           new AtpAgent({
-            service: "http://localhost:9001",
+            service: mockedBlueskyServer.host,
           }),
           new Credentials("l", "p"),
           new Publication("message", [
@@ -47,28 +56,51 @@ Deno.test(async function publish() {
       mockedBlueskyServer.lastRecord?.embed.images[0].image,
       undefined,
     );
-  } finally {
-    await mockedBlueskyServer.stop();
-  }
-});
+  });
 
-Deno.test(async function loginFailed() {
-  const error = await assertRejects(
-    async () =>
-      await new BlueskyPublisherService().publish(
-        new BlueskyPublication(
-          new MockAtpAgent(false),
-          new Credentials("l", "p"),
-          new Publication("message", [
+  it("should publish with alt", async () => {
+    await new BlueskyPublisherService().publish(
+      new BlueskyPublication(
+        new AtpAgent({
+          service: mockedBlueskyServer.host,
+        }),
+        new Credentials("l", "p"),
+        new Publication(
+          "message",
+          [
             new File(
               new Path(
                 "./test/resources/video-game/8-Bit Bayonetta (2015)/PC/8-Bit Bayonetta - 00001.webp",
               ),
             ),
-          ]),
+          ],
+          ["alt"],
         ),
       ),
-  );
-  assert(error instanceof Error);
-  assertEquals(error.message, "Failed to login!");
+    );
+
+    assertEquals(mockedBlueskyServer.lastRecord?.embed.images.length, 1);
+    assertEquals(mockedBlueskyServer.lastRecord?.embed.images[0].alt, "alt");
+  });
+
+  it("should fails during login", async () => {
+    const error = await assertRejects(
+      async () =>
+        await new BlueskyPublisherService().publish(
+          new BlueskyPublication(
+            new MockAtpAgent(false),
+            new Credentials("l", "p"),
+            new Publication("message", [
+              new File(
+                new Path(
+                  "./test/resources/video-game/8-Bit Bayonetta (2015)/PC/8-Bit Bayonetta - 00001.webp",
+                ),
+              ),
+            ]),
+          ),
+        ),
+    );
+    assert(error instanceof Error);
+    assertEquals(error.message, "Failed to login!");
+  });
 });

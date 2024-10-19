@@ -12,6 +12,9 @@ export interface RelationRepository {
     screenshot: VideoGameScreenshot,
     platform: VideoGamePlatform,
   ): Promise<void>;
+
+  // XXX Do not return entities directly, use domain objects instead
+  getAllRelations(): Promise<VideoGameRelationImageRepositoryEntity[]>;
 }
 
 export class KvRelationRepository implements RelationRepository {
@@ -35,5 +38,9 @@ export class KvRelationRepository implements RelationRepository {
     } satisfies VideoGameRelationImageRepositoryEntity;
 
     await this.commonRepository.saveVideoGameRelation(entity);
+  }
+
+  async getAllRelations(): Promise<VideoGameRelationImageRepositoryEntity[]> {
+    return await this.commonRepository.getAllVideoGameRelations();
   }
 }

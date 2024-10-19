@@ -1,3 +1,4 @@
+import type { VideoGameRelationImageRepositoryEntity } from "../../../src/common/repository/entity/VideoGameRelationImageRepositoryEntity.ts";
 import type { VideoGame } from "../../../src/scanner/domain/entity/VideoGame.ts";
 import type { VideoGameScreenshot } from "../../../src/scanner/domain/entity/VideoGameScreenshot.ts";
 import type { VideoGamePlatform } from "../../../src/scanner/domain/valueobject/VideoGamePlatform.ts";
@@ -10,5 +11,9 @@ export class MockRelationRepository implements RelationRepository {
     _3: VideoGamePlatform,
   ): Promise<void> {
     return Promise.resolve();
+  }
+
+  getAllRelations(): Promise<VideoGameRelationImageRepositoryEntity[]> {
+    return Promise.resolve([]);
   }
 }

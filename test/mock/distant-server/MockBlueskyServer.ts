@@ -5,32 +5,53 @@ import { createFakeHashDigest } from "../../test-utils/createFakeHashDigest.ts";
 export class MockBlueskyServer {
   private server: Deno.HttpServer<Deno.NetAddr>;
 
+  public readonly host: string;
   public lastRecord?: BlueskyRecord;
 
   constructor(port: number) {
+    this.host = `http://localhost:${port}`;
+
     this.server = Deno.serve({ port }, async (_req: Request) => {
-      if (_req.url.endsWith("/com.atproto.server.createSession")) {
-        return this.createSessionResponse();
-      }
+      try {
+        if (_req.url.endsWith("/com.atproto.server.createSession")) {
+          return this.createSessionResponse();
+        }
 
-      if (_req.url.endsWith("/com.atproto.repo.uploadBlob")) {
-        return await this.uploadBlobResponse();
-      }
+        if (_req.url.endsWith("/com.atproto.repo.uploadBlob")) {
+          return await this.uploadBlobResponse();
+        }
 
-      if (_req.url.endsWith("/com.atproto.repo.createRecord")) {
-        return await this.createRecordResponse(_req);
-      }
+        if (_req.url.endsWith("/com.atproto.repo.createRecord")) {
+          return await this.createRecordResponse(_req);
+        }
 
-      console.error(`URL not found: ${_req.url}`);
-      throw new Error(`URL not found: ${_req.url}`);
+        console.error(`URL not found: ${_req.url}`);
+
+        return new Response(`URL not found: ${_req.url}`, {
+          status: 404,
+        });
+      } catch (e) {
+        console.error("Error on MockBlueskyServer");
+        console.error(e);
+
+        return new Response(`Error on MockBlueskyServer: ${e}`, {
+          status: 500,
+        });
+      }
     });
+  }
+
+  reset(): void {
+    this.lastRecord = undefined;
   }
 
   async stop(): Promise<void> {
     await this.server.shutdown();
 
     // XXX That's crap but it's the only way to wait for the server to stop and prevent "broken pipe" errors
-    await new Promise((resolve) => setTimeout(resolve, 5000));
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    return this.server.finished;
   }
 
   private createSessionResponse() {

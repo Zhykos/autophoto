@@ -18,4 +18,23 @@ export class CommonKvRelationRepository {
       {} as VideoGameRelationImageRepositoryEntity,
     );
   }
+
+  async updatePublishedStatus(imageID: string): Promise<void> {
+    const allRelations: VideoGameRelationImageRepositoryEntity[] =
+      await this.getAllVideoGameRelations();
+
+    const entity: VideoGameRelationImageRepositoryEntity | undefined =
+      allRelations.find((relation) => relation.imageID === imageID);
+
+    if (entity) {
+      entity.published = true;
+      await this.kvDriver.save(["relation", entity.uuid], entity);
+    } else {
+      console.error(
+        `Image ID "${imageID}" in relations cannot be found.
+Possible entities are: ${(await this.kvDriver.list(["relation"], {} as VideoGameRelationImageRepositoryEntity)).map((e) => `${e.imageID} (rel: ${e.uuid})`).sort()}`,
+      );
+      throw new Error(`Relation entity with Image ID "${imageID}" not found`);
+    }
+  }
 }

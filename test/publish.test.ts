@@ -1,8 +1,20 @@
 import { assertEquals, assertNotEquals } from "@std/assert";
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  it,
+} from "@std/testing/bdd";
 import { BlueskyCredentials } from "../src/cli/domain/valueobject/BlueskyCredentials.ts";
 import { KvDriver } from "../src/common/dbdriver/KvDriver.ts";
+import type { VideoGameRelationImageRepositoryEntity } from "../src/common/repository/entity/VideoGameRelationImageRepositoryEntity.ts";
 import { main } from "../src/main.ts";
-import { publish } from "../src/publish.ts";
+import { VideoGameScreeshotsToShare } from "../src/picker/domain/aggregate/VideoGameScreeshotsToShare.ts";
+import { Image } from "../src/picker/domain/entity/Image.ts";
+import { UnpublishedVideoGameScreenshotRelation } from "../src/picker/domain/entity/UnpublishedVideoGameScreenshotRelation.ts";
+import type { RelationRepository } from "../src/picker/repository/RelationRepository.ts";
+import { debugDatabaseInformation, publish } from "../src/publish.ts";
 import { pathExists } from "../src/utils/file.ts";
 import { MockBlueskyServer } from "./mock/distant-server/MockBlueskyServer.ts";
 import { getAllImagesFromRepository } from "./test-utils/getAllImagesFromRepository.ts";
@@ -11,57 +23,131 @@ import { getAllVideoGamesFromRepository } from "./test-utils/getAllVideoGamesFro
 
 const tempDatabaseFilePath = "./test/it-database.sqlite3";
 
-async function beforeEach() {
-  if (pathExists(tempDatabaseFilePath)) {
-    Deno.removeSync(tempDatabaseFilePath);
-  }
+describe("main publish", () => {
+  let mockedBlueskyServer: MockBlueskyServer;
 
-  assertEquals(await getAllImagesFromRepository(tempDatabaseFilePath), []);
-  assertEquals(await getAllVideoGamesFromRepository(tempDatabaseFilePath), []);
-  assertEquals(await getAllRelationsFromRepository(tempDatabaseFilePath), []);
-}
+  beforeAll(() => {
+    mockedBlueskyServer = new MockBlueskyServer(1312);
+  });
 
-Deno.test(async function runPublish() {
-  await beforeEach();
+  beforeEach(async () => {
+    if (pathExists(tempDatabaseFilePath)) {
+      Deno.removeSync(tempDatabaseFilePath);
+    }
 
-  await main(["config.yml", "--database=./test/it-database.sqlite3", "--scan"]);
-
-  await main([
-    "./test/resources/config2.yml",
-    "--database=./test/it-database.sqlite3",
-    "--scan",
-  ]);
-
-  const mockedBlueskyServer = new MockBlueskyServer(9004);
-
-  const driver = new KvDriver("./test/it-database.sqlite3");
-
-  try {
-    await publish(
-      new BlueskyCredentials(
-        new URL("http://localhost:9004"),
-        "login",
-        "password",
-      ),
-      driver,
-    );
-
-    assertNotEquals(mockedBlueskyServer.lastRecord, undefined);
+    assertEquals(await getAllImagesFromRepository(tempDatabaseFilePath), []);
     assertEquals(
-      mockedBlueskyServer.lastRecord?.text,
-      'Screenshots from video game "80\'s Overdrive" (2017) taken on Nintendo Switch',
+      await getAllVideoGamesFromRepository(tempDatabaseFilePath),
+      [],
     );
-    assertEquals(mockedBlueskyServer.lastRecord?.embed.images.length, 4);
-    assertEquals(
-      mockedBlueskyServer.lastRecord?.embed.images[0].alt,
-      "Screenshot from video game 80's Overdrive (no more details given by the bot)",
-    );
-    assertNotEquals(
-      mockedBlueskyServer.lastRecord?.embed.images[0].image,
-      undefined,
-    );
-  } finally {
-    driver.close();
+    assertEquals(await getAllRelationsFromRepository(tempDatabaseFilePath), []);
+  });
+
+  afterAll(async () => {
     await mockedBlueskyServer.stop();
-  }
+  });
+
+  it("should publish", async () => {
+    await main([
+      "config.yml",
+      "--database=./test/it-database.sqlite3",
+      "--scan",
+    ]);
+
+    await main([
+      "./test/resources/config2.yml",
+      "--database=./test/it-database.sqlite3",
+      "--scan",
+    ]);
+
+    const driver = new KvDriver("./test/it-database.sqlite3");
+
+    try {
+      await publish(
+        new BlueskyCredentials(
+          new URL(mockedBlueskyServer.host),
+          "login",
+          "password",
+        ),
+        driver,
+        true,
+      );
+
+      assertNotEquals(mockedBlueskyServer.lastRecord, undefined);
+      assertEquals(
+        mockedBlueskyServer.lastRecord?.text,
+        'Screenshots from video game "80\'s Overdrive" (2017) taken on Nintendo Switch',
+      );
+      assertEquals(mockedBlueskyServer.lastRecord?.embed.images.length, 4);
+      assertEquals(
+        mockedBlueskyServer.lastRecord?.embed.images[0].alt,
+        "Screenshot from video game 80's Overdrive (no more details given by the bot)",
+      );
+      assertNotEquals(
+        mockedBlueskyServer.lastRecord?.embed.images[0].image,
+        undefined,
+      );
+
+      const allRelations: VideoGameRelationImageRepositoryEntity[] =
+        await getAllRelationsFromRepository(tempDatabaseFilePath);
+
+      assertEquals(allRelations.length, 8);
+      assertEquals(allRelations.filter((r) => r.published === true).length, 4);
+    } finally {
+      driver.close();
+    }
+  });
+
+  it("should debug publication", async () => {
+    const relationRepository = new MockRelationRepository();
+
+    const debug: string = await debugDatabaseInformation(
+      new VideoGameScreeshotsToShare(
+        "80's Overdrive",
+        "Nintendo Switch",
+        2017,
+        [
+          new Image(
+            "uuid1",
+            "test/resources/video-game/80's Overdrive (2017)/Nintendo Switch/80's Overdrive - 00001.webp",
+          ),
+        ],
+      ),
+      relationRepository,
+    );
+    assertEquals(
+      debug,
+      `Publication done for video game "80's Overdrive" (2017 - Nintendo Switch).
+
+1 image published:
+  - test/resources/video-game/80's Overdrive (2017)/Nintendo Switch/80's Overdrive - 00001.webp
+
+2 images not published yet: it may take another 1 publication to publish them (if 1 publication per day).`,
+    );
+  });
 });
+
+class MockRelationRepository implements RelationRepository {
+  getUnpublishedVideoGameRelations(): Promise<
+    UnpublishedVideoGameScreenshotRelation[]
+  > {
+    return Promise.resolve([
+      new UnpublishedVideoGameScreenshotRelation(
+        "uuid1",
+        "image1",
+        "game1",
+        "",
+      ),
+      new UnpublishedVideoGameScreenshotRelation(
+        "uuid2",
+        "image2",
+        "game2",
+        "",
+      ),
+    ]);
+  }
+
+  updatePublishedStatuses(_: Image[]): Promise<void> {
+    return Promise.resolve();
+  }
+}
