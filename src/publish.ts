@@ -81,7 +81,10 @@ export async function debugDatabaseInformation(
   return `Publication done for video game "${publishedVideoGameScreeshots.title}" (${publishedVideoGameScreeshots.releaseYear} - ${publishedVideoGameScreeshots.platform}).
 
 ${publishedVideoGameScreeshots.screenshots.length} image${publishedVideoGameScreeshots.screenshots.length > 1 ? "s" : ""} published:
-${publishedVideoGameScreeshots.screenshots.map((s) => `  - ${s.path}`).join("\n")}
+${publishedVideoGameScreeshots.screenshots
+  .map((s) => `  - ${s.path}`)
+  .sort()
+  .join("\n")}
 
 ${unpublishedVideoGameRelations.length} image${unpublishedVideoGameRelations.length > 1 ? "s" : ""} not published yet: it may take ${possibleRemainingDays} another publication${possibleRemainingDays > 1 ? "s" : ""} to publish them (if 1 publication per day).`;
 }
