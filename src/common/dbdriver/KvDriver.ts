@@ -1,7 +1,7 @@
 export class KvDriver {
   private kvSingleton: Deno.Kv | undefined = undefined;
 
-  constructor(private readonly databaseFilePath: string) {}
+  constructor(public readonly databaseFilePath: string) {}
 
   private async getKv(): Promise<Deno.Kv> {
     if (this.kvSingleton === undefined) {

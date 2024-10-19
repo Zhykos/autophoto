@@ -4,8 +4,12 @@ import type { KvDriver } from "./common/dbdriver/KvDriver.ts";
 import { File } from "./common/domain/valueobject/File.ts";
 import { Path } from "./common/domain/valueobject/Path.ts";
 import type { VideoGameScreeshotsToShare } from "./picker/domain/aggregate/VideoGameScreeshotsToShare.ts";
+import type { UnpublishedVideoGameScreenshotRelation } from "./picker/domain/entity/UnpublishedVideoGameScreenshotRelation.ts";
 import { KvImageRepository } from "./picker/repository/ImageRepository.ts";
-import { KvRelationRepository } from "./picker/repository/RelationRepository.ts";
+import {
+  KvRelationRepository,
+  type RelationRepository,
+} from "./picker/repository/RelationRepository.ts";
 import { KvVideoGameRepository } from "./picker/repository/VideoGameRepository.ts";
 import { PickerService } from "./picker/service/PickerService.ts";
 import { BlueskyPublication } from "./publisher/domain/aggregate/BlueskyPublication.ts";
@@ -18,8 +22,10 @@ export const publish = async (
   kvDriver: KvDriver,
   debugDatabase: boolean,
 ): Promise<string | undefined> => {
+  const relationRepository = new KvRelationRepository(kvDriver);
+
   const pickerService = new PickerService(
-    new KvRelationRepository(kvDriver),
+    relationRepository,
     new KvVideoGameRepository(kvDriver),
     new KvImageRepository(kvDriver),
   );
@@ -51,14 +57,31 @@ export const publish = async (
   );
 
   if (debugDatabase) {
-    const debug: string = await debugDatabaseInformation();
+    const debug: string = await debugDatabaseInformation(
+      pickedVideoGameScreeshots,
+      relationRepository,
+    );
     console.log("Debug database information:", debug);
   }
 
   return resultPublication;
 };
 
-export async function debugDatabaseInformation(): Promise<string> {
-  // TODO
-  return "TODO";
+export async function debugDatabaseInformation(
+  publishedVideoGameScreeshots: VideoGameScreeshotsToShare,
+  relationRepository: RelationRepository,
+): Promise<string> {
+  const unpublishedVideoGameRelations: UnpublishedVideoGameScreenshotRelation[] =
+    await relationRepository.getUnpublishedVideoGameRelations();
+
+  const possibleRemainingDays: number = Math.ceil(
+    unpublishedVideoGameRelations.length / 4,
+  );
+
+  return `Publication done for video game "${publishedVideoGameScreeshots.title}" (${publishedVideoGameScreeshots.releaseYear} - ${publishedVideoGameScreeshots.platform}).
+
+${publishedVideoGameScreeshots.screenshots.length} image${publishedVideoGameScreeshots.screenshots.length > 1 ? "s" : ""} published:
+${publishedVideoGameScreeshots.screenshots.map((s) => `  - ${s.path}`).join("\n")}
+
+${unpublishedVideoGameRelations.length} image${unpublishedVideoGameRelations.length > 1 ? "s" : ""} not published yet: it may take ${possibleRemainingDays} another publication${possibleRemainingDays > 1 ? "s" : ""} to publish them (if 1 publication per day).`;
 }

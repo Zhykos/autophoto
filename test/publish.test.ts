@@ -9,6 +9,10 @@ import {
 import { BlueskyCredentials } from "../src/cli/domain/valueobject/BlueskyCredentials.ts";
 import { KvDriver } from "../src/common/dbdriver/KvDriver.ts";
 import { main } from "../src/main.ts";
+import { VideoGameScreeshotsToShare } from "../src/picker/domain/aggregate/VideoGameScreeshotsToShare.ts";
+import { Image } from "../src/picker/domain/entity/Image.ts";
+import { UnpublishedVideoGameScreenshotRelation } from "../src/picker/domain/entity/UnpublishedVideoGameScreenshotRelation.ts";
+import type { RelationRepository } from "../src/picker/repository/RelationRepository.ts";
 import { debugDatabaseInformation, publish } from "../src/publish.ts";
 import { pathExists } from "../src/utils/file.ts";
 import { MockBlueskyServer } from "./mock/distant-server/MockBlueskyServer.ts";
@@ -88,45 +92,51 @@ describe("main publish", () => {
   });
 
   it("should debug publication", async () => {
-    await main([
-      "config.yml",
-      "--database=./test/it-database.sqlite3",
-      "--scan",
-    ]);
+    const relationRepository = new MockRelationRepository();
 
-    const driver = new KvDriver("./test/it-database.sqlite3");
+    const debug: string = await debugDatabaseInformation(
+      new VideoGameScreeshotsToShare(
+        "80's Overdrive",
+        "Nintendo Switch",
+        2017,
+        [
+          new Image(
+            "uuid1",
+            "test/resources/video-game/80's Overdrive (2017)/Nintendo Switch/80's Overdrive - 00001.webp",
+          ),
+        ],
+      ),
+      relationRepository,
+    );
+    assertEquals(
+      debug,
+      `Publication done for video game "80's Overdrive" (2017 - Nintendo Switch).
 
-    try {
-      await publish(
-        new BlueskyCredentials(
-          new URL(mockedBlueskyServer.host),
-          "login",
-          "password",
-        ),
-        driver,
-        true,
-      );
+1 image published:
+  - test/resources/video-game/80's Overdrive (2017)/Nintendo Switch/80's Overdrive - 00001.webp
 
-      assertEquals(
-        mockedBlueskyServer.lastRecord?.text,
-        'Screenshots from video game "80\'s Overdrive" (2017) taken on Nintendo Switch',
-      );
-      assertEquals(mockedBlueskyServer.lastRecord?.embed.images.length, 3);
-
-      const debug: string = await debugDatabaseInformation();
-      assertEquals(
-        debug,
-        `Publication done for video game "80's Overdrive" (2017 - Nintendo Switch).
-
-        3 images published:
-        - Screenshot from video game 80's Overdrive (no more details given by the bot) : test/resources/video-game/80's Overdrive (2017)/Nintendo Switch/80's Overdrive - 00001.webp
-        - Screenshot from video game 80's Overdrive (no more details given by the bot) : test/resources/video-game/80's Overdrive (2017)/Nintendo Switch/80's Overdrive - 00005.webp
-        - Screenshot from video game 80's Overdrive (no more details given by the bot) : test/resources/video-game/80's Overdrive (2017)/Nintendo Switch/80's Overdrive - 00006.webp
-
-        2 images not published yet: it will take 1 another publication to publish them (if 1 publication per day).`,
-      );
-    } finally {
-      driver.close();
-    }
+2 images not published yet: it may take 1 another publication to publish them (if 1 publication per day).`,
+    );
   });
 });
+
+class MockRelationRepository implements RelationRepository {
+  getUnpublishedVideoGameRelations(): Promise<
+    UnpublishedVideoGameScreenshotRelation[]
+  > {
+    return Promise.resolve([
+      new UnpublishedVideoGameScreenshotRelation(
+        "uuid1",
+        "image1",
+        "game1",
+        "",
+      ),
+      new UnpublishedVideoGameScreenshotRelation(
+        "uuid2",
+        "image2",
+        "game2",
+        "",
+      ),
+    ]);
+  }
+}
