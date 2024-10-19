@@ -139,4 +139,8 @@ class MockRelationRepository implements RelationRepository {
       ),
     ]);
   }
+
+  updatePublishedStatuses(_: string[]): Promise<void> {
+    return Promise.resolve();
+  }
 }

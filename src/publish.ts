@@ -57,6 +57,8 @@ export const publish = async (
     ),
   );
 
+  await updatePublishedStatuses(pickedVideoGameScreeshots, relationRepository);
+
   if (debugDatabase) {
     const debug: string = await debugDatabaseInformation(
       pickedVideoGameScreeshots,
@@ -67,6 +69,15 @@ export const publish = async (
 
   return resultPublication;
 };
+
+async function updatePublishedStatuses(
+  publishedVideoGameScreeshots: VideoGameScreeshotsToShare,
+  relationRepository: RelationRepository,
+): Promise<void> {
+  await relationRepository.updatePublishedStatuses(
+    publishedVideoGameScreeshots.screenshots.map((s) => s.id),
+  );
+}
 
 export async function debugDatabaseInformation(
   publishedVideoGameScreeshots: VideoGameScreeshotsToShare,

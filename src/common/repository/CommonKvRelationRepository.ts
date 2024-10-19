@@ -18,4 +18,17 @@ export class CommonKvRelationRepository {
       {} as VideoGameRelationImageRepositoryEntity,
     );
   }
+
+  async updatePublishedStatus(uuid: string): Promise<void> {
+    const entity: VideoGameRelationImageRepositoryEntity | undefined =
+      await this.kvDriver.get(
+        ["relation", uuid],
+        {} as VideoGameRelationImageRepositoryEntity,
+      );
+
+    if (entity) {
+      entity.published = true;
+      await this.kvDriver.save(["relation", uuid], entity);
+    }
+  }
 }

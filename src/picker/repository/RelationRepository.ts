@@ -7,6 +7,8 @@ export interface RelationRepository {
   getUnpublishedVideoGameRelations(): Promise<
     UnpublishedVideoGameScreenshotRelation[]
   >;
+
+  updatePublishedStatuses(updatedIDs: string[]): Promise<void>;
 }
 
 export class KvRelationRepository implements RelationRepository {
@@ -33,5 +35,11 @@ export class KvRelationRepository implements RelationRepository {
             relation.platform,
           ),
       );
+  }
+
+  async updatePublishedStatuses(updatedIDs: string[]): Promise<void> {
+    for (const updatedID of updatedIDs) {
+      await this.commonRepository.updatePublishedStatus(updatedID);
+    }
   }
 }
