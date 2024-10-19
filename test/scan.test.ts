@@ -3,13 +3,20 @@ import { beforeEach, describe, it } from "@std/testing/bdd";
 import { KvDriver } from "../src/common/dbdriver/KvDriver.ts";
 import { Directory } from "../src/common/domain/valueobject/Directory.ts";
 import { Path } from "../src/common/domain/valueobject/Path.ts";
+import type { VideoGameRelationImageRepositoryEntity } from "../src/common/repository/entity/VideoGameRelationImageRepositoryEntity.ts";
 import type { Configuration } from "../src/configuration/domain/aggregate/Configuration.ts";
 import { ConfigurationDataPattern } from "../src/configuration/domain/valueobject/ConfigurationDataPattern.ts";
 import { ConfigurationScanWithPattern } from "../src/configuration/domain/valueobject/ConfigurationScanWithPattern.ts";
 import { DirectoryType } from "../src/configuration/domain/valueobject/DirectoryType.ts";
 import { ConfigurationService } from "../src/configuration/service/ConfigurationService.ts";
 import { debugDatabaseInformation, runScanner, scan } from "../src/scan.ts";
+import { VideoGame } from "../src/scanner/domain/entity/VideoGame.ts";
 import type { VideoGameScreenshot } from "../src/scanner/domain/entity/VideoGameScreenshot.ts";
+import type { VideoGamePlatform } from "../src/scanner/domain/valueobject/VideoGamePlatform.ts";
+import { VideoGameReleaseYear } from "../src/scanner/domain/valueobject/VideoGameReleaseYear.ts";
+import { VideoGameTitle } from "../src/scanner/domain/valueobject/VideoGameTitle.ts";
+import type { RelationRepository } from "../src/scanner/repository/RelationRepository.ts";
+import type { VideoGameRepository } from "../src/scanner/repository/VideoGameRepository.ts";
 import { Scanner } from "../src/scanner/service/Scanner.ts";
 import { pathExists } from "../src/utils/file.ts";
 import { MockImageRepository } from "./mock/repository/MockImageRepository.ts";
@@ -71,19 +78,101 @@ describe("main scanner", () => {
       );
       await runScanner(configuration, kvDriver, true);
 
-      const debug: string = await debugDatabaseInformation();
+      const debug: string = await debugDatabaseInformation(
+        tempDatabaseFilePath,
+        new MockDebugVideoGameRepository(),
+        new MockDebugRelationRepository(),
+      );
       assertEquals(
         debug,
         `Scanning done and saved in ${tempDatabaseFilePath}.
 
-        Video games and platforms:
-        - 8-Bit Bayonetta (2015) - PC : 2 screenshots (0 published)
-        - 80's Overdrive (2017) - Nintendo Switch : 3 screenshots (0 published)
+Video games and platforms:
+  - 8-Bit Bayonetta (2015) : 2 screenshots (0 already published)
+  - 80's Overdrive (2017) : 4 screenshots (1 already published)
 
-        5 screenshots to publish: it may take 2 days to publish all screenshots (if you execute the command everyday).`,
+6 screenshots in database, 5 to be published: it may take 2 days to publish all screenshots (if you execute the command everyday).`,
       );
     } finally {
       kvDriver.close();
     }
   });
 });
+
+class MockDebugVideoGameRepository implements VideoGameRepository {
+  saveVideoGames(_: VideoGame[]): Promise<void> {
+    return Promise.resolve();
+  }
+
+  getAllVideoGames(): Promise<VideoGame[]> {
+    return Promise.resolve([
+      new VideoGame(
+        new VideoGameTitle("80's Overdrive"),
+        new VideoGameReleaseYear(2017),
+        "80's Overdrive",
+      ),
+      new VideoGame(
+        new VideoGameTitle("8-Bit Bayonetta"),
+        new VideoGameReleaseYear(2015),
+        "8-Bit Bayonetta",
+      ),
+    ]);
+  }
+}
+
+class MockDebugRelationRepository implements RelationRepository {
+  saveVideoGameRelation(
+    _1: VideoGame,
+    _2: VideoGameScreenshot,
+    _3: VideoGamePlatform,
+  ): Promise<void> {
+    return Promise.resolve();
+  }
+
+  getAllRelations(): Promise<VideoGameRelationImageRepositoryEntity[]> {
+    return Promise.resolve([
+      {
+        uuid: "8-Bit Bayonetta",
+        videoGameID: "string",
+        platform: "string",
+        imageID: "string",
+        published: false,
+      } satisfies VideoGameRelationImageRepositoryEntity,
+      {
+        uuid: "8-Bit Bayonetta",
+        videoGameID: "string",
+        platform: "string",
+        imageID: "string",
+        published: false,
+      } satisfies VideoGameRelationImageRepositoryEntity,
+      {
+        uuid: "80's Overdrive",
+        videoGameID: "string",
+        platform: "string",
+        imageID: "string",
+        published: false,
+      } satisfies VideoGameRelationImageRepositoryEntity,
+      {
+        uuid: "80's Overdrive",
+        videoGameID: "string",
+        platform: "string",
+        imageID: "string",
+        published: false,
+      } satisfies VideoGameRelationImageRepositoryEntity,
+      {
+        uuid: "80's Overdrive",
+        videoGameID: "string",
+        platform: "string",
+        imageID: "string",
+        published: true,
+      } satisfies VideoGameRelationImageRepositoryEntity,
+      {
+        uuid: "80's Overdrive",
+        videoGameID: "string",
+        platform: "string",
+        imageID: "string",
+        published: false,
+      } satisfies VideoGameRelationImageRepositoryEntity,
+    ]);
+  }
+}
