@@ -1,7 +1,6 @@
 {
+  "nodeModulesDir": "auto",
   "tasks": {
-    "scandir": "deno run --allow-read --allow-write --unstable-kv src/main.ts --scan config.yml",
-    "publish": "deno run --allow-read --allow-write --unstable-kv src/main.ts --publish config.yml",
     "test": "deno test --allow-read --allow-write --trace-leaks --unstable-kv --allow-env --allow-net -- config.yml --database=./test/it-database.sqlite3 --scan",
     "coverage": "rm -fr coverage && deno test --allow-read --allow-write --unstable-kv --allow-env --allow-net --coverage -- config.yml --database=./test/it-database.sqlite3 --scan && deno coverage --html --exclude=\"/test/\" && open coverage/html/index.html",
     "lint": "deno lint && deno run -A npm:@biomejs/biome lint",

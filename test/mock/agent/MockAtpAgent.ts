@@ -7,7 +7,7 @@ export class MockAtpAgent extends AtpAgent {
     });
   }
 
-  login(_: {
+  override login(_: {
     identifier: string;
     password: string;
   }): Promise<ComAtprotoServerCreateSession.Response> {

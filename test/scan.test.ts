@@ -29,7 +29,7 @@ import { getAllVideoGamesFromRepository } from "./test-utils/getAllVideoGamesFro
 const tempDatabaseFilePath = "./test/it-database.sqlite3";
 
 class MockErrorImageRepository extends MockImageRepository {
-  getAllVideoGameScreenshots(): Promise<VideoGameScreenshot[]> {
+  override getAllVideoGameScreenshots(): Promise<VideoGameScreenshot[]> {
     throw new Error("MockErrorImageRepository.getAllVideoGameScreenshots");
   }
 }
