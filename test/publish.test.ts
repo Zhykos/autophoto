@@ -8,6 +8,7 @@ import {
 } from "@std/testing/bdd";
 import { BlueskyCredentials } from "../src/cli/domain/valueobject/BlueskyCredentials.ts";
 import { KvDriver } from "../src/common/dbdriver/KvDriver.ts";
+import type { VideoGameRelationImageRepositoryEntity } from "../src/common/repository/entity/VideoGameRelationImageRepositoryEntity.ts";
 import { main } from "../src/main.ts";
 import { VideoGameScreeshotsToShare } from "../src/picker/domain/aggregate/VideoGameScreeshotsToShare.ts";
 import { Image } from "../src/picker/domain/entity/Image.ts";
@@ -46,7 +47,7 @@ describe("main publish", () => {
     await mockedBlueskyServer.stop();
   });
 
-  it.skip("should publish", async () => {
+  it("should publish", async () => {
     await main([
       "config.yml",
       "--database=./test/it-database.sqlite3",
@@ -86,6 +87,12 @@ describe("main publish", () => {
         mockedBlueskyServer.lastRecord?.embed.images[0].image,
         undefined,
       );
+
+      const allRelations: VideoGameRelationImageRepositoryEntity[] =
+        await getAllRelationsFromRepository(tempDatabaseFilePath);
+
+      assertEquals(allRelations.length, 8);
+      assertEquals(allRelations.filter((r) => r.published === true).length, 4);
     } finally {
       driver.close();
     }
@@ -140,7 +147,7 @@ class MockRelationRepository implements RelationRepository {
     ]);
   }
 
-  updatePublishedStatuses(_: string[]): Promise<void> {
+  updatePublishedStatuses(_: Image[]): Promise<void> {
     return Promise.resolve();
   }
 }

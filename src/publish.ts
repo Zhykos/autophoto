@@ -75,7 +75,7 @@ async function updatePublishedStatuses(
   relationRepository: RelationRepository,
 ): Promise<void> {
   await relationRepository.updatePublishedStatuses(
-    publishedVideoGameScreeshots.screenshots.map((s) => s.id),
+    publishedVideoGameScreeshots.screenshots,
   );
 }
 
