@@ -2,7 +2,6 @@ import type { KvDriver } from "./common/dbdriver/KvDriver.ts";
 import type { VideoGameRelationImageRepositoryEntity } from "./common/repository/entity/VideoGameRelationImageRepositoryEntity.ts";
 import type { Configuration } from "./configuration/domain/aggregate/Configuration.ts";
 import type { ConfigurationScanWithPattern } from "./configuration/domain/valueobject/ConfigurationScanWithPattern.ts";
-import { publish } from "./publish.ts";
 import { ImageDirectory } from "./scanner/domain/aggregate/ImageDirectory.ts";
 import type { VideoGame } from "./scanner/domain/entity/VideoGame.ts";
 import { KvImageRepository } from "./scanner/repository/ImageRepository.ts";
@@ -56,7 +55,7 @@ export async function debugDatabaseInformation(
 
   const details: string[] = allVideoGames.map((videoGame) => {
     const relations: VideoGameRelationImageRepositoryEntity[] =
-      allRelations.filter((relation) => relation.uuid === videoGame.id);
+      allRelations.filter((relation) => relation.videoGameID === videoGame.id);
 
     const publishedScreenshotsNumber: number = relations.filter(
       (relation) => relation.published,
