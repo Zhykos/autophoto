@@ -61,7 +61,7 @@ describe("main publish", () => {
     assertEquals(allLinks.length, 5);
   });
 
-  it.skip("should publish", async () => {
+  it("should publish", async () => {
     await main(["config.yml", `--database=${tempDatabaseFilePath}`, "--scan"]);
 
     await main([

@@ -70,7 +70,7 @@ describe("main publish", () => {
           "password",
         ),
         driver,
-        false,
+        true,
       );
 
       assertNotEquals(mockedBlueskyServer.lastRecord, undefined);
