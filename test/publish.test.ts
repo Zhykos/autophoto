@@ -114,7 +114,17 @@ describe("main publish", () => {
       assertEquals(mockedBlueskyServer.lastRecord?.embed.images.length, 3);
 
       const debug: string = await debugDatabaseInformation();
-      assertEquals(debug, "");
+      assertEquals(
+        debug,
+        `Publication done for video game "80's Overdrive" (2017 - Nintendo Switch).
+
+        3 images published:
+        - Screenshot from video game 80's Overdrive (no more details given by the bot) : test/resources/video-game/80's Overdrive (2017)/Nintendo Switch/80's Overdrive - 00001.webp
+        - Screenshot from video game 80's Overdrive (no more details given by the bot) : test/resources/video-game/80's Overdrive (2017)/Nintendo Switch/80's Overdrive - 00005.webp
+        - Screenshot from video game 80's Overdrive (no more details given by the bot) : test/resources/video-game/80's Overdrive (2017)/Nintendo Switch/80's Overdrive - 00006.webp
+
+        2 images not published yet: it will take 1 another publication to publish them (if 1 publication per day).`,
+      );
     } finally {
       driver.close();
     }

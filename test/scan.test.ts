@@ -72,7 +72,16 @@ describe("main scanner", () => {
       await runScanner(configuration, kvDriver, true);
 
       const debug: string = await debugDatabaseInformation();
-      assertEquals(debug, "");
+      assertEquals(
+        debug,
+        `Scanning done and saved in ${tempDatabaseFilePath}.
+
+        Video games and platforms:
+        - 8-Bit Bayonetta (2015) - PC : 2 screenshots (0 published)
+        - 80's Overdrive (2017) - Nintendo Switch : 3 screenshots (0 published)
+
+        5 screenshots to publish: it may take 2 days to publish all screenshots (if you execute the command everyday).`,
+      );
     } finally {
       kvDriver.close();
     }
