@@ -26,7 +26,7 @@ export class KvRelationRepository implements RelationRepository {
       await this.commonRepository.getAllVideoGameRelations();
 
     return allRelations
-      .filter((relation) => !relation.published)
+      .filter((relation) => relation.published === false)
       .map(
         (relation) =>
           new UnpublishedVideoGameScreenshotRelation(
