@@ -37,9 +37,9 @@ jobs:
         run: deno test --allow-read --allow-write --unstable-kv --allow-env --allow-net --coverage -- config.yml --database=./test/it-database.sqlite3 --scan
 
       - name: Generate lcov report
-        run: deno coverage --lcov --output=cov.lcov
+        run: deno task lcov
 
-      - name: Check test coverage
+      - name: Check test coverage minimum 90%
         uses: terencetcf/github-actions-lcov-minimum-coverage-checker@v1
         with:
           coverage-file: cov.lcov
