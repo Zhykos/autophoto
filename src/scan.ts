@@ -136,7 +136,7 @@ async function preScan(configuration: Configuration): Promise<boolean> {
         try {
           new VideoGamePlatform(group3);
           filesCount++;
-        } catch (error) {
+        } catch (_) {
           console.error(`  - "${filepath}" has an invalid platform: ${group3}`);
           errorsCount++;
         }
