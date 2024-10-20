@@ -11,6 +11,7 @@
   },
   "imports": {
     "@atproto/api": "npm:@atproto/api@^0.13.11",
+    "@biomejs/biome": "npm:@biomejs/biome@1.9.4",
     "@std/assert": "jsr:@std/assert@^1.0.5",
     "@std/cli": "jsr:@std/cli@^1.0.6",
     "@std/collections": "jsr:@std/collections@^1.0.7",
