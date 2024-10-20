@@ -3,16 +3,23 @@ import type { ValueObject } from "../../../common/domain/ValueObject.ts";
 
 const platforms = [
   "Android",
+  "Android (preview)",
   "iOS",
   "Nintendo Switch",
   "PC",
+  "PC (alpha)",
+  "PC (demo)",
+  "PC (early access)",
   "PlayStation 4",
+  "PlayStation 4 (beta)",
   "PlayStation 5",
   "Steam Deck",
+  "unknown",
   "Xbox 360",
   "Xbox Game Cloud",
   "Xbox One",
   "Xbox Series X",
+  "Xbox Series X (beta)",
 ];
 
 export class VideoGamePlatform implements ValueObject {

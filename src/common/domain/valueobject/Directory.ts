@@ -37,6 +37,10 @@ export class Directory implements ValueObject {
   ): Promise<void> {
     for await (const dirEntry of Deno.readDir(directory)) {
       if (dirEntry.isDirectory) {
+        if (dirEntry.name === "@eaDir") {
+          continue;
+        }
+
         await Directory.scanDirectory(
           `${directory}/${dirEntry.name}`,
           pattern,
