@@ -4,6 +4,7 @@ import type { Configuration } from "./configuration/domain/aggregate/Configurati
 import type { ConfigurationScanWithPattern } from "./configuration/domain/valueobject/ConfigurationScanWithPattern.ts";
 import { ImageDirectory } from "./scanner/domain/aggregate/ImageDirectory.ts";
 import type { VideoGame } from "./scanner/domain/entity/VideoGame.ts";
+import { VideoGamePlatform } from "./scanner/domain/valueobject/VideoGamePlatform.ts";
 import { KvImageRepository } from "./scanner/repository/ImageRepository.ts";
 import {
   KvRelationRepository,
@@ -21,6 +22,12 @@ export const runScanner = async (
   kvDriver: KvDriver,
   debugDatabase: boolean,
 ): Promise<void> => {
+  const hasError: boolean = await preScan(configuration);
+  if (hasError) {
+    console.error("An error occurred while pre-scanning.");
+    return;
+  }
+
   const videoGameRepository = new KvVideoGameRepository(kvDriver);
   const relationRepository = new KvRelationRepository(kvDriver);
 
@@ -106,5 +113,58 @@ export async function scan(
 
   if (hasError) {
     throw new Error("An error occurred while scanning.");
+  }
+}
+
+async function preScan(configuration: Configuration): Promise<boolean> {
+  console.log("Pre-scan...");
+
+  let filesCount = 0;
+  let warningCount = 0;
+  let errorsCount = 0;
+
+  for (const scan of configuration.scans) {
+    const directory: string = scan.directory.path.value;
+    console.log(`Pre-scanning ${directory}...`);
+
+    await scanDirectory(directory, scan.pattern.regex, (filepath) => {
+      const regexResult: RegExpExecArray | null =
+        scan.pattern.regex.exec(filepath);
+
+      if (regexResult) {
+        const group3: string = regexResult[3];
+        try {
+          new VideoGamePlatform(group3);
+          filesCount++;
+        } catch (error) {
+          console.error(`  - "${filepath}" has an invalid platform: ${group3}`);
+          errorsCount++;
+        }
+      } else {
+        warningCount++;
+        console.warn(`  - "${filepath}" does not match the pattern.`);
+      }
+    });
+  }
+
+  console.log("Pre-scan completed!");
+  console.log(`Found ${filesCount} files.`);
+  console.log(`Had ${errorsCount} errors and ${warningCount} warnings.`);
+
+  return errorsCount > 0;
+}
+
+async function scanDirectory(
+  directory: string,
+  pattern: RegExp,
+  onFile: (filepath: string) => void,
+): Promise<void> {
+  for await (const dirEntry of Deno.readDir(directory)) {
+    if (dirEntry.isDirectory) {
+      await scanDirectory(`${directory}/${dirEntry.name}`, pattern, onFile);
+    } else if (dirEntry.isFile && dirEntry.name !== ".DS_Store") {
+      const fullPath = `${directory}/${dirEntry.name}`;
+      onFile(fullPath);
+    }
   }
 }
