@@ -39,3 +39,24 @@ jobs:
         with:
           coverage-file: cov.lcov
           minimum-coverage: 90
+
+  build:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Setup repo
+        uses: actions/checkout@v4
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@4606d5cc6fb3f673efd4f594850e3f4b3e9d29cd
+        with:
+          deno-version: v2.x
+
+      - name: Build Linux binary x86_64
+        run: deno compile --allow-read --allow-write --unstable-kv --allow-env --allow-net --target x86_64-unknown-linux-gnu ./src/main.ts
+
+      - name: Archive build
+        uses: actions/upload-artifact@v2
+        with:
+          name: build
