@@ -8,7 +8,7 @@ Deno.test(function wrongPlatform() {
   assert(error instanceof DomainError);
   assertEquals(
     error.message,
-    "Platform (foo) must be one of the following: Nintendo Switch, PC",
+    "Platform (foo) must be one of the following: Android, Nintendo Switch, PC, PlayStation 4, PlayStation 5, Steam Deck, Xbox 360, Xbox Game Cloud, Xbox One, Xbox Series X, iOS",
   );
 });
 
