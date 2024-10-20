@@ -66,3 +66,12 @@ jobs:
         with:
           name: autophoto-linux-x86_64
           path: build/linux-x86_64
+
+      - name: Build Linux binary ARM
+        run: deno task build:linux-arm
+
+      - name: Archive Linux binary ARM
+        uses: actions/upload-artifact@v4
+        with:
+          name: autophoto-linux-arm
+          path: build/linux-arm
