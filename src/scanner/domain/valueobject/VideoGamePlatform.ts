@@ -9,6 +9,7 @@ const platforms = [
   "PlayStation 4",
   "PlayStation 5",
   "Steam Deck",
+  "unknown",
   "Xbox 360",
   "Xbox Game Cloud",
   "Xbox One",
