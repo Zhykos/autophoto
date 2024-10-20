@@ -160,7 +160,7 @@ async function scanDirectory(
   onFile: (filepath: string) => void,
 ): Promise<void> {
   for await (const dirEntry of Deno.readDir(directory)) {
-    if (dirEntry.isDirectory) {
+    if (dirEntry.isDirectory && dirEntry.name !== "@eaDir") {
       await scanDirectory(`${directory}/${dirEntry.name}`, pattern, onFile);
     } else if (dirEntry.isFile && dirEntry.name !== ".DS_Store") {
       const fullPath = `${directory}/${dirEntry.name}`;
