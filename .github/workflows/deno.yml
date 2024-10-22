@@ -5,9 +5,10 @@ on:
     branches:
       - develop
       - main
-      - feature/**
       - bugfix/**
+      - feature/**
       - hotfix/**
+      - release/**
 
 permissions:
   contents: read
