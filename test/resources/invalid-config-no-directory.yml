@@ -1,0 +1,7 @@
+autophoto:
+  scan:
+    - type: video-game
+      data-pattern:
+        regex: '^(.+) \(\d{4}\)/(.+)/.+\.webp$'
+        groups:
+          - title
