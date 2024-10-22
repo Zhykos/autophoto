@@ -204,6 +204,11 @@ This software uses the following open source packages:
 
 ---
 
+This project is also a space to learn and experiment with Deno, TypeScript, DDD and TDD.
+So, if you have any suggestions, questions or want to chat, feel free to contact me.
+Some things already need to be improved, like the error handling, the architecture,
+the domains, the performance, etc. So, if you want to help me, I will be happy to work with you.
+
 > [zhykos.fr](https://www.zhykos.fr) &nbsp;&middot;&nbsp;
 > GitHub [@zhykos](https://github.com/Zhykos) &nbsp;&middot;&nbsp;
 > Bluesky [@zhykos](https://bsky.app/profile/zhykos.bsky.social)
