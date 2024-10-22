@@ -100,8 +100,6 @@ You need a Bluesky account to publish your photos: [Bluesky](https://bsky.app/).
 Then run the application with the `--publish` option and your Bluesky credentials:
 
 ```shell
-
-```shell
 autophoto --publish --bluesky_login=your_login --bluesky_password=your_password
 ```
 
