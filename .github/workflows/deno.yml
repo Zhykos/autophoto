@@ -29,7 +29,7 @@ jobs:
       - name: Install biome linting tool
         run: |
           deno add npm:@biomejs/biome@1.9.4
-          deno install --allow-scripts=npm:@biomejs/biome@1.9.4
+          deno install --allow-scripts=npm:@biomejs/biome@1.9.3,npm:@biomejs/biome@1.9.4
 
       - name: Run linter
         run: deno task lint
