@@ -26,13 +26,8 @@ jobs:
         with:
           deno-version: v2.x
 
-      - name: Install biome linting tool
-        run: |
-          deno add npm:@biomejs/biome@1.9.4
-          deno install --allow-scripts=npm:@biomejs/biome@1.9.3,npm:@biomejs/biome@1.9.4
-
       - name: Run linter
-        run: deno task lint
+        run: deno lint
 
       - name: Run tests and activate coverage
         run: deno test --allow-read --allow-write --unstable-kv --allow-env --allow-net --coverage -- config.yml --database=./test/it-database.sqlite3 --scan
