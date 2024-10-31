@@ -18,6 +18,6 @@ Deno.test(function buildNoAction() {
   assert(error instanceof Error);
   assertEquals(
     error.message,
-    "Action is required: scanner or bluesky publisher",
+    "Action is required: prescanner, publisher or scanner",
   );
 });

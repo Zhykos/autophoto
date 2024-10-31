@@ -1,3 +1,9 @@
 export interface Action {
-  isScan(): boolean;
+  type(): ActionType;
+}
+
+export enum ActionType {
+  PRESCANNER = "PRESCANNER",
+  PUBLISHER = "PUBLISHER",
+  SCANNER = "SCANNER",
 }

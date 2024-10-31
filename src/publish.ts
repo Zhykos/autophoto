@@ -1,5 +1,5 @@
 import { AtpAgent } from "@atproto/api";
-import type { BlueskyCredentials } from "./cli/domain/valueobject/BlueskyCredentials.ts";
+import type { BlueskyPublisherAction } from "./cli/domain/valueobject/BlueskyPublisherAction.ts";
 import type { KvDriver } from "./common/dbdriver/KvDriver.ts";
 import { File } from "./common/domain/valueobject/File.ts";
 import { Path } from "./common/domain/valueobject/Path.ts";
@@ -19,7 +19,7 @@ import { BlueskyPublisherService } from "./publisher/service/BlueskyPublisherSer
 import { pluralFinalS } from "./utils/plural-final-s.ts";
 
 export const publish = async (
-  blueskyCredentials: BlueskyCredentials,
+  blueskyAction: BlueskyPublisherAction,
   kvDriver: KvDriver,
   debugDatabase: boolean,
 ): Promise<string | undefined> => {
@@ -41,9 +41,9 @@ export const publish = async (
   const resultPublication: string = await new BlueskyPublisherService().publish(
     new BlueskyPublication(
       new AtpAgent({
-        service: blueskyCredentials.host.toString(),
+        service: blueskyAction.host.toString(),
       }),
-      new Credentials(blueskyCredentials.login, blueskyCredentials.password),
+      new Credentials(blueskyAction.login, blueskyAction.password),
       new Publication(
         `${pluralFinalS(pickedVideoGameScreeshots.screenshots.length, "Screenshot", false)} from video game "${pickedVideoGameScreeshots.title}" (${pickedVideoGameScreeshots.releaseYear}) taken on ${pickedVideoGameScreeshots.platform}`,
         pickedVideoGameScreeshots.screenshots.map(

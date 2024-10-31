@@ -1,4 +1,4 @@
-const getFileInfo = (path: string): Deno.FileInfo | null => {
+export const getFileInfo = (path: string): Deno.FileInfo | null => {
   try {
     return Deno.lstatSync(path);
   } catch (_) {

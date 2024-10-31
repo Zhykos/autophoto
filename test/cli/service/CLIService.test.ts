@@ -1,5 +1,7 @@
 import { assert, assertEquals, assertFalse, assertThrows } from "@std/assert";
 import type { CLI } from "../../../src/cli/domain/aggregate/CLI.ts";
+import { BlueskyPublisherAction } from "../../../src/cli/domain/valueobject/BlueskyPublisherAction.ts";
+import { ScannerAction } from "../../../src/cli/domain/valueobject/ScannerAction.ts";
 import { CLIService } from "../../../src/cli/service/CLIService.ts";
 
 Deno.test(function noArgs() {
@@ -37,14 +39,17 @@ Deno.test(function argMustBeFile() {
 Deno.test(function argMissingAction() {
   const error = assertThrows(() => new CLIService().read(["README.md"]));
   assert(error instanceof Error);
-  assertEquals(error.message, 'Missing option: "--scan" or "--publish"');
+  assertEquals(
+    error.message,
+    'Missing option: "--prescan" or "--publish" or "--scan"',
+  );
 });
 
 Deno.test(function readScanOK() {
   const cliResult: CLI = new CLIService().read(["--scan", "README.md"]);
   assertEquals(cliResult.configuration.path.value, "README.md");
-  assert(cliResult.action.isScan());
-  assertFalse(cliResult.debugDatabase);
+  assert(cliResult.action instanceof ScannerAction);
+  assertFalse(cliResult.debug);
 });
 
 Deno.test(function readPublishOK() {
@@ -55,7 +60,7 @@ Deno.test(function readPublishOK() {
     "README.md",
   ]);
   assertEquals(cliResult.configuration.path.value, "README.md");
-  assertFalse(cliResult.action.isScan());
+  assert(cliResult.action instanceof BlueskyPublisherAction);
 });
 
 Deno.test(function newDatabaseFile() {
@@ -70,9 +75,9 @@ Deno.test(function newDatabaseFile() {
 
 Deno.test(function debug() {
   const cliResult: CLI = new CLIService().read([
-    "--debug-database",
+    "--debug",
     "--scan",
     "README.md",
   ]);
-  assert(cliResult.debugDatabase);
+  assert(cliResult.debug);
 });

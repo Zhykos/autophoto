@@ -19,7 +19,7 @@ import { getAllVideoGamesFromRepository } from "./test-utils/getAllVideoGamesFro
 
 const tempDatabaseFilePath = "./test/it-database.sqlite3";
 
-describe("main publish", () => {
+describe("main", () => {
   let mockedBlueskyServer: MockBlueskyServer;
 
   beforeAll(() => {

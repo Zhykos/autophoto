@@ -7,8 +7,14 @@ import { CLI, type CLIBuilder } from "../domain/aggregate/CLI.ts";
 export class CLIService {
   read(cliArgs: string[]): CLI {
     const args: Args = parseArgs(cliArgs, {
-      boolean: ["debug-database", "publish", "scan"],
-      string: ["bluesky_host", "bluesky_login", "bluesky_passord", "database"],
+      boolean: ["debug", "publish", "scan"],
+      string: [
+        "bluesky_host",
+        "bluesky_login",
+        "bluesky_passord",
+        "database",
+        "prescan",
+      ],
     });
 
     const cliParameters: (string | number)[] = args._;
@@ -41,8 +47,8 @@ export class CLIService {
       .withConfiguration(new File(new Path(filepath)))
       .withDatabaseFilepath(databaseFilepath);
 
-    if (args["debug-database"] === true) {
-      cliBuilder.withDebugDatabase();
+    if (args.debug === true) {
+      cliBuilder.withDebug();
     }
 
     if (args.publish === true) {
@@ -55,8 +61,10 @@ export class CLIService {
       );
     } else if (args.scan === true) {
       cliBuilder.withScanner();
+    } else if (args.prescan) {
+      cliBuilder.withPreScanner(new File(new Path(args.prescan)));
     } else {
-      throw new Error('Missing option: "--scan" or "--publish"');
+      throw new Error('Missing option: "--prescan" or "--publish" or "--scan"');
     }
 
     return cliBuilder.build();

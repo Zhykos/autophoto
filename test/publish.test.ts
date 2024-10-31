@@ -6,7 +6,7 @@ import {
   describe,
   it,
 } from "@std/testing/bdd";
-import { BlueskyCredentials } from "../src/cli/domain/valueobject/BlueskyCredentials.ts";
+import { BlueskyPublisherAction } from "../src/cli/domain/valueobject/BlueskyPublisherAction.ts";
 import { KvDriver } from "../src/common/dbdriver/KvDriver.ts";
 import type { VideoGameRelationImageRepositoryEntity } from "../src/common/repository/entity/VideoGameRelationImageRepositoryEntity.ts";
 import { main } from "../src/main.ts";
@@ -64,7 +64,7 @@ describe("main publish", () => {
 
     try {
       await publish(
-        new BlueskyCredentials(
+        new BlueskyPublisherAction(
           new URL(mockedBlueskyServer.host),
           "login",
           "password",
