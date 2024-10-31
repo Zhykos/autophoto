@@ -41,7 +41,7 @@ export async function main(cliArgs: string[]): Promise<boolean> {
     const configuration: Configuration = new ConfigurationService().loadFile(
       (cli.action as PreScannerAction).configuration.path.value,
     );
-    return preScan(configuration);
+    return preScan(configuration).errorsCount === 0;
   } finally {
     kvDriver.close();
     console.log("Autophoto finished.");

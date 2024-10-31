@@ -2,7 +2,9 @@ import type { Configuration } from "./configuration/domain/aggregate/Configurati
 import { VideoGamePlatform } from "./scanner/domain/valueobject/VideoGamePlatform.ts";
 import { scanDirectory } from "./utils/scan-directory.ts";
 
-export const preScan = (configuration: Configuration): boolean => {
+export const preScan = (
+  configuration: Configuration,
+): { filesCount: number; errorsCount: number } => {
   let filesCount = 0;
   let errorsCount = 0;
 
@@ -39,5 +41,5 @@ export const preScan = (configuration: Configuration): boolean => {
   console.log(`Found ${filesCount} files.`);
   console.log(`Had ${errorsCount} errors.`);
 
-  return errorsCount > 0;
+  return { filesCount, errorsCount };
 };
