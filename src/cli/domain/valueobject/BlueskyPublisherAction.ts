@@ -1,8 +1,8 @@
 import { DomainError } from "../../../common/domain/DomainError.ts";
 import type { ValueObject } from "../../../common/domain/ValueObject.ts";
-import type { Action } from "./Action.ts";
+import { type Action, ActionType } from "./Action.ts";
 
-export class BlueskyCredentials implements ValueObject, Action {
+export class BlueskyPublisherAction implements ValueObject, Action {
   constructor(
     public readonly host: URL,
     public readonly login: string,
@@ -22,7 +22,7 @@ export class BlueskyCredentials implements ValueObject, Action {
   }
 
   equals(other: unknown): boolean {
-    if (other instanceof BlueskyCredentials) {
+    if (other instanceof BlueskyPublisherAction) {
       return (
         this.login === other.login &&
         this.password === other.password &&
@@ -32,7 +32,7 @@ export class BlueskyCredentials implements ValueObject, Action {
     return false;
   }
 
-  isScan(): boolean {
-    return false;
+  type(): ActionType {
+    return ActionType.PUBLISHER;
   }
 }

@@ -1,13 +1,15 @@
 import type { File } from "../../../common/domain/valueobject/File.ts";
 import type { Action } from "../valueobject/Action.ts";
-import { BlueskyCredentials } from "../valueobject/BlueskyCredentials.ts";
+import { BlueskyPublisherAction } from "../valueobject/BlueskyPublisherAction.ts";
+import { PreScannerAction } from "../valueobject/PreScannerAction.ts";
+import { ScannerAction } from "../valueobject/ScannerAction.ts";
 
 export class CLI {
   constructor(
     public readonly configuration: File,
     public readonly action: Action,
     public readonly databaseFilepath = "./db.autophoto.sqlite3",
-    public readonly debugDatabase = false,
+    public readonly debug = false,
   ) {}
 
   static builder() {
@@ -15,17 +17,11 @@ export class CLI {
   }
 }
 
-class ScannerAction implements Action {
-  isScan(): boolean {
-    return true;
-  }
-}
-
 export class CLIBuilder {
   private configuration: File | undefined;
   private action: Action | undefined;
   private databaseFilepath: string | undefined;
-  private debugDatabase = false;
+  private debug = false;
 
   withConfiguration(configuration: File) {
     this.configuration = configuration;
@@ -43,12 +39,17 @@ export class CLIBuilder {
   }
 
   withBluesky(host: URL, login: string, password: string) {
-    this.action = new BlueskyCredentials(host, login, password);
+    this.action = new BlueskyPublisherAction(host, login, password);
     return this;
   }
 
-  withDebugDatabase() {
-    this.debugDatabase = true;
+  withDebug() {
+    this.debug = true;
+    return this;
+  }
+
+  withPreScanner(configuration: File) {
+    this.action = new PreScannerAction(configuration);
     return this;
   }
 
@@ -58,14 +59,14 @@ export class CLIBuilder {
     }
 
     if (!this.action) {
-      throw new Error("Action is required: scanner or bluesky publisher");
+      throw new Error("Action is required: prescanner, publisher or scanner");
     }
 
     return new CLI(
       this.configuration,
       this.action,
       this.databaseFilepath,
-      this.debugDatabase,
+      this.debug,
     );
   }
 }
