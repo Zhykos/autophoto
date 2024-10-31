@@ -1,7 +1,10 @@
 import type { Log } from "@cross/log";
 import type { Configuration } from "./configuration/domain/aggregate/Configuration.ts";
 import { VideoGamePlatform } from "./scanner/domain/valueobject/VideoGamePlatform.ts";
+import { getFileInfo } from "./utils/file.ts";
 import { scanDirectory } from "./utils/scan-directory.ts";
+
+const blueskyMaxFileSize = 976.56 * 1024;
 
 export const preScan = (configuration: Configuration, logger: Log): boolean => {
   let filesCount = 0;
@@ -28,7 +31,16 @@ export const preScan = (configuration: Configuration, logger: Log): boolean => {
       const group3: string = regexResult[3];
       try {
         new VideoGamePlatform(group3);
-        filesCount++;
+        const fileInfo: Deno.FileInfo = getFileInfo(filepath) as Deno.FileInfo;
+
+        if (fileInfo.size > blueskyMaxFileSize) {
+          logger.error(
+            `  - "${filepath}" is too big: ${fileInfo.size} bytes (max: ${blueskyMaxFileSize} bytes)`,
+          );
+          errorsCount++;
+        } else {
+          filesCount++;
+        }
       } catch (_) {
         logger.error(`  - "${filepath}" has an invalid platform: ${group3}`);
         errorsCount++;

@@ -64,7 +64,7 @@ describe("main prescan", () => {
 
   it("should fails with unknown platform", () => {
     const pattern = new ConfigurationScanWithPattern(
-      new Directory(new Path("./test/resources/video-game4")),
+      new Directory(new Path("./test/resources/video-game-unknown-platform")),
       DirectoryType["video-game"],
       new ConfigurationDataPattern(/^(.+) \((\d{4})\)\/(.+)\/.+\.webp$/, [
         "title",
@@ -84,6 +84,31 @@ describe("main prescan", () => {
     assertContainsMatch(
       loggerTransport.errorMessages,
       /has an invalid platform: Atari/,
+    );
+  });
+
+  it("should fails with big file", () => {
+    const pattern = new ConfigurationScanWithPattern(
+      new Directory(new Path("./test/resources/video-game-big-size")),
+      DirectoryType["video-game"],
+      new ConfigurationDataPattern(/^(.+) \((\d{4})\)\/(.+)\/.+\.webp$/, [
+        "title",
+        "year",
+        "platform",
+      ]),
+    );
+    const scans: ConfigurationScanWithPattern[] = [pattern];
+    const configuration: Configuration = new Configuration(scans);
+    const loggerTransport = new MockLoggerTransport();
+
+    const result: boolean = preScan(configuration, new Log([loggerTransport]));
+
+    assertFalse(result);
+    assertEquals(loggerTransport.logMessages.length, 4);
+    assertEquals(loggerTransport.errorMessages.length, 1);
+    assertContainsMatch(
+      loggerTransport.errorMessages,
+      /is too big: 1283244 bytes \(max: 999997.44 bytes\)/,
     );
   });
 });
