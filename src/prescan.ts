@@ -1,20 +1,19 @@
+import type { Log } from "@cross/log";
 import type { Configuration } from "./configuration/domain/aggregate/Configuration.ts";
 import { VideoGamePlatform } from "./scanner/domain/valueobject/VideoGamePlatform.ts";
 import { scanDirectory } from "./utils/scan-directory.ts";
 
-export const preScan = (
-  configuration: Configuration,
-): { filesCount: number; errorsCount: number } => {
+export const preScan = (configuration: Configuration, logger: Log): boolean => {
   let filesCount = 0;
   let errorsCount = 0;
 
   for (const scan of configuration.scans) {
     const directory: string = scan.directory.path.value;
-    console.log(`Pre-scanning ${directory}...`);
+    logger.log(`Pre-scanning ${directory}...`);
 
     const platIndex: number = scan.pattern.groups.indexOf("platform");
     if (platIndex === -1) {
-      console.error(
+      logger.error(
         `  - The pattern "${scan.pattern.regex.source}" does not have a "platform" group.`,
       );
       errorsCount++;
@@ -31,15 +30,15 @@ export const preScan = (
         new VideoGamePlatform(group3);
         filesCount++;
       } catch (_) {
-        console.error(`  - "${filepath}" has an invalid platform: ${group3}`);
+        logger.error(`  - "${filepath}" has an invalid platform: ${group3}`);
         errorsCount++;
       }
     });
   }
 
-  console.log("Pre-scan completed!");
-  console.log(`Found ${filesCount} files.`);
-  console.log(`Had ${errorsCount} errors.`);
+  logger.log("Pre-scan completed!");
+  logger.log(`Found ${filesCount} files.`);
+  logger.log(`Had ${errorsCount} errors.`);
 
-  return { filesCount, errorsCount };
+  return errorsCount === 0;
 };

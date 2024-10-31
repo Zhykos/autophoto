@@ -1,4 +1,5 @@
-import { assert, assertEquals } from "@std/assert";
+import { Log } from "@cross/log";
+import { assert, assertEquals, assertFalse } from "@std/assert";
 import { describe, it } from "@std/testing/bdd";
 import { Directory } from "../src/common/domain/valueobject/Directory.ts";
 import { Path } from "../src/common/domain/valueobject/Path.ts";
@@ -9,6 +10,8 @@ import { DirectoryType } from "../src/configuration/domain/valueobject/Directory
 import { ConfigurationService } from "../src/configuration/service/ConfigurationService.ts";
 import { main } from "../src/main.ts";
 import { preScan } from "../src/prescan.ts";
+import { MockLoggerTransport } from "./mock/logger/MockLoggerTransport.ts";
+import { assertContainsMatch } from "./test-utils/assertContainsMatch.ts";
 
 describe("main prescan", () => {
   it("should prescan with main", async () => {
@@ -25,14 +28,17 @@ describe("main prescan", () => {
     const configuration: Configuration = new ConfigurationService().loadFile(
       "config.yml",
     );
+    const loggerTransport = new MockLoggerTransport();
 
-    const result: {
-      filesCount: number;
-      errorsCount: number;
-    } = preScan(configuration);
+    const result: boolean = preScan(configuration, new Log([loggerTransport]));
 
-    assertEquals(result.filesCount, 5);
-    assertEquals(result.errorsCount, 0);
+    assert(result);
+    assertEquals(loggerTransport.logMessages.length, 4);
+    assertEquals(loggerTransport.errorMessages.length, 0);
+    assertContainsMatch(
+      loggerTransport.logMessages,
+      /Pre-scanning .+\/video-game\.\.\./,
+    );
   });
 
   it("should fails with wrong pattern", () => {
@@ -43,14 +49,17 @@ describe("main prescan", () => {
     );
     const scans: ConfigurationScanWithPattern[] = [pattern];
     const configuration: Configuration = new Configuration(scans);
+    const loggerTransport = new MockLoggerTransport();
 
-    const result: {
-      filesCount: number;
-      errorsCount: number;
-    } = preScan(configuration);
+    const result: boolean = preScan(configuration, new Log([loggerTransport]));
 
-    assertEquals(result.filesCount, 0);
-    assertEquals(result.errorsCount, 1);
+    assertFalse(result);
+    assertEquals(loggerTransport.logMessages.length, 4);
+    assertEquals(loggerTransport.errorMessages.length, 1);
+    assertContainsMatch(
+      loggerTransport.errorMessages,
+      /The pattern "a" does not have a "platform" group/,
+    );
   });
 
   it("should fails with unknown platform", () => {
@@ -65,13 +74,16 @@ describe("main prescan", () => {
     );
     const scans: ConfigurationScanWithPattern[] = [pattern];
     const configuration: Configuration = new Configuration(scans);
+    const loggerTransport = new MockLoggerTransport();
 
-    const result: {
-      filesCount: number;
-      errorsCount: number;
-    } = preScan(configuration);
+    const result: boolean = preScan(configuration, new Log([loggerTransport]));
 
-    assertEquals(result.filesCount, 0);
-    assertEquals(result.errorsCount, 1);
+    assertFalse(result);
+    assertEquals(loggerTransport.logMessages.length, 4);
+    assertEquals(loggerTransport.errorMessages.length, 1);
+    assertContainsMatch(
+      loggerTransport.errorMessages,
+      /has an invalid platform: Atari/,
+    );
   });
 });

@@ -1,3 +1,4 @@
+import { Log } from "@cross/log";
 import type { CLI } from "./cli/domain/aggregate/CLI.ts";
 import { ActionType } from "./cli/domain/valueobject/Action.ts";
 import type { BlueskyPublisherAction } from "./cli/domain/valueobject/BlueskyPublisherAction.ts";
@@ -15,6 +16,7 @@ export async function main(cliArgs: string[]): Promise<boolean> {
 
   const cli: CLI = new CLIService().read(cliArgs);
   const kvDriver = new KvDriver(cli.databaseFilepath);
+  const logger = new Log();
 
   try {
     if (cli.action.type() === ActionType.SCANNER) {
@@ -41,7 +43,7 @@ export async function main(cliArgs: string[]): Promise<boolean> {
     const configuration: Configuration = new ConfigurationService().loadFile(
       (cli.action as PreScannerAction).configuration.path.value,
     );
-    return preScan(configuration).errorsCount === 0;
+    return preScan(configuration, logger);
   } finally {
     kvDriver.close();
     console.log("Autophoto finished.");
