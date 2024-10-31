@@ -46,7 +46,7 @@ describe("main", () => {
   });
 
   it("should scan", async () => {
-    await main(["config.yml", `--database=${tempDatabaseFilePath}`, "--scan"]);
+    await main([`--database=${tempDatabaseFilePath}`, "--scan=config.yml"]);
 
     const filesAfterScan: ImageRepositoryRepositoryEntity[] =
       await getAllImagesFromRepository(tempDatabaseFilePath);
@@ -62,16 +62,14 @@ describe("main", () => {
   });
 
   it("should publish", async () => {
-    await main(["config.yml", `--database=${tempDatabaseFilePath}`, "--scan"]);
+    await main([`--database=${tempDatabaseFilePath}`, "--scan=config.yml"]);
 
     await main([
-      "./test/resources/config2.yml",
       `--database=${tempDatabaseFilePath}`,
-      "--scan",
+      "--scan=./test/resources/config2.yml",
     ]);
 
     await main([
-      "config.yml",
       `--database=${tempDatabaseFilePath}`,
       "--publish",
       `--bluesky_host=${mockedBlueskyServer.host}`,
@@ -97,7 +95,6 @@ describe("main", () => {
 
   it("should publish nothing because database is empty", async () => {
     await main([
-      "config.yml",
       `--database=${tempDatabaseFilePath}`,
       "--publish",
       `--bluesky_host=${mockedBlueskyServer.host}`,

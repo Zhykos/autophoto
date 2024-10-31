@@ -31,7 +31,7 @@ Deno.test(function argMustBeExistingPath() {
 });
 
 Deno.test(function argMustBeFile() {
-  const error = assertThrows(() => new CLIService().read(["--scan", "src"]));
+  const error = assertThrows(() => new CLIService().read(["--scan=src"]));
   assert(error instanceof Error);
   assertEquals(error.message, 'Path is not a file: "src"');
 });
@@ -46,7 +46,7 @@ Deno.test(function argMissingAction() {
 });
 
 Deno.test(function readScanOK() {
-  const cliResult: CLI = new CLIService().read(["--scan", "README.md"]);
+  const cliResult: CLI = new CLIService().read(["--scan=README.md"]);
   assertEquals(cliResult.configuration.path.value, "README.md");
   assert(cliResult.action instanceof ScannerAction);
   assertFalse(cliResult.debug);
@@ -57,7 +57,6 @@ Deno.test(function readPublishOK() {
     "--publish",
     "--bluesky_login=login",
     "--bluesky_password=password",
-    "README.md",
   ]);
   assertEquals(cliResult.configuration.path.value, "README.md");
   assert(cliResult.action instanceof BlueskyPublisherAction);
@@ -66,18 +65,13 @@ Deno.test(function readPublishOK() {
 Deno.test(function newDatabaseFile() {
   const cliResult: CLI = new CLIService().read([
     "--database=new.db",
-    "--scan",
-    "README.md",
+    "--scan=README.md",
   ]);
   assertEquals(cliResult.configuration.path.value, "README.md");
   assertEquals(cliResult.databaseFilepath, "new.db");
 });
 
 Deno.test(function debug() {
-  const cliResult: CLI = new CLIService().read([
-    "--debug",
-    "--scan",
-    "README.md",
-  ]);
+  const cliResult: CLI = new CLIService().read(["--debug", "--scan=README.md"]);
   assert(cliResult.debug);
 });

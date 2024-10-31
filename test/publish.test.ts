@@ -48,16 +48,11 @@ describe("main publish", () => {
   });
 
   it("should publish", async () => {
-    await main([
-      "config.yml",
-      "--database=./test/it-database.sqlite3",
-      "--scan",
-    ]);
+    await main(["--database=./test/it-database.sqlite3", "--scan=config.yml"]);
 
     await main([
-      "./test/resources/config2.yml",
       "--database=./test/it-database.sqlite3",
-      "--scan",
+      "--scan=./test/resources/config2.yml",
     ]);
 
     const driver = new KvDriver("./test/it-database.sqlite3");

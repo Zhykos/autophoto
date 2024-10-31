@@ -16,7 +16,6 @@ import { assertContainsMatch } from "./test-utils/assertContainsMatch.ts";
 describe("main prescan", () => {
   it("should prescan with main", async () => {
     const result: boolean = await main([
-      "config.yml",
       "--database=./test/it-database.sqlite3",
       "--prescan=config.yml",
     ]);
