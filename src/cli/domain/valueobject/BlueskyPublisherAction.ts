@@ -1,13 +1,14 @@
 import { DomainError } from "../../../common/domain/DomainError.ts";
 import type { ValueObject } from "../../../common/domain/ValueObject.ts";
-import { type Action, ActionType } from "./Action.ts";
+import { CLIExecutor } from "./CLIExecutor.ts";
 
-export class BlueskyPublisherAction implements ValueObject, Action {
+export class BlueskyPublisherAction extends CLIExecutor implements ValueObject {
   constructor(
     public readonly host: URL,
     public readonly login: string,
     public readonly password: string,
   ) {
+    super();
     this.validateObjectProperties();
   }
 
@@ -30,9 +31,5 @@ export class BlueskyPublisherAction implements ValueObject, Action {
       );
     }
     return false;
-  }
-
-  type(): ActionType {
-    return ActionType.PUBLISHER;
   }
 }

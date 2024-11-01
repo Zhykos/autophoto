@@ -1,16 +1,11 @@
 import type { File } from "../../../common/domain/valueobject/File.ts";
-import type { Action } from "../valueobject/Action.ts";
 import { BlueskyPublisherAction } from "../valueobject/BlueskyPublisherAction.ts";
+import type { CLIExecutor } from "../valueobject/CLIExecutor.ts";
 import { PreScannerAction } from "../valueobject/PreScannerAction.ts";
 import { ScannerAction } from "../valueobject/ScannerAction.ts";
 
 export class CLI {
-  constructor(
-    public readonly configuration: File,
-    public readonly action: Action,
-    public readonly databaseFilepath = "./db.autophoto.sqlite3",
-    public readonly debug = false,
-  ) {}
+  constructor(public readonly action: CLIExecutor) {}
 
   static builder() {
     return new CLIBuilder();
@@ -18,23 +13,10 @@ export class CLI {
 }
 
 export class CLIBuilder {
-  private configuration: File | undefined;
-  private action: Action | undefined;
-  private databaseFilepath: string | undefined;
-  private debug = false;
+  private action: CLIExecutor | undefined;
 
-  withConfiguration(configuration: File) {
-    this.configuration = configuration;
-    return this;
-  }
-
-  withScanner() {
-    this.action = new ScannerAction();
-    return this;
-  }
-
-  withDatabaseFilepath(databaseFilepath?: string) {
-    this.databaseFilepath = databaseFilepath;
+  withScanner(configurationFile: File) {
+    this.action = new ScannerAction(configurationFile);
     return this;
   }
 
@@ -43,30 +25,34 @@ export class CLIBuilder {
     return this;
   }
 
-  withDebug() {
-    this.debug = true;
+  withPreScanner(configurationFile: File) {
+    this.action = new PreScannerAction(configurationFile);
     return this;
   }
 
-  withPreScanner(configuration: File) {
-    this.action = new PreScannerAction(configuration);
-    return this;
-  }
-
-  build() {
-    if (!this.configuration) {
-      throw new Error("Configuration is required");
-    }
-
+  withDatabaseFilepath(databaseFilepath: string) {
     if (!this.action) {
       throw new Error("Action is required: prescanner, publisher or scanner");
     }
 
-    return new CLI(
-      this.configuration,
-      this.action,
-      this.databaseFilepath,
-      this.debug,
-    );
+    this.action.databaseFilepath = databaseFilepath;
+    return this;
+  }
+
+  withDebug() {
+    if (!this.action) {
+      throw new Error("Action is required: prescanner, publisher or scanner");
+    }
+
+    this.action.debug = true;
+    return this;
+  }
+
+  build() {
+    if (!this.action) {
+      throw new Error("Action is required: prescanner, publisher or scanner");
+    }
+
+    return new CLI(this.action);
   }
 }

@@ -58,15 +58,15 @@ describe("main publish", () => {
     const driver = new KvDriver("./test/it-database.sqlite3");
 
     try {
-      await publish(
-        new BlueskyPublisherAction(
-          new URL(mockedBlueskyServer.host),
-          "login",
-          "password",
-        ),
-        driver,
-        true,
+      const action = new BlueskyPublisherAction(
+        new URL(mockedBlueskyServer.host),
+        "login",
+        "password",
       );
+
+      action.debug = true;
+
+      await publish(action, driver);
 
       assertNotEquals(mockedBlueskyServer.lastRecord, undefined);
       assertEquals(

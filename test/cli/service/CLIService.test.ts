@@ -7,7 +7,10 @@ import { CLIService } from "../../../src/cli/service/CLIService.ts";
 Deno.test(function noArgs() {
   const error = assertThrows(() => new CLIService().read([]));
   assert(error instanceof Error);
-  assertEquals(error.message, 'Command line must have only one argument: ""');
+  assertEquals(
+    error.message,
+    'Only one option allowed: "--prescan" or "--publish" or "--scan"',
+  );
 });
 
 Deno.test(function tooMuchArgs() {
@@ -17,17 +20,14 @@ Deno.test(function tooMuchArgs() {
   assert(error instanceof Error);
   assertEquals(
     error.message,
-    'Command line must have only one argument: "README.md,LICENSE"',
+    'Command line argument is not allowed: "README.md,LICENSE"',
   );
 });
 
 Deno.test(function argMustBeExistingPath() {
   const error = assertThrows(() => new CLIService().read(["foo"]));
   assert(error instanceof Error);
-  assertEquals(
-    error.message,
-    'Command line argument must be an existing path: "foo"',
-  );
+  assertEquals(error.message, 'Command line argument is not allowed: "foo"');
 });
 
 Deno.test(function argMustBeFile() {
@@ -41,15 +41,18 @@ Deno.test(function argMissingAction() {
   assert(error instanceof Error);
   assertEquals(
     error.message,
-    'Missing option: "--prescan" or "--publish" or "--scan"',
+    'Command line argument is not allowed: "README.md"',
   );
 });
 
 Deno.test(function readScanOK() {
   const cliResult: CLI = new CLIService().read(["--scan=README.md"]);
-  assertEquals(cliResult.configuration.path.value, "README.md");
   assert(cliResult.action instanceof ScannerAction);
-  assertFalse(cliResult.debug);
+  assertEquals(
+    (cliResult.action as ScannerAction).configurationFile.path.value,
+    "README.md",
+  );
+  assertFalse(cliResult.action.debug);
 });
 
 Deno.test(function readPublishOK() {
@@ -58,7 +61,6 @@ Deno.test(function readPublishOK() {
     "--bluesky_login=login",
     "--bluesky_password=password",
   ]);
-  assertEquals(cliResult.configuration.path.value, "README.md");
   assert(cliResult.action instanceof BlueskyPublisherAction);
 });
 
@@ -67,11 +69,14 @@ Deno.test(function newDatabaseFile() {
     "--database=new.db",
     "--scan=README.md",
   ]);
-  assertEquals(cliResult.configuration.path.value, "README.md");
-  assertEquals(cliResult.databaseFilepath, "new.db");
+  assertEquals(
+    (cliResult.action as ScannerAction).configurationFile.path.value,
+    "README.md",
+  );
+  assertEquals(cliResult.action.databaseFilepath, "new.db");
 });
 
 Deno.test(function debug() {
   const cliResult: CLI = new CLIService().read(["--debug", "--scan=README.md"]);
-  assert(cliResult.debug);
+  assert(cliResult.action.debug);
 });
