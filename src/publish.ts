@@ -39,6 +39,8 @@ export const publish = async (
     return undefined;
   }
 
+  logger.log(`Picked video game: ${pickedVideoGameScreeshots.title}`);
+
   const resultPublication: string = await new BlueskyPublisherService().publish(
     new BlueskyPublication(
       new AtpAgent({
