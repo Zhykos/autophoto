@@ -15,10 +15,7 @@ import { assertContainsMatch } from "./test-utils/assertContainsMatch.ts";
 
 describe("main prescan", () => {
   it("should prescan with main", async () => {
-    const result: boolean = await main([
-      "--database=./test/it-database.sqlite3",
-      "--prescan=config.yml",
-    ]);
+    const result: boolean = await main(["--prescan=config.yml"]);
 
     assert(result);
   });
@@ -53,8 +50,8 @@ describe("main prescan", () => {
     const result: boolean = preScan(configuration, new Log([loggerTransport]));
 
     assertFalse(result);
-    assertEquals(loggerTransport.logMessages.length, 4);
-    assertEquals(loggerTransport.errorMessages.length, 1);
+    assertEquals(loggerTransport.logMessages.length, 3);
+    assertEquals(loggerTransport.errorMessages.length, 2);
     assertContainsMatch(
       loggerTransport.errorMessages,
       /The pattern "a" does not have a "platform" group/,
@@ -78,8 +75,8 @@ describe("main prescan", () => {
     const result: boolean = preScan(configuration, new Log([loggerTransport]));
 
     assertFalse(result);
-    assertEquals(loggerTransport.logMessages.length, 4);
-    assertEquals(loggerTransport.errorMessages.length, 1);
+    assertEquals(loggerTransport.logMessages.length, 3);
+    assertEquals(loggerTransport.errorMessages.length, 2);
     assertContainsMatch(
       loggerTransport.errorMessages,
       /has an invalid platform: Atari/,
@@ -103,8 +100,8 @@ describe("main prescan", () => {
     const result: boolean = preScan(configuration, new Log([loggerTransport]));
 
     assertFalse(result);
-    assertEquals(loggerTransport.logMessages.length, 4);
-    assertEquals(loggerTransport.errorMessages.length, 1);
+    assertEquals(loggerTransport.logMessages.length, 3);
+    assertEquals(loggerTransport.errorMessages.length, 2);
     assertContainsMatch(
       loggerTransport.errorMessages,
       /is too big: 1283244 bytes \(max: 999997.44 bytes\)/,

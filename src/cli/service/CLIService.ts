@@ -18,16 +18,9 @@ export class CLIService {
       ],
     });
 
-    const cliParameters: (string | number)[] = args._;
-    if (cliParameters.length > 0) {
-      throw new Error(
-        `Command line argument is not allowed: "${cliParameters}"`,
-      );
-    }
+    this.checkArgs(args);
 
     const cliBuilder: CLIBuilder = CLI.builder();
-
-    this.checkArgs(args);
 
     if (args.publish === true) {
       cliBuilder.withBluesky(
@@ -63,7 +56,19 @@ export class CLIService {
     return cliBuilder.build();
   }
 
-  private checkArgs(args: Args) {
+  private checkArgs(args: Args): void {
+    const cliParameters: (string | number)[] = args._;
+    if (cliParameters.length > 0) {
+      throw new Error(
+        `Command line argument is not allowed: "${cliParameters}"`,
+      );
+    }
+
+    this.onlyOneArg(args);
+    this.checkArgsCombination(args);
+  }
+
+  private onlyOneArg(args: Args): void {
     let nbArgsOptions = 0;
 
     if (args.publish) {
@@ -81,6 +86,25 @@ export class CLIService {
     if (nbArgsOptions !== 1) {
       throw new Error(
         'Only one option allowed: "--prescan" or "--publish" or "--scan"',
+      );
+    }
+  }
+
+  private checkArgsCombination(args: Args): void {
+    if (args.prescan && args.debug) {
+      throw new Error('Option "--prescan" is not compatible with "--debug"');
+    }
+
+    if (args.prescan && args.database) {
+      throw new Error('Option "--prescan" is not compatible with "--database"');
+    }
+
+    if (
+      (args.prescan || args.scan) &&
+      (args.bluesky_host || args.bluesky_login || args.bluesky_password)
+    ) {
+      throw new Error(
+        'Option "--prescan" or "--scan" is not compatible with "--bluesky_host", "--bluesky_login" or "--bluesky_password"',
       );
     }
   }
