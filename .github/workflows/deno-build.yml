@@ -1,0 +1,43 @@
+name: "CI: build native binaries"
+
+on:
+  push:
+    branches:
+      - main
+      - bugfix/**
+      - hotfix/**
+      - release/**
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup repo
+        uses: actions/checkout@v4
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@4606d5cc6fb3f673efd4f594850e3f4b3e9d29cd
+        with:
+          deno-version: v2.x
+
+      - name: Build Linux binary x86_64
+        run: deno task build:linux-x86_64
+
+      - name: Archive Linux binary x86_64
+        uses: actions/upload-artifact@v4
+        with:
+          name: autophoto-linux-x86_64-1.0.0
+          path: build/linux-x86_64
+
+      - name: Build Linux binary ARM
+        run: deno task build:linux-arm
+
+      - name: Archive Linux binary ARM
+        uses: actions/upload-artifact@v4
+        with:
+          name: autophoto-linux-arm-1.0.0
+          path: build/linux-arm
