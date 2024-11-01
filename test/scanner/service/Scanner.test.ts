@@ -42,7 +42,7 @@ describe("Scanner", () => {
 
     try {
       const scanner = new Scanner(
-        new KvImageRepository(kvDriver),
+        new KvImageRepository(kvDriver, mockLogger()),
         new KvVideoGameRepository(kvDriver),
         new KvRelationRepository(kvDriver),
       );

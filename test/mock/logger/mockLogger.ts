@@ -8,12 +8,16 @@ export class MockLogger {
     return new Log([this.transport]);
   }
 
-  get logMessages(): string[] {
-    return this.transport.logMessages;
+  get infoMessages(): string[] {
+    return this.transport.infoMessages;
   }
 
   get errorMessages(): string[] {
     return this.transport.errorMessages;
+  }
+
+  get warningMessages(): string[] {
+    return this.transport.warningMessages;
   }
 }
 
