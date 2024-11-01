@@ -21,12 +21,12 @@ export class Scanner {
     imageDirectory: ImageDirectory,
   ): Promise<void> {
     const newSavedScreenshots: VideoGameScreenshot[] =
-      await this.saveNewScreenshots(imageDirectory);
+      await this.saveScreenshots(imageDirectory);
     await this.saveNewVideoGames(imageDirectory, newSavedScreenshots);
     await this.saveNewLinks(imageDirectory, newSavedScreenshots);
   }
 
-  private async saveNewScreenshots(
+  private async saveScreenshots(
     imageDirectory: ImageDirectory,
   ): Promise<VideoGameScreenshot[]> {
     const scannedImages: Image[] = await imageDirectory.scan();
@@ -34,16 +34,28 @@ export class Scanner {
     const repositoryScreenshots: VideoGameScreenshot[] =
       await this.imageRepository.getAllVideoGameScreenshots();
 
-    const newScreenshotsToSave: VideoGameScreenshot[] = scannedImages
-      .filter(
-        (image) =>
-          !repositoryScreenshots.some((screenshot) =>
-            screenshot.image.equals(image),
-          ),
-      )
-      .map((image) => new VideoGameScreenshot(image));
+    const newScreenshotsToSave: VideoGameScreenshot[] = [];
+    const screenshotsToUpdate: VideoGameScreenshot[] = [];
+
+    for (const image of scannedImages) {
+      const existingScreenshot: VideoGameScreenshot | undefined =
+        repositoryScreenshots.find((screenshot) =>
+          screenshot.image.equals(image),
+        );
+
+      if (existingScreenshot) {
+        if (existingScreenshot.toUpdate === true) {
+          screenshotsToUpdate.push(
+            new VideoGameScreenshot(image, existingScreenshot.id),
+          );
+        }
+      } else {
+        newScreenshotsToSave.push(new VideoGameScreenshot(image));
+      }
+    }
 
     await this.imageRepository.saveVideoGameScreenshots(newScreenshotsToSave);
+    await this.imageRepository.saveVideoGameScreenshots(screenshotsToUpdate);
 
     return newScreenshotsToSave;
   }

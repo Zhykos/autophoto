@@ -5,6 +5,7 @@ export class VideoGameScreenshot extends Entity {
   constructor(
     public readonly image: Image,
     uuid?: string,
+    public readonly toUpdate = false,
   ) {
     super(uuid);
   }

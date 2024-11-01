@@ -67,7 +67,10 @@ describe("main scanner", () => {
     );
 
     assert(error instanceof Error);
-    assertEquals(error.message, "An error occurred while scanning.");
+    assertEquals(
+      error.message,
+      "An error occurred while scanning (see console).",
+    );
   });
 
   it("should debug scan", async () => {
