@@ -1,78 +1,136 @@
 import { assert, assertEquals, assertFalse, assertThrows } from "@std/assert";
+import { describe, it } from "@std/testing/bdd";
 import type { CLI } from "../../../src/cli/domain/aggregate/CLI.ts";
+import { BlueskyPublisherAction } from "../../../src/cli/domain/valueobject/BlueskyPublisherAction.ts";
+import { ScannerAction } from "../../../src/cli/domain/valueobject/ScannerAction.ts";
 import { CLIService } from "../../../src/cli/service/CLIService.ts";
+import { mockLogger } from "../../mock/logger/mockLogger.ts";
 
-Deno.test(function noArgs() {
-  const error = assertThrows(() => new CLIService().read([]));
-  assert(error instanceof Error);
-  assertEquals(error.message, 'Command line must have only one argument: ""');
-});
+describe("CLIService", () => {
+  it("should fail if no args", () => {
+    const error = assertThrows(() => new CLIService().read([], mockLogger()));
+    assert(error instanceof Error);
+    assertEquals(
+      error.message,
+      'Only one option allowed: "--prescan" or "--publish" or "--scan"',
+    );
+  });
 
-Deno.test(function tooMuchArgs() {
-  const error = assertThrows(() =>
-    new CLIService().read(["README.md", "LICENSE"]),
-  );
-  assert(error instanceof Error);
-  assertEquals(
-    error.message,
-    'Command line must have only one argument: "README.md,LICENSE"',
-  );
-});
+  it("should fail if too mush args", () => {
+    const error = assertThrows(() =>
+      new CLIService().read(["README.md", "LICENSE"], mockLogger()),
+    );
+    assert(error instanceof Error);
+    assertEquals(
+      error.message,
+      'Command line argument is not allowed: "README.md,LICENSE"',
+    );
+  });
 
-Deno.test(function argMustBeExistingPath() {
-  const error = assertThrows(() => new CLIService().read(["foo"]));
-  assert(error instanceof Error);
-  assertEquals(
-    error.message,
-    'Command line argument must be an existing path: "foo"',
-  );
-});
+  it("should fail if one arg", () => {
+    const error = assertThrows(() =>
+      new CLIService().read(["foo"], mockLogger()),
+    );
+    assert(error instanceof Error);
+    assertEquals(error.message, 'Command line argument is not allowed: "foo"');
+  });
 
-Deno.test(function argMustBeFile() {
-  const error = assertThrows(() => new CLIService().read(["--scan", "src"]));
-  assert(error instanceof Error);
-  assertEquals(error.message, 'Path is not a file: "src"');
-});
+  it("should fail if scanner option is a directory", () => {
+    const error = assertThrows(() =>
+      new CLIService().read(["--scan=src"], mockLogger()),
+    );
+    assert(error instanceof Error);
+    assertEquals(error.message, 'Path is not a file: "src"');
+  });
 
-Deno.test(function argMissingAction() {
-  const error = assertThrows(() => new CLIService().read(["README.md"]));
-  assert(error instanceof Error);
-  assertEquals(error.message, 'Missing option: "--scan" or "--publish"');
-});
+  it("should fail if one file arg", () => {
+    const error = assertThrows(() =>
+      new CLIService().read(["README.md"], mockLogger()),
+    );
+    assert(error instanceof Error);
+    assertEquals(
+      error.message,
+      'Command line argument is not allowed: "README.md"',
+    );
+  });
 
-Deno.test(function readScanOK() {
-  const cliResult: CLI = new CLIService().read(["--scan", "README.md"]);
-  assertEquals(cliResult.configuration.path.value, "README.md");
-  assert(cliResult.action.isScan());
-  assertFalse(cliResult.debugDatabase);
-});
+  it("should create scanner", () => {
+    const cliResult: CLI = new CLIService().read(
+      ["--scan=README.md"],
+      mockLogger(),
+    );
+    assert(cliResult.action instanceof ScannerAction);
+    assertEquals(
+      (cliResult.action as ScannerAction).configurationFile.path.value,
+      "README.md",
+    );
+    assertFalse(cliResult.action.debug);
+  });
 
-Deno.test(function readPublishOK() {
-  const cliResult: CLI = new CLIService().read([
-    "--publish",
-    "--bluesky_login=login",
-    "--bluesky_password=password",
-    "README.md",
-  ]);
-  assertEquals(cliResult.configuration.path.value, "README.md");
-  assertFalse(cliResult.action.isScan());
-});
+  it("should create publisher", () => {
+    const cliResult: CLI = new CLIService().read(
+      ["--publish", "--bluesky_login=login", "--bluesky_password=password"],
+      mockLogger(),
+    );
+    assert(cliResult.action instanceof BlueskyPublisherAction);
+  });
 
-Deno.test(function newDatabaseFile() {
-  const cliResult: CLI = new CLIService().read([
-    "--database=new.db",
-    "--scan",
-    "README.md",
-  ]);
-  assertEquals(cliResult.configuration.path.value, "README.md");
-  assertEquals(cliResult.databaseFilepath, "new.db");
-});
+  it("should specify database", () => {
+    const cliResult: CLI = new CLIService().read(
+      ["--database=new.db", "--scan=README.md"],
+      mockLogger(),
+    );
+    assertEquals(
+      (cliResult.action as ScannerAction).configurationFile.path.value,
+      "README.md",
+    );
+    assertEquals(cliResult.action.databaseFilepath, "new.db");
+  });
 
-Deno.test(function debug() {
-  const cliResult: CLI = new CLIService().read([
-    "--debug-database",
-    "--scan",
-    "README.md",
-  ]);
-  assert(cliResult.debugDatabase);
+  it("should activate debug", () => {
+    const cliResult: CLI = new CLIService().read(
+      ["--debug", "--scan=README.md"],
+      mockLogger(),
+    );
+    assert(cliResult.action.debug);
+  });
+
+  it("should fail if debug prescan", () => {
+    const error = assertThrows(() =>
+      new CLIService().read(["--debug", "--prescan=config.yml"], mockLogger()),
+    );
+    assert(error instanceof Error);
+    assertEquals(
+      error.message,
+      'Option "--prescan" is not compatible with "--debug"',
+    );
+  });
+
+  it("should fail if using a database with prescan", () => {
+    const error = assertThrows(() =>
+      new CLIService().read(
+        ["--database=db.sqlite", "--prescan=config.yml"],
+        mockLogger(),
+      ),
+    );
+    assert(error instanceof Error);
+    assertEquals(
+      error.message,
+      'Option "--prescan" is not compatible with "--database"',
+    );
+  });
+
+  it("should fail if using scanner with bluesky publisher", () => {
+    const error = assertThrows(() =>
+      new CLIService().read(
+        ["--bluesky_host=https://bsky.social", "--prescan=config.yml"],
+        mockLogger(),
+      ),
+    );
+    assert(error instanceof Error);
+    assertEquals(
+      error.message,
+      'Option "--prescan" or "--scan" is not compatible with "--bluesky_host", "--bluesky_login" or "--bluesky_password"',
+    );
+  });
 });

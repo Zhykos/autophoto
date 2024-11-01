@@ -24,11 +24,14 @@
 
 ## Key Features
 
+* Pre-scan your directory for photos
+  - Photos are detected by a path pattern
+  - Check all detected photos if they are valid
 * Scan your directory for photos
-  - V1 only suppose to work with video game screenshots
+  - For now only suppose to work with video game screenshots
   - Photos are detected by a path pattern
 * Publish them to a remote server
-  - V1 only supports Bluesky
+  - Only supports Bluesky
   - Randomly select 4 photos and publish them
 * Application is build as native desktop app
   - CLI based
@@ -71,26 +74,36 @@ A `scan` entry has the following properties:
 In the example above, the application will scan the `./test/resources/video-game` directory for photos with the following path pattern:
 `{video game title} ({release-year})/{platform}/photo-name.webp`
 
+#### Run the application to pre-scan (check) your directories
+
+Once you have your configuration file, you can run the application with the configuration file as argument: :
+
+```shell
+autophoto --prescan=./path/to/your/configuration-file.yaml
+```
+
+You'll see the detected photos and if they are valid or not in the console.
+
 #### Run the application to scan your directories
 
 Once you have your configuration file, you can run the application with the configuration file as argument: :
 
 ```shell
-autophoto --scan ./path/to/your/configuration-file.yaml
+autophoto --scan=./path/to/your/configuration-file.yaml
 ```
 
 The scanned data are stored in a SQLite database in the `db.autophoto.sqlite3` file.
-But you can specify a different path for the database file with the `--database` option:
+You can specify a different path for the database file with the `--database` option:
 
 ```shell
-autophoto --scan ./path/to/your/configuration-file.yaml --database=./path/to/your/database-file.sqlite3
+autophoto --scan=./path/to/your/configuration-file.yaml --database=./path/to/your/database-file.sqlite3
 ```
 
-You can also activate the debug mode with the `--debug-database` option.
+You can also activate the debug mode with the `--debug` option.
 This will print the video games and photos detected during the scan:
 
 ```shell
-autophoto --scan ./path/to/your/configuration-file.yaml --debug-database
+autophoto --scan=./path/to/your/configuration-file.yaml --debug
 ```
 
 ### To publish your photos
@@ -109,11 +122,11 @@ You can also specify the path to the database file with the `--database` option:
 autophoto --publish --bluesky_login=your_login --bluesky_password=your_password --database=./path/to/your/database-file.sqlite3
 ```
 
-You can also activate the debug mode with the `--debug-database` option.
+You can also activate the debug mode with the `--debug` option.
 This will print the photos published:
 
 ```shell
-autophoto --publish --bluesky_login=your_login --bluesky_password=your_password --debug-database
+autophoto --publish --bluesky_login=your_login --bluesky_password=your_password --debug
 ```
 
 You can also specify the Bluesky URL with the `--bluesky_host` option:
@@ -126,26 +139,42 @@ autophoto --publish --bluesky_login=your_login --bluesky_password=your_password 
 
 ### Install the project
 
+#### Deno
+
+Deno is a runtime for JavaScript and TypeScript that is based on the V8 JavaScript engine and the Rust programming language.
+
 You need to install Deno to run the project: https://docs.deno.com/runtime/getting_started/installation/.
 
-Activate the lint and format with Biome:
+#### Lint and format
+
+Activate the linter and formater with Biome:
 
 ```shell
 deno add npm:@biomejs/biome@1.9.4
 deno install --allow-scripts=npm:@biomejs/biome@1.9.4
 ```
 
-You'll be able to run the lint with the following command:
+You'll be able to run the lint with the following command (Deno linter and Biome linter will be executed):
 
 ```shell
 deno task lint
 ```
 
-You'll be able to run the format with the following command:
+You'll be able to run the format with the following command (only use Biome formatter):
 
 ```shell
 deno task format
 ```
+
+#### Git hooks
+
+You can install the git hooks with the following command:
+
+```shell
+deno task hook install
+```
+
+It will run the linter and tests before each commit.
 
 ### Run the project
 
@@ -190,6 +219,7 @@ This software uses the following open source packages:
 - [JavaScript Standards](https://jsr.io/@std)
 - [atproto - For Bluesky](https://atproto.com/)
 - [Multiformats](https://multiformats.io/)
+- [Hook](https://deno.land/x/deno_hooks)
 - [README template](https://github.com/amitmerchant1990)
 - I wish to not generate a header with IA so I used an image by <a href="https://unsplash.com/fr/@enikoo?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">eniko kis</a> on <a href="https://unsplash.com/fr/photos/appareil-photo-instantane-polaroid-one-step-2-blanc-et-noir-sur-tableau-blanc-KsLPTsYaqIQ?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Unsplash</a>
 - Everyone, somehow, because I used Copilot to help me write the code
@@ -203,6 +233,11 @@ This software uses the following open source packages:
 - [🖼️ Gallery of video games screenshots: more than 10.000 photos](https://bsky.app/profile/galleryvideogames.bsky.social)
 
 ---
+
+This project is also a space to learn and experiment with Deno, TypeScript, DDD and TDD.
+So, if you have any suggestions, questions or want to chat, feel free to contact me.
+Some things already need to be improved, like the error handling, the architecture,
+the domains, the performance, etc. So, if you want to help me, I will be happy to work with you.
 
 > [zhykos.fr](https://www.zhykos.fr) &nbsp;&middot;&nbsp;
 > GitHub [@zhykos](https://github.com/Zhykos) &nbsp;&middot;&nbsp;

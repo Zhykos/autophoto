@@ -1,5 +1,6 @@
 import { AtpAgent } from "@atproto/api";
-import type { BlueskyCredentials } from "./cli/domain/valueobject/BlueskyCredentials.ts";
+import type { Log } from "@cross/log";
+import type { BlueskyPublisherAction } from "./cli/domain/valueobject/BlueskyPublisherAction.ts";
 import type { KvDriver } from "./common/dbdriver/KvDriver.ts";
 import { File } from "./common/domain/valueobject/File.ts";
 import { Path } from "./common/domain/valueobject/Path.ts";
@@ -19,9 +20,9 @@ import { BlueskyPublisherService } from "./publisher/service/BlueskyPublisherSer
 import { pluralFinalS } from "./utils/plural-final-s.ts";
 
 export const publish = async (
-  blueskyCredentials: BlueskyCredentials,
+  blueskyAction: BlueskyPublisherAction,
   kvDriver: KvDriver,
-  debugDatabase: boolean,
+  logger: Log,
 ): Promise<string | undefined> => {
   const relationRepository = new KvRelationRepository(kvDriver);
 
@@ -38,12 +39,14 @@ export const publish = async (
     return undefined;
   }
 
+  logger.log(`Picked video game: ${pickedVideoGameScreeshots.title}`);
+
   const resultPublication: string = await new BlueskyPublisherService().publish(
     new BlueskyPublication(
       new AtpAgent({
-        service: blueskyCredentials.host.toString(),
+        service: blueskyAction.host.toString(),
       }),
-      new Credentials(blueskyCredentials.login, blueskyCredentials.password),
+      new Credentials(blueskyAction.login, blueskyAction.password),
       new Publication(
         `${pluralFinalS(pickedVideoGameScreeshots.screenshots.length, "Screenshot", false)} from video game "${pickedVideoGameScreeshots.title}" (${pickedVideoGameScreeshots.releaseYear}) taken on ${pickedVideoGameScreeshots.platform}`,
         pickedVideoGameScreeshots.screenshots.map(
@@ -57,14 +60,18 @@ export const publish = async (
     ),
   );
 
-  await updatePublishedStatuses(pickedVideoGameScreeshots, relationRepository);
+  await updatePublishedStatuses(
+    pickedVideoGameScreeshots,
+    relationRepository,
+    logger,
+  );
 
-  if (debugDatabase) {
+  if (blueskyAction.debug) {
     const debug: string = await debugDatabaseInformation(
       pickedVideoGameScreeshots,
       relationRepository,
     );
-    console.log("Debug database information:", debug);
+    logger.log("Debug database information:", debug);
   }
 
   return resultPublication;
@@ -73,9 +80,11 @@ export const publish = async (
 async function updatePublishedStatuses(
   publishedVideoGameScreeshots: VideoGameScreeshotsToShare,
   relationRepository: RelationRepository,
+  logger: Log,
 ): Promise<void> {
   await relationRepository.updatePublishedStatuses(
     publishedVideoGameScreeshots.screenshots,
+    logger,
   );
 }
 

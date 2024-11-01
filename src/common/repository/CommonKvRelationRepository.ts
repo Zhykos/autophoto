@@ -1,3 +1,4 @@
+import type { Log } from "@cross/log";
 import type { KvDriver } from "../../common/dbdriver/KvDriver.ts";
 import type { VideoGameRelationImageRepositoryEntity } from "./entity/VideoGameRelationImageRepositoryEntity.ts";
 
@@ -19,7 +20,7 @@ export class CommonKvRelationRepository {
     );
   }
 
-  async updatePublishedStatus(imageID: string): Promise<void> {
+  async updatePublishedStatus(imageID: string, logger: Log): Promise<void> {
     const allRelations: VideoGameRelationImageRepositoryEntity[] =
       await this.getAllVideoGameRelations();
 
@@ -30,7 +31,7 @@ export class CommonKvRelationRepository {
       entity.published = true;
       await this.kvDriver.save(["relation", entity.uuid], entity);
     } else {
-      console.error(
+      logger.error(
         `Image ID "${imageID}" in relations cannot be found.
 Possible entities are: ${(await this.kvDriver.list(["relation"], {} as VideoGameRelationImageRepositoryEntity)).map((e) => `${e.imageID} (rel: ${e.uuid})`).sort()}`,
       );

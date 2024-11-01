@@ -6,7 +6,7 @@ import {
   describe,
   it,
 } from "@std/testing/bdd";
-import { BlueskyCredentials } from "../src/cli/domain/valueobject/BlueskyCredentials.ts";
+import { BlueskyPublisherAction } from "../src/cli/domain/valueobject/BlueskyPublisherAction.ts";
 import { KvDriver } from "../src/common/dbdriver/KvDriver.ts";
 import type { VideoGameRelationImageRepositoryEntity } from "../src/common/repository/entity/VideoGameRelationImageRepositoryEntity.ts";
 import { main } from "../src/main.ts";
@@ -17,6 +17,7 @@ import type { RelationRepository } from "../src/picker/repository/RelationReposi
 import { debugDatabaseInformation, publish } from "../src/publish.ts";
 import { pathExists } from "../src/utils/file.ts";
 import { MockBlueskyServer } from "./mock/distant-server/MockBlueskyServer.ts";
+import { mockLogger } from "./mock/logger/mockLogger.ts";
 import { getAllImagesFromRepository } from "./test-utils/getAllImagesFromRepository.ts";
 import { getAllRelationsFromRepository } from "./test-utils/getAllRelationsFromRepository.ts";
 import { getAllVideoGamesFromRepository } from "./test-utils/getAllVideoGamesFromRepository.ts";
@@ -48,30 +49,25 @@ describe("main publish", () => {
   });
 
   it("should publish", async () => {
-    await main([
-      "config.yml",
-      "--database=./test/it-database.sqlite3",
-      "--scan",
-    ]);
+    await main(["--database=./test/it-database.sqlite3", "--scan=config.yml"]);
 
     await main([
-      "./test/resources/config2.yml",
       "--database=./test/it-database.sqlite3",
-      "--scan",
+      "--scan=./test/resources/config2.yml",
     ]);
 
     const driver = new KvDriver("./test/it-database.sqlite3");
 
     try {
-      await publish(
-        new BlueskyCredentials(
-          new URL(mockedBlueskyServer.host),
-          "login",
-          "password",
-        ),
-        driver,
-        true,
+      const action = new BlueskyPublisherAction(
+        new URL(mockedBlueskyServer.host),
+        "login",
+        "password",
       );
+
+      action.debug = true;
+
+      await publish(action, driver, mockLogger());
 
       assertNotEquals(mockedBlueskyServer.lastRecord, undefined);
       assertEquals(

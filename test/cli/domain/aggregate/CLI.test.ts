@@ -1,23 +1,43 @@
 import { assert, assertEquals, assertThrows } from "@std/assert";
+import { describe, it } from "@std/testing/bdd";
 import { CLI } from "../../../../src/cli/domain/aggregate/CLI.ts";
-import { File } from "../../../../src/common/domain/valueobject/File.ts";
-import { Path } from "../../../../src/common/domain/valueobject/Path.ts";
 
-Deno.test(function buildNoConfiguration() {
-  const error = assertThrows(() => CLI.builder().build());
-  assert(error instanceof Error);
-  assertEquals(error.message, "Configuration is required");
-});
+describe("CLI", () => {
+  it("should fail if no configuration", () => {
+    const error = assertThrows(() => CLI.builder().build());
+    assert(error instanceof Error);
+    assertEquals(
+      error.message,
+      "Action is required: prescanner, publisher or scanner",
+    );
+  });
 
-Deno.test(function buildNoAction() {
-  const error = assertThrows(() =>
-    CLI.builder()
-      .withConfiguration(new File(new Path("README.md")))
-      .build(),
-  );
-  assert(error instanceof Error);
-  assertEquals(
-    error.message,
-    "Action is required: scanner or bluesky publisher",
-  );
+  it("should fail if no action", () => {
+    const error = assertThrows(() => CLI.builder().build());
+    assert(error instanceof Error);
+    assertEquals(
+      error.message,
+      "Action is required: prescanner, publisher or scanner",
+    );
+  });
+
+  it("should fail if no action but database", () => {
+    const error = assertThrows(() =>
+      CLI.builder().withDatabaseFilepath("").build(),
+    );
+    assert(error instanceof Error);
+    assertEquals(
+      error.message,
+      "Action is required: prescanner, publisher or scanner",
+    );
+  });
+
+  it("should fail if no action but debug", () => {
+    const error = assertThrows(() => CLI.builder().withDebug().build());
+    assert(error instanceof Error);
+    assertEquals(
+      error.message,
+      "Action is required: prescanner, publisher or scanner",
+    );
+  });
 });
