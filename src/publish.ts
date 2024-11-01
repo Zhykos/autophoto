@@ -21,7 +21,6 @@ import { pluralFinalS } from "./utils/plural-final-s.ts";
 export const publish = async (
   blueskyAction: BlueskyPublisherAction,
   kvDriver: KvDriver,
-  debugDatabase: boolean,
 ): Promise<string | undefined> => {
   const relationRepository = new KvRelationRepository(kvDriver);
 
@@ -59,7 +58,7 @@ export const publish = async (
 
   await updatePublishedStatuses(pickedVideoGameScreeshots, relationRepository);
 
-  if (debugDatabase) {
+  if (blueskyAction.debug) {
     const debug: string = await debugDatabaseInformation(
       pickedVideoGameScreeshots,
       relationRepository,

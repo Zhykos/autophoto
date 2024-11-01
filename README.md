@@ -76,21 +76,21 @@ In the example above, the application will scan the `./test/resources/video-game
 Once you have your configuration file, you can run the application with the configuration file as argument: :
 
 ```shell
-autophoto --scan ./path/to/your/configuration-file.yaml
+autophoto --scan=./path/to/your/configuration-file.yaml
 ```
 
 The scanned data are stored in a SQLite database in the `db.autophoto.sqlite3` file.
 But you can specify a different path for the database file with the `--database` option:
 
 ```shell
-autophoto --scan ./path/to/your/configuration-file.yaml --database=./path/to/your/database-file.sqlite3
+autophoto --scan=./path/to/your/configuration-file.yaml --database=./path/to/your/database-file.sqlite3
 ```
 
-You can also activate the debug mode with the `--debug-database` option.
+You can also activate the debug mode with the `--debug` option.
 This will print the video games and photos detected during the scan:
 
 ```shell
-autophoto --scan ./path/to/your/configuration-file.yaml --debug-database
+autophoto --scan=./path/to/your/configuration-file.yaml --debug
 ```
 
 ### To publish your photos
@@ -109,11 +109,11 @@ You can also specify the path to the database file with the `--database` option:
 autophoto --publish --bluesky_login=your_login --bluesky_password=your_password --database=./path/to/your/database-file.sqlite3
 ```
 
-You can also activate the debug mode with the `--debug-database` option.
+You can also activate the debug mode with the `--debug` option.
 This will print the photos published:
 
 ```shell
-autophoto --publish --bluesky_login=your_login --bluesky_password=your_password --debug-database
+autophoto --publish --bluesky_login=your_login --bluesky_password=your_password --debug
 ```
 
 You can also specify the Bluesky URL with the `--bluesky_host` option:

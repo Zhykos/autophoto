@@ -1,15 +1,16 @@
 {
   "nodeModulesDir": "auto",
   "tasks": {
-    "test": "deno test --allow-read --allow-write --trace-leaks --unstable-kv --allow-env --allow-net -- config.yml --database=./test/it-database.sqlite3 --scan",
-    "coverage": "rm -fr coverage && deno test --allow-read --allow-write --unstable-kv --allow-env --allow-net --coverage --fail-fast -- config.yml --database=./test/it-database.sqlite3 --scan && deno coverage --html --exclude=\"/test/\" && open coverage/html/index.html",
+    "test": "deno test --allow-read --allow-write --trace-leaks --unstable-kv --allow-env --allow-net -- --database=./test/it-database.sqlite3 --scan=config.yml",
+    "coverage": "rm -fr coverage && deno test --allow-read --allow-write --unstable-kv --allow-env --allow-net --coverage --fail-fast -- --database=./test/it-database.sqlite3 --scan=config.yml && deno coverage --html --exclude=\"/test/\" && open coverage/html/index.html",
     "lcov": "deno coverage --lcov --output=cov.lcov --exclude=\"/test/\"",
     "lint": "deno lint && deno run -A npm:@biomejs/biome lint",
     "format": "deno run -A npm:@biomejs/biome check --write",
-    "e2e:scan": "deno run --allow-read --allow-write --unstable-kv src/main.ts config.yml --scan --debug-database --database=./test/e2e-debug.sqlite3 && deno run --allow-read --allow-write --unstable-kv src/main.ts ./test/resources/config2.yml --scan --debug-database --database=./test/e2e-debug.sqlite3",
-    "e2e:publish": "deno run --allow-read --allow-write --allow-net --unstable-kv src/main.ts --publish --debug-database --database=./test/e2e-debug.sqlite3 --bluesky_login=$LOGIN --bluesky_password=$PASSWORD config.yml",
-    "build:linux-x86_64": "deno compile --allow-read --allow-write --unstable-kv --allow-env --allow-net --target x86_64-unknown-linux-gnu --output build/linux-x86_64/autophoto ./src/main.ts",
-    "build:linux-arm": "deno compile --allow-read --allow-write --unstable-kv --allow-env --allow-net --target aarch64-unknown-linux-gnu --output build/linux-arm/autophoto ./src/main.ts"
+    "e2e:prescan": "deno run --allow-read --allow-write --unstable-kv src/main-cli.ts --prescan=config.yml && deno run --allow-read --allow-write --unstable-kv src/main-cli.ts --prescan=./test/resources/config-errors.yml",
+    "e2e:scan": "rm ./test/e2e-debug.sqlite3 && deno run --allow-read --allow-write --unstable-kv src/main-cli.ts --scan=config.yml --debug --database=./test/e2e-debug.sqlite3 && deno run --allow-read --allow-write --unstable-kv src/main-cli.ts --scan=./test/resources/config2.yml --debug --database=./test/e2e-debug.sqlite3",
+    "e2e:publish": "deno run --allow-read --allow-write --allow-net --unstable-kv src/main-cli.ts --publish --debug --database=./test/e2e-debug.sqlite3 --bluesky_login=$LOGIN --bluesky_password=$PASSWORD",
+    "build:linux-x86_64": "deno compile --allow-read --allow-write --unstable-kv --allow-env --allow-net --target x86_64-unknown-linux-gnu --output build/linux-x86_64/autophoto ./src/main-cli.ts",
+    "build:linux-arm": "deno compile --allow-read --allow-write --unstable-kv --allow-env --allow-net --target aarch64-unknown-linux-gnu --output build/linux-arm/autophoto ./src/main-cli.ts"
   },
   "imports": {
     "@atproto/api": "npm:@atproto/api@^0.13.11",

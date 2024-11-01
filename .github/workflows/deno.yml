@@ -30,7 +30,7 @@ jobs:
         run: deno lint
 
       - name: Run tests and activate coverage
-        run: deno test --allow-read --allow-write --unstable-kv --allow-env --allow-net --coverage -- config.yml --database=./test/it-database.sqlite3 --scan
+        run: deno test --allow-read --allow-write --unstable-kv --allow-env --allow-net --coverage -- --database=./test/it-database.sqlite3 --scan=config.yml
 
       - name: Generate lcov report
         run: deno task lcov
