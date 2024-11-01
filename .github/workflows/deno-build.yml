@@ -19,6 +19,7 @@ jobs:
       - name: Setup repo
         uses: actions/checkout@v4
 
+      # https://github.com/denoland/setup-deno/releases
       - name: Setup Deno
         uses: denoland/setup-deno@4606d5cc6fb3f673efd4f594850e3f4b3e9d29cd
         with:
