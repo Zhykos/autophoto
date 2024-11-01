@@ -17,6 +17,7 @@ import type { RelationRepository } from "../src/picker/repository/RelationReposi
 import { debugDatabaseInformation, publish } from "../src/publish.ts";
 import { pathExists } from "../src/utils/file.ts";
 import { MockBlueskyServer } from "./mock/distant-server/MockBlueskyServer.ts";
+import { mockLogger } from "./mock/logger/mockLogger.ts";
 import { getAllImagesFromRepository } from "./test-utils/getAllImagesFromRepository.ts";
 import { getAllRelationsFromRepository } from "./test-utils/getAllRelationsFromRepository.ts";
 import { getAllVideoGamesFromRepository } from "./test-utils/getAllVideoGamesFromRepository.ts";
@@ -66,7 +67,7 @@ describe("main publish", () => {
 
       action.debug = true;
 
-      await publish(action, driver);
+      await publish(action, driver, mockLogger());
 
       assertNotEquals(mockedBlueskyServer.lastRecord, undefined);
       assertEquals(

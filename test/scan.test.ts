@@ -19,6 +19,7 @@ import type { RelationRepository } from "../src/scanner/repository/RelationRepos
 import type { VideoGameRepository } from "../src/scanner/repository/VideoGameRepository.ts";
 import { Scanner } from "../src/scanner/service/Scanner.ts";
 import { pathExists } from "../src/utils/file.ts";
+import { mockLogger } from "./mock/logger/mockLogger.ts";
 import { MockImageRepository } from "./mock/repository/MockImageRepository.ts";
 import { MockRelationRepository } from "./mock/repository/MockRelationRepository.ts";
 import { MockVideoGameRepository } from "./mock/repository/MockVideoGameRepository.ts";
@@ -62,7 +63,7 @@ describe("main scanner", () => {
     );
 
     const error = await assertRejects(
-      async () => await scan(scanner, [scanData]),
+      async () => await scan(scanner, [scanData], mockLogger()),
     );
 
     assert(error instanceof Error);
@@ -76,7 +77,7 @@ describe("main scanner", () => {
       const configuration: Configuration = new ConfigurationService().loadFile(
         "./test/resources/config3.yml",
       );
-      await runScanner(configuration, kvDriver, true);
+      await runScanner(configuration, kvDriver, true, mockLogger());
 
       const debug: string = await debugDatabaseInformation(
         tempDatabaseFilePath,
