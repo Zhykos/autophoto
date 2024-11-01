@@ -11,6 +11,7 @@ import { ConfigurationDataPattern } from "../../../src/configuration/domain/valu
 import { ConfigurationScanWithPattern } from "../../../src/configuration/domain/valueobject/ConfigurationScanWithPattern.ts";
 import { DirectoryType } from "../../../src/configuration/domain/valueobject/DirectoryType.ts";
 import { scan } from "../../../src/scan.ts";
+import { ImageDirectory } from "../../../src/scanner/domain/aggregate/ImageDirectory.ts";
 import { KvImageRepository } from "../../../src/scanner/repository/ImageRepository.ts";
 import { KvRelationRepository } from "../../../src/scanner/repository/RelationRepository.ts";
 import { KvVideoGameRepository } from "../../../src/scanner/repository/VideoGameRepository.ts";
@@ -22,11 +23,16 @@ import { getAllRelationsFromRepository } from "../../test-utils/getAllRelationsF
 import { getAllVideoGamesFromRepository } from "../../test-utils/getAllVideoGamesFromRepository.ts";
 
 const tempDatabaseFilePath = "./test/it-database.sqlite3";
+const tempScreenshotDirectory = "./temp/video-game";
 
 describe("Scanner", () => {
   beforeEach(async () => {
     if (pathExists(tempDatabaseFilePath)) {
       Deno.removeSync(tempDatabaseFilePath);
+    }
+
+    if (pathExists(tempScreenshotDirectory)) {
+      Deno.removeSync(tempScreenshotDirectory, { recursive: true });
     }
 
     assertEquals(await getAllImagesFromRepository(tempDatabaseFilePath), []);
@@ -42,7 +48,7 @@ describe("Scanner", () => {
 
     try {
       const scanner = new Scanner(
-        new KvImageRepository(kvDriver),
+        new KvImageRepository(kvDriver, mockLogger()),
         new KvVideoGameRepository(kvDriver),
         new KvRelationRepository(kvDriver),
       );
@@ -224,6 +230,71 @@ describe("Scanner", () => {
         "PC",
         "PC",
       ]);
+    } finally {
+      kvDriver.close();
+    }
+  });
+
+  it("should detect a checksum change", async () => {
+    const kvDriver = new KvDriver(tempDatabaseFilePath);
+
+    try {
+      const scanner = new Scanner(
+        new KvImageRepository(kvDriver, mockLogger()),
+        new KvVideoGameRepository(kvDriver),
+        new KvRelationRepository(kvDriver),
+      );
+
+      Deno.mkdirSync(
+        "./temp/video-game/80's Overdrive (2017)/Nintendo Switch",
+        {
+          recursive: true,
+        },
+      );
+
+      Deno.copyFileSync(
+        "./test/resources/video-game/80's Overdrive (2017)/Nintendo Switch/80's Overdrive - 00005.webp",
+        "./temp/video-game/80's Overdrive (2017)/Nintendo Switch/80's Overdrive - 00005.webp",
+      );
+
+      const imageDirectory = new ImageDirectory(
+        new Directory(new Path("./temp/video-game")),
+        /^(.+) \((\d{4})\)\/(.+)\/.+\.webp$/,
+        ["title", "release-year", "platform"],
+      );
+
+      await scanner.scanAndSaveNewImages(imageDirectory);
+
+      const filesAfterScan1: ImageRepositoryRepositoryEntity[] =
+        await getAllImagesFromRepository(tempDatabaseFilePath);
+      assertEquals(filesAfterScan1.length, 1);
+      assertEquals(
+        filesAfterScan1[0].path,
+        "./temp/video-game/80's Overdrive (2017)/Nintendo Switch/80's Overdrive - 00005.webp",
+      );
+      assertEquals(
+        filesAfterScan1[0].checksum,
+        "ee89cfb7675343a77fdb33a60136a8a9c249b70f65b1a7e1e50f8f36168f596a0df04b4bea9bf06e447a2b70f602e7f6fe096a4cfa6f24908bf59ac972ccf25d",
+      );
+
+      Deno.copyFileSync(
+        "./test/resources/video-game/80's Overdrive (2017)/Nintendo Switch/80's Overdrive - 00001.webp",
+        "./temp/video-game/80's Overdrive (2017)/Nintendo Switch/80's Overdrive - 00005.webp",
+      );
+
+      await scanner.scanAndSaveNewImages(imageDirectory);
+
+      const filesAfterScan2: ImageRepositoryRepositoryEntity[] =
+        await getAllImagesFromRepository(tempDatabaseFilePath);
+      assertEquals(filesAfterScan2.length, 1);
+      assertEquals(
+        filesAfterScan2[0].path,
+        "./temp/video-game/80's Overdrive (2017)/Nintendo Switch/80's Overdrive - 00005.webp",
+      );
+      assertEquals(
+        filesAfterScan2[0].checksum,
+        "2d64e06439195fd08c21ad7c0e0fb702d27e66c6795ca9bd3089f19a3e328c2cf79e0491279703294c971dd04942fd0e30316206a18081f88e2ae6067d257a5a",
+      );
     } finally {
       kvDriver.close();
     }

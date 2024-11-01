@@ -27,7 +27,7 @@ export const runScanner = async (
   const relationRepository = new KvRelationRepository(kvDriver);
 
   const scanner = new Scanner(
-    new KvImageRepository(kvDriver),
+    new KvImageRepository(kvDriver, logger),
     videoGameRepository,
     relationRepository,
   );
@@ -102,11 +102,12 @@ export async function scan(
   } catch (error) {
     // TODO Alerting
     hasError = true;
-    logger.error("An error occurred while scanning.");
-    logger.error(error);
+    logger.error("An error occurred while scanning:");
+    logger.error((error as Error).message);
+    console.error(error);
   }
 
   if (hasError) {
-    throw new Error("An error occurred while scanning.");
+    throw new Error("An error occurred while scanning (see console).");
   }
 }

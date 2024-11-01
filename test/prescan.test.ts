@@ -30,10 +30,10 @@ describe("main prescan", () => {
     const result: boolean = preScan(configuration, logger.logger());
 
     assert(result);
-    assertEquals(logger.logMessages.length, 4);
+    assertEquals(logger.infoMessages.length, 4);
     assertEquals(logger.errorMessages.length, 0);
     assertContainsMatch(
-      logger.logMessages,
+      logger.infoMessages,
       /Pre-scanning .+\/video-game\.\.\./,
     );
   });
@@ -51,7 +51,7 @@ describe("main prescan", () => {
     const result: boolean = preScan(configuration, new Log([loggerTransport]));
 
     assertFalse(result);
-    assertEquals(loggerTransport.logMessages.length, 3);
+    assertEquals(loggerTransport.infoMessages.length, 3);
     assertEquals(loggerTransport.errorMessages.length, 2);
     assertContainsMatch(
       loggerTransport.errorMessages,
@@ -76,7 +76,7 @@ describe("main prescan", () => {
     const result: boolean = preScan(configuration, new Log([loggerTransport]));
 
     assertFalse(result);
-    assertEquals(loggerTransport.logMessages.length, 3);
+    assertEquals(loggerTransport.infoMessages.length, 3);
     assertEquals(loggerTransport.errorMessages.length, 2);
     assertContainsMatch(
       loggerTransport.errorMessages,
@@ -101,7 +101,7 @@ describe("main prescan", () => {
     const result: boolean = preScan(configuration, new Log([loggerTransport]));
 
     assertFalse(result);
-    assertEquals(loggerTransport.logMessages.length, 3);
+    assertEquals(loggerTransport.infoMessages.length, 3);
     assertEquals(loggerTransport.errorMessages.length, 2);
     assertContainsMatch(
       loggerTransport.errorMessages,
