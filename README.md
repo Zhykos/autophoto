@@ -126,7 +126,12 @@ autophoto --publish --bluesky_login=your_login --bluesky_password=your_password 
 
 ### Install the project
 
+#### Deno
+
+Deno is a runtime for JavaScript and TypeScript that is based on the V8 JavaScript engine and the Rust programming language.
 You need to install Deno to run the project: https://docs.deno.com/runtime/getting_started/installation/.
+
+#### Lint and format
 
 Activate the lint and format with Biome:
 
@@ -146,6 +151,16 @@ You'll be able to run the format with the following command:
 ```shell
 deno task format
 ```
+
+#### Git hooks
+
+You can install the git hooks with the following command:
+
+```shell
+deno task hook install
+```
+
+It will run the linter and tests before each commit.
 
 ### Run the project
 
