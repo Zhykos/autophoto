@@ -3,6 +3,7 @@ import { beforeEach, describe, it } from "@std/testing/bdd";
 import { KvDriver } from "../../../src/common/dbdriver/KvDriver.ts";
 import { CommonKvRelationRepository } from "../../../src/common/repository/CommonKvRelationRepository.ts";
 import { pathExists } from "../../../src/utils/file.ts";
+import { mockLogger } from "../../mock/logger/mockLogger.ts";
 import { getAllImagesFromRepository } from "../../test-utils/getAllImagesFromRepository.ts";
 import { getAllRelationsFromRepository } from "../../test-utils/getAllRelationsFromRepository.ts";
 import { getAllVideoGamesFromRepository } from "../../test-utils/getAllVideoGamesFromRepository.ts";
@@ -30,7 +31,7 @@ describe("CommonKvRelationRepository", () => {
 
     try {
       const error = await assertRejects(
-        async () => await repository.updatePublishedStatus("foo"),
+        async () => await repository.updatePublishedStatus("foo", mockLogger()),
       );
       assert(error instanceof Error);
       assertEquals(

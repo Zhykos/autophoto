@@ -1,4 +1,5 @@
 import { AtpAgent } from "@atproto/api";
+import type { Log } from "@cross/log";
 import type { BlueskyPublisherAction } from "./cli/domain/valueobject/BlueskyPublisherAction.ts";
 import type { KvDriver } from "./common/dbdriver/KvDriver.ts";
 import { File } from "./common/domain/valueobject/File.ts";
@@ -21,6 +22,7 @@ import { pluralFinalS } from "./utils/plural-final-s.ts";
 export const publish = async (
   blueskyAction: BlueskyPublisherAction,
   kvDriver: KvDriver,
+  logger: Log,
 ): Promise<string | undefined> => {
   const relationRepository = new KvRelationRepository(kvDriver);
 
@@ -56,14 +58,18 @@ export const publish = async (
     ),
   );
 
-  await updatePublishedStatuses(pickedVideoGameScreeshots, relationRepository);
+  await updatePublishedStatuses(
+    pickedVideoGameScreeshots,
+    relationRepository,
+    logger,
+  );
 
   if (blueskyAction.debug) {
     const debug: string = await debugDatabaseInformation(
       pickedVideoGameScreeshots,
       relationRepository,
     );
-    console.log("Debug database information:", debug);
+    logger.log("Debug database information:", debug);
   }
 
   return resultPublication;
@@ -72,9 +78,11 @@ export const publish = async (
 async function updatePublishedStatuses(
   publishedVideoGameScreeshots: VideoGameScreeshotsToShare,
   relationRepository: RelationRepository,
+  logger: Log,
 ): Promise<void> {
   await relationRepository.updatePublishedStatuses(
     publishedVideoGameScreeshots.screenshots,
+    logger,
   );
 }
 

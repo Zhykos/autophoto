@@ -1,3 +1,4 @@
+import type { Log } from "@cross/log";
 import type { KvDriver } from "../../common/dbdriver/KvDriver.ts";
 import { CommonKvRelationRepository } from "../../common/repository/CommonKvRelationRepository.ts";
 import type { VideoGameRelationImageRepositoryEntity } from "../../common/repository/entity/VideoGameRelationImageRepositoryEntity.ts";
@@ -9,7 +10,7 @@ export interface RelationRepository {
     UnpublishedVideoGameScreenshotRelation[]
   >;
 
-  updatePublishedStatuses(updatedImages: Image[]): Promise<void>;
+  updatePublishedStatuses(updatedImages: Image[], logger: Log): Promise<void>;
 }
 
 export class KvRelationRepository implements RelationRepository {
@@ -38,9 +39,15 @@ export class KvRelationRepository implements RelationRepository {
       );
   }
 
-  async updatePublishedStatuses(updatedImages: Image[]): Promise<void> {
+  async updatePublishedStatuses(
+    updatedImages: Image[],
+    logger: Log,
+  ): Promise<void> {
     for (const updatedImage of updatedImages) {
-      await this.commonRepository.updatePublishedStatus(updatedImage.id);
+      await this.commonRepository.updatePublishedStatus(
+        updatedImage.id,
+        logger,
+      );
     }
   }
 }

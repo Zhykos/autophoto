@@ -1,3 +1,4 @@
+import type { Log } from "@cross/log";
 import type { KvDriver } from "./common/dbdriver/KvDriver.ts";
 import type { VideoGameRelationImageRepositoryEntity } from "./common/repository/entity/VideoGameRelationImageRepositoryEntity.ts";
 import type { Configuration } from "./configuration/domain/aggregate/Configuration.ts";
@@ -20,6 +21,7 @@ export const runScanner = async (
   configuration: Configuration,
   kvDriver: KvDriver,
   debugDatabase: boolean,
+  logger: Log,
 ): Promise<void> => {
   const videoGameRepository = new KvVideoGameRepository(kvDriver);
   const relationRepository = new KvRelationRepository(kvDriver);
@@ -30,7 +32,7 @@ export const runScanner = async (
     relationRepository,
   );
 
-  await scan(scanner, configuration.scans);
+  await scan(scanner, configuration.scans, logger);
 
   if (debugDatabase) {
     const debug: string = await debugDatabaseInformation(
@@ -38,7 +40,7 @@ export const runScanner = async (
       videoGameRepository,
       relationRepository,
     );
-    console.log("Debug database information:", debug);
+    logger.log("Debug database information:", debug);
   }
 };
 
@@ -81,13 +83,14 @@ ${pluralFinalS(allRelations.length, "screenshot")} in database, ${remainingScree
 export async function scan(
   scanner: Scanner,
   scanData: ConfigurationScanWithPattern[],
+  logger: Log,
 ): Promise<void> {
   let hasError = false;
 
   try {
     // TODO Alerting
     for (const scan of scanData) {
-      console.log(`Scanning ${scan.directory.path.value}...`);
+      logger.log(`Scanning ${scan.directory.path.value}...`);
       const imageDirectory = new ImageDirectory(
         scan.directory,
         scan.pattern.regex,
@@ -95,12 +98,12 @@ export async function scan(
       );
       await scanner.scanAndSaveNewImages(imageDirectory);
     }
-    console.log("Scan completed!");
+    logger.log("Scan completed!");
   } catch (error) {
     // TODO Alerting
     hasError = true;
-    console.error("An error occurred while scanning.");
-    console.error(error);
+    logger.error("An error occurred while scanning.");
+    logger.error(error);
   }
 
   if (hasError) {

@@ -16,6 +16,7 @@ import { KvRelationRepository } from "../../../src/scanner/repository/RelationRe
 import { KvVideoGameRepository } from "../../../src/scanner/repository/VideoGameRepository.ts";
 import { Scanner } from "../../../src/scanner/service/Scanner.ts";
 import { pathExists } from "../../../src/utils/file.ts";
+import { mockLogger } from "../../mock/logger/mockLogger.ts";
 import { getAllImagesFromRepository } from "../../test-utils/getAllImagesFromRepository.ts";
 import { getAllRelationsFromRepository } from "../../test-utils/getAllRelationsFromRepository.ts";
 import { getAllVideoGamesFromRepository } from "../../test-utils/getAllVideoGamesFromRepository.ts";
@@ -46,26 +47,30 @@ describe("Scanner", () => {
         new KvRelationRepository(kvDriver),
       );
 
-      await scan(scanner, [
-        new ConfigurationScanWithPattern(
-          new Directory(new Path("./test/resources/video-game")),
-          DirectoryType["video-game"],
-          new ConfigurationDataPattern(/^(.+) \((\d{4})\)\/(.+)\/.+\.webp$/, [
-            "title",
-            "release-year",
-            "platform",
-          ]),
-        ),
-        new ConfigurationScanWithPattern(
-          new Directory(new Path("./test/resources/video-game2")),
-          DirectoryType["video-game"],
-          new ConfigurationDataPattern(/^(.+) \((\d{4})\)\/(.+)\/.+\.webp$/, [
-            "title",
-            "release-year",
-            "platform",
-          ]),
-        ),
-      ]);
+      await scan(
+        scanner,
+        [
+          new ConfigurationScanWithPattern(
+            new Directory(new Path("./test/resources/video-game")),
+            DirectoryType["video-game"],
+            new ConfigurationDataPattern(/^(.+) \((\d{4})\)\/(.+)\/.+\.webp$/, [
+              "title",
+              "release-year",
+              "platform",
+            ]),
+          ),
+          new ConfigurationScanWithPattern(
+            new Directory(new Path("./test/resources/video-game2")),
+            DirectoryType["video-game"],
+            new ConfigurationDataPattern(/^(.+) \((\d{4})\)\/(.+)\/.+\.webp$/, [
+              "title",
+              "release-year",
+              "platform",
+            ]),
+          ),
+        ],
+        mockLogger(),
+      );
 
       const filesAfterScan: ImageRepositoryRepositoryEntity[] =
         await getAllImagesFromRepository(tempDatabaseFilePath);

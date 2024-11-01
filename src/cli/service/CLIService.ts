@@ -1,3 +1,4 @@
+import type { Log } from "@cross/log";
 import { type Args, parseArgs } from "@std/cli/parse-args";
 import { File } from "../../common/domain/valueobject/File.ts";
 import { Path } from "../../common/domain/valueobject/Path.ts";
@@ -5,7 +6,7 @@ import { pathExists } from "../../utils/file.ts";
 import { CLI, type CLIBuilder } from "../domain/aggregate/CLI.ts";
 
 export class CLIService {
-  read(cliArgs: string[]): CLI {
+  read(cliArgs: string[], logger: Log): CLI {
     const args: Args = parseArgs(cliArgs, {
       boolean: ["debug", "publish"],
       string: [
@@ -45,9 +46,9 @@ export class CLIService {
       cliBuilder.withDatabaseFilepath(databaseFilepath);
 
       if (pathExists(databaseFilepath)) {
-        console.log(`Using database file: ${databaseFilepath}`);
+        logger.log(`Using database file: ${databaseFilepath}`);
       } else {
-        console.warn(
+        logger.warn(
           `Database file not found, using a new one: ${databaseFilepath}`,
         );
       }

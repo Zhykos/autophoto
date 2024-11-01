@@ -11,6 +11,7 @@ import { ConfigurationService } from "../src/configuration/service/Configuration
 import { main } from "../src/main.ts";
 import { preScan } from "../src/prescan.ts";
 import { MockLoggerTransport } from "./mock/logger/MockLoggerTransport.ts";
+import { MockLogger } from "./mock/logger/mockLogger.ts";
 import { assertContainsMatch } from "./test-utils/assertContainsMatch.ts";
 
 describe("main prescan", () => {
@@ -24,15 +25,15 @@ describe("main prescan", () => {
     const configuration: Configuration = new ConfigurationService().loadFile(
       "config.yml",
     );
-    const loggerTransport = new MockLoggerTransport();
 
-    const result: boolean = preScan(configuration, new Log([loggerTransport]));
+    const logger = new MockLogger();
+    const result: boolean = preScan(configuration, logger.logger());
 
     assert(result);
-    assertEquals(loggerTransport.logMessages.length, 4);
-    assertEquals(loggerTransport.errorMessages.length, 0);
+    assertEquals(logger.logMessages.length, 4);
+    assertEquals(logger.errorMessages.length, 0);
     assertContainsMatch(
-      loggerTransport.logMessages,
+      logger.logMessages,
       /Pre-scanning .+\/video-game\.\.\./,
     );
   });
