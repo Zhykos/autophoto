@@ -103,7 +103,7 @@ export async function scan(
     // TODO Alerting
     hasError = true;
     logger.error("An error occurred while scanning:");
-    logger.error(error instanceof Error ? error.message : "Unknown error");
+    logger.error((error as Error).message);
     console.error(error);
   }
 
