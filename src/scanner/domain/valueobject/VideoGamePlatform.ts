@@ -13,6 +13,7 @@ const platforms = [
   "PlayStation 4",
   "PlayStation 4 (beta)",
   "PlayStation 5",
+  "PS Vita",
   "Steam Deck",
   "unknown",
   "Xbox 360",
