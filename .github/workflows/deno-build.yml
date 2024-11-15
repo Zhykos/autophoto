@@ -25,20 +25,11 @@ jobs:
         with:
           deno-version: v2.x
 
-      - name: Build Linux binary x86_64
-        run: deno task build:linux-x86_64
-
-      - name: Archive Linux binary x86_64
-        uses: actions/upload-artifact@v4
-        with:
-          name: autophoto-linux-x86_64-2.0.1
-          path: build/linux-x86_64
-
       - name: Build Linux binary ARM
         run: deno task build:linux-arm
 
       - name: Archive Linux binary ARM
         uses: actions/upload-artifact@v4
         with:
-          name: autophoto-linux-arm-2.0.1
+          name: autophoto-linux-arm-2.0.2
           path: build/linux-arm
