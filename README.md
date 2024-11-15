@@ -224,6 +224,10 @@ This software uses the following open source packages:
 - I wish to not generate a header with IA so I used an image by <a href="https://unsplash.com/fr/@enikoo?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">eniko kis</a> on <a href="https://unsplash.com/fr/photos/appareil-photo-instantane-polaroid-one-step-2-blanc-et-noir-sur-tableau-blanc-KsLPTsYaqIQ?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Unsplash</a>
 - Everyone, somehow, because I used Copilot to help me write the code
 
+## Authors
+
+- **Thomas Cicognani** - *Original creator* - [Zhykos](https://github.com/Zhykos)
+
 ## License
 
 [MIT](https://opensource.org/license/MIT)
