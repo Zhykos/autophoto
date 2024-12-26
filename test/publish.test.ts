@@ -1,4 +1,9 @@
-import { assertEquals, assertNotEquals } from "@std/assert";
+import {
+  assert,
+  assertEquals,
+  assertMatch,
+  assertNotEquals,
+} from "@std/assert";
 import {
   afterAll,
   beforeAll,
@@ -70,14 +75,16 @@ describe("main publish", () => {
       await publish(action, driver, mockLogger());
 
       assertNotEquals(mockedBlueskyServer.lastRecord, undefined);
-      assertEquals(
-        mockedBlueskyServer.lastRecord?.text,
-        'Screenshots from video game "80\'s Overdrive" (2017) taken on Nintendo Switch',
+      assertMatch(
+        mockedBlueskyServer.lastRecord?.text ?? "",
+        /^Screenshots? from video game ".+" \(\d+\) taken on .+$/,
       );
-      assertEquals(mockedBlueskyServer.lastRecord?.embed.images.length, 4);
-      assertEquals(
-        mockedBlueskyServer.lastRecord?.embed.images[0].alt,
-        "Screenshot from video game 80's Overdrive (no more details given by the bot)",
+      const publishedImages: number =
+        mockedBlueskyServer.lastRecord?.embed.images.length ?? 0;
+      assert(publishedImages > 0);
+      assertMatch(
+        mockedBlueskyServer.lastRecord?.embed.images[0].alt ?? "",
+        /^Screenshot from video game .+ \(no more details given by the bot\)$/,
       );
       assertNotEquals(
         mockedBlueskyServer.lastRecord?.embed.images[0].image,
@@ -88,7 +95,11 @@ describe("main publish", () => {
         await getAllRelationsFromRepository(tempDatabaseFilePath);
 
       assertEquals(allRelations.length, 8);
-      assertEquals(allRelations.filter((r) => r.published === true).length, 4);
+      assert(allRelations.filter((r) => r.published === true).length > 0);
+      assertEquals(
+        allRelations.filter((r) => r.published === true).length,
+        publishedImages,
+      );
     } finally {
       driver.close();
     }

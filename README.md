@@ -16,8 +16,10 @@
   <a href="#how-to-use">How To Use</a> •
   <a href="#contributing">Contributing</a> •
   <a href="#credits">Credits</a> •
+  <a href="#authors">Authors</a> •
   <a href="#license">License</a> •
-  <a href="#projects-using-autophoto">Projects using autophoto</a>
+  <a href="#projects-using-autophoto">Projects using autophoto</a> •
+  <a href="#changelog">Changelog</a>
 </p>
 
 ![bluesky](doc/bluesky-post.webp)
@@ -26,7 +28,7 @@
 
 * Pre-scan your directory for photos
   - Photos are detected by a path pattern
-  - Check all detected photos if they are valid
+  - Check all detected photos if they are valid (for instance BlueSky has size limitations)
 * Scan your directory for photos
   - For now only suppose to work with video game screenshots
   - Photos are detected by a path pattern
@@ -246,3 +248,10 @@ the domains, the performance, etc. So, if you want to help me, I will be happy t
 > [zhykos.fr](https://www.zhykos.fr) &nbsp;&middot;&nbsp;
 > GitHub [@zhykos](https://github.com/Zhykos) &nbsp;&middot;&nbsp;
 > Bluesky [@zhykos](https://bsky.app/profile/zhykos.bsky.social)
+
+---
+
+## Changelog
+
+* 2.1
+  - Remove the pick priority of directories which have at least 4 photos to publish
