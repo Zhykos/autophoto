@@ -16,8 +16,10 @@
   <a href="#how-to-use">How To Use</a> •
   <a href="#contributing">Contributing</a> •
   <a href="#credits">Credits</a> •
+  <a href="#authors">Authors</a> •
   <a href="#license">License</a> •
-  <a href="#projects-using-autophoto">Projects using autophoto</a>
+  <a href="#projects-using-autophoto">Projects using autophoto</a> •
+  <a href="#changelog">Changelog</a>
 </p>
 
 ![bluesky](doc/bluesky-post.webp)
@@ -26,7 +28,7 @@
 
 * Pre-scan your directory for photos
   - Photos are detected by a path pattern
-  - Check all detected photos if they are valid
+  - Check all detected photos if they are valid (for instance BlueSky has size limitations)
 * Scan your directory for photos
   - For now only suppose to work with video game screenshots
   - Photos are detected by a path pattern
@@ -214,14 +216,14 @@ It will generate a coverage report in the `coverage` directory and open it in yo
 
 This software uses the following open source packages:
 
-- [Deno 2 - JavaScript runtime](https://deno.com/)
-- [Biome - Lint and format](https://biomejs.dev/)
-- [JavaScript Standards](https://jsr.io/@std)
-- [atproto - For Bluesky](https://atproto.com/)
-- [Multiformats](https://multiformats.io/)
-- [Hook](https://deno.land/x/deno_hooks)
-- [README template](https://github.com/amitmerchant1990)
-- I wish to not generate a header with IA so I used an image by <a href="https://unsplash.com/fr/@enikoo?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">eniko kis</a> on <a href="https://unsplash.com/fr/photos/appareil-photo-instantane-polaroid-one-step-2-blanc-et-noir-sur-tableau-blanc-KsLPTsYaqIQ?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Unsplash</a>
+- Deno2: [JavaScript runtime](https://deno.com/)
+- Biome: [Lint and format](https://biomejs.dev/)
+- JavaScript Standards: [jsr.io](https://jsr.io/@std)
+- To publish on Bluesky: [atproto - For Bluesky](https://atproto.com/)
+- Multiformats library: [Multiformats](https://multiformats.io/)
+- Git hook: [Hook](https://deno.land/x/deno_hooks)
+- README template by [Amit Merchant](https://github.com/amitmerchant1990)
+- I wish to not generate a header with IA so I used an image by <a href="https://unsplash.com/fr/@enikoo">eniko kis</a> on <a href="https://unsplash.com/fr/photos/appareil-photo-instantane-polaroid-one-step-2-blanc-et-noir-sur-tableau-blanc-KsLPTsYaqIQ">Unsplash</a>
 - Everyone, somehow, because I used Copilot to help me write the code
 
 ## Authors
@@ -245,4 +247,11 @@ the domains, the performance, etc. So, if you want to help me, I will be happy t
 
 > [zhykos.fr](https://www.zhykos.fr) &nbsp;&middot;&nbsp;
 > GitHub [@zhykos](https://github.com/Zhykos) &nbsp;&middot;&nbsp;
-> Bluesky [@zhykos](https://bsky.app/profile/zhykos.bsky.social)
+> Bluesky [@zhykos](https://bsky.app/profile/zhykos.fr)
+
+---
+
+## Changelog
+
+* 2.1
+  - Remove the pick priority of directories which have at least 4 photos to publish
