@@ -24,28 +24,7 @@ export class PickerService {
       return undefined;
     }
 
-    const possibilitiesPriority: UnpublishedVideoGamesScreenshot[] =
-      unpublishedVideoGamesScreenshots.filter(
-        (screenshot) => screenshot.images.length >= 4,
-      );
-
-    if (possibilitiesPriority.length > 0) {
-      return this.pickScreenshotsToShare(possibilitiesPriority);
-    }
-
-    const mapByLength = new Map<number, UnpublishedVideoGamesScreenshot[]>();
-    for (const screenshot of unpublishedVideoGamesScreenshots) {
-      const length: number = screenshot.images.length;
-      if (!mapByLength.has(length)) {
-        mapByLength.set(length, []);
-      }
-      mapByLength.get(length)?.push(screenshot);
-    }
-    return this.pickScreenshotsToShare(
-      mapByLength.get(3) ??
-        mapByLength.get(2) ??
-        (mapByLength.get(1) as UnpublishedVideoGamesScreenshot[]),
-    );
+    return this.pickScreenshotsToShare(unpublishedVideoGamesScreenshots);
   }
 
   private pickScreenshotsToShare(
@@ -67,18 +46,19 @@ export class PickerService {
   private async getUnpublishedVideoGamesScreenshots(): Promise<
     UnpublishedVideoGamesScreenshot[]
   > {
-    const unpublishedScreenshotRelations: UnpublishedVideoGameScreenshotRelation[] =
-      await this.relationRepository.getUnpublishedVideoGameRelations();
+    const unpublishedScreenshotRelations:
+      UnpublishedVideoGameScreenshotRelation[] = await this.relationRepository
+        .getUnpublishedVideoGameRelations();
     const unpublishedVideoGamesIDs: string[] = distinct(
       unpublishedScreenshotRelations.map((rel) => rel.videoGameID),
     );
-    const unpublishedVideoGames: VideoGame[] =
-      await this.videoGameRepository.getVideoGames(unpublishedVideoGamesIDs);
+    const unpublishedVideoGames: VideoGame[] = await this.videoGameRepository
+      .getVideoGames(unpublishedVideoGamesIDs);
     const unpublishedImagesIDs: string[] = distinct(
       unpublishedScreenshotRelations.map((rel) => rel.imageID),
     );
-    const unpublishedImages: Image[] =
-      await this.imageRepository.getVideoGameScreenshots(unpublishedImagesIDs);
+    const unpublishedImages: Image[] = await this.imageRepository
+      .getVideoGameScreenshots(unpublishedImagesIDs);
     return UnpublishedVideoGamesScreenshot.buildAll(
       unpublishedScreenshotRelations,
       unpublishedVideoGames,
