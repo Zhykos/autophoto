@@ -6,7 +6,7 @@ import { pathExists } from "../../utils/file.ts";
 import { CLI, type CLIBuilder } from "../domain/aggregate/CLI.ts";
 
 export class CLIService {
-  read(cliArgs: string[], logger: Log): CLI {
+  read(cliArgs: string[]): CLI {
     const args: Args = parseArgs(cliArgs, {
       boolean: ["debug", "publish"],
       string: [
@@ -14,6 +14,7 @@ export class CLIService {
         "bluesky_login",
         "bluesky_passord",
         "database",
+        "logger",
         "prescan",
         "scan",
       ],
@@ -41,6 +42,8 @@ export class CLIService {
       cliBuilder.withDebug();
     }
 
+    const logger: Log = cliBuilder.withLogger(args.logger);
+
     const databaseFilepath: string | undefined = args.database;
     if (databaseFilepath) {
       cliBuilder.withDatabaseFilepath(databaseFilepath);
@@ -67,6 +70,7 @@ export class CLIService {
 
     this.onlyOneArg(args);
     this.checkArgsCombination(args);
+    this.checkLoggerArg(args);
   }
 
   private onlyOneArg(args: Args): void {
@@ -107,6 +111,14 @@ export class CLIService {
       throw new Error(
         'Option "--prescan" or "--scan" is not compatible with "--bluesky_host", "--bluesky_login" or "--bluesky_password"',
       );
+    }
+  }
+
+  private checkLoggerArg(args: Args): void {
+    if (args.logger) {
+      if (!["batch", "console"].includes(args.logger)) {
+        throw new Error('Option "--logger" must be "batch" or "console"');
+      }
     }
   }
 }

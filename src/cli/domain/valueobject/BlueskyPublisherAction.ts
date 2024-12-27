@@ -1,8 +1,8 @@
 import { DomainError } from "../../../common/domain/DomainError.ts";
 import type { ValueObject } from "../../../common/domain/ValueObject.ts";
-import { CLIExecutor } from "./CLIExecutor.ts";
+import { CLIAction } from "./CLIAction.ts";
 
-export class BlueskyPublisherAction extends CLIExecutor implements ValueObject {
+export class BlueskyPublisherAction extends CLIAction implements ValueObject {
   constructor(
     public readonly host: URL,
     public readonly login: string,
