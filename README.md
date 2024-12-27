@@ -229,6 +229,7 @@ This software uses the following open source packages:
 ## Authors
 
 - **Thomas Cicognani** - *Original creator* - [Zhykos](https://github.com/Zhykos)
+- **Andrea Valentini** - *Contributor* - [AndreVale69](https://github.com/AndreVale69)
 
 ## License
 
