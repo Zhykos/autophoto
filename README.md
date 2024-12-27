@@ -269,5 +269,12 @@ the domains, the performance, etc. So, if you want to help me, I will be happy t
 
 ## Changelog
 
-* 2.1
+* 1.0.0
+  - Initial release
+* Forgot to add the changelog
+* 2.1.0
   - Remove the pick priority of directories which have at least 4 photos to publish
+* 2.2.0
+  - Fix number formats in logs (thanks to @AndreVale69)
+  - Add a logger style option (batch or console)
+  - Check PRs with GitHub Actions
