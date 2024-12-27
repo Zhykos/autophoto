@@ -5,10 +5,13 @@ on:
     branches:
       - develop
       - main
-      - bugfix/**
       - feature/**
       - hotfix/**
       - release/**
+  pull_request:
+    branches:
+      - feature/**
+      - hotfix/**
 
 permissions:
   contents: read
