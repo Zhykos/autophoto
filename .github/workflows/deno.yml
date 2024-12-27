@@ -10,8 +10,7 @@ on:
       - release/**
   pull_request:
     branches:
-      - feature/**
-      - hotfix/**
+      - develop
 
 permissions:
   contents: read
