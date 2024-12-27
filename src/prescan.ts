@@ -2,9 +2,9 @@ import type { Log } from "@cross/log";
 import type { Configuration } from "./configuration/domain/aggregate/Configuration.ts";
 import { VideoGamePlatform } from "./scanner/domain/valueobject/VideoGamePlatform.ts";
 import { getFileInfo } from "./utils/file.ts";
+import { formatNumber } from "./utils/format-number.ts";
 import { pluralFinalS } from "./utils/plural-final-s.ts";
 import { scanDirectory } from "./utils/scan-directory.ts";
-import { formatNumber } from "./utils/format-number.ts";
 
 const blueskyMaxFileSize = 976.56 * 1024;
 
@@ -51,7 +51,9 @@ export const preScan = (configuration: Configuration, logger: Log): boolean => {
   }
 
   logger.log("Pre-scan completed!");
-  logger.log(`Found ${formatNumber(filesCount)} ${pluralFinalS(filesCount, "file", false)}.`);
+  logger.log(
+    `Found ${formatNumber(filesCount)} ${pluralFinalS(filesCount, "file", false)}.`,
+  );
 
   if (errorsCount === 0) {
     logger.log("No errors found.");

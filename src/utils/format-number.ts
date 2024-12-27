@@ -4,15 +4,15 @@
  * The values are supported by the BCP 47 standard.
  */
 export enum CommonLocales {
-    EnglishUnitedStates = 'en-US',
-    EnglishUnitedKingdom = 'en-GB',
-    French = 'fr-FR',
-    German = 'de-DE',
-    Spanish = 'es-ES',
-    Italian = 'it-IT',
-    Japanese = 'ja-JP',
-    Chinese = 'zh-CN',
-    Russian = 'ru-RU'
+  EnglishUnitedStates = "en-US",
+  EnglishUnitedKingdom = "en-GB",
+  French = "fr-FR",
+  German = "de-DE",
+  Spanish = "es-ES",
+  Italian = "it-IT",
+  Japanese = "ja-JP",
+  Chinese = "zh-CN",
+  Russian = "ru-RU",
 }
 
 /**
@@ -27,8 +27,8 @@ export enum CommonLocales {
  * @returns The formatted number.
  */
 export function formatNumber(
-    number: number,
-    locales: CommonLocales | string = CommonLocales.EnglishUnitedStates
+  number: number,
+  locales: CommonLocales | string = CommonLocales.EnglishUnitedStates,
 ): string {
   return number.toLocaleString(locales);
 }

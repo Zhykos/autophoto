@@ -113,8 +113,8 @@ async function pickEveryPhotos(): Promise<void> {
   const bayonetta: VideoGameRepositoryEntity = videoGamesAfterScan.find(
     (vg) => vg.title === "8-Bit Bayonetta",
   ) as VideoGameRepositoryEntity;
-  const bayonettaLinks: VideoGameRelationImageRepositoryEntity[] = allLinks
-    .filter((link) => link.videoGameID === bayonetta.uuid);
+  const bayonettaLinks: VideoGameRelationImageRepositoryEntity[] =
+    allLinks.filter((link) => link.videoGameID === bayonetta.uuid);
   assertEquals(bayonettaLinks.length, 2);
   assertEquals(distinct(bayonettaLinks.map((l) => l.platform)), ["PC"]);
 
@@ -123,8 +123,8 @@ async function pickEveryPhotos(): Promise<void> {
   const overdrive: VideoGameRepositoryEntity = videoGamesAfterScan.find(
     (vg) => vg.title === "80's Overdrive",
   ) as VideoGameRepositoryEntity;
-  const overdriveLinks: VideoGameRelationImageRepositoryEntity[] = allLinks
-    .filter((link) => link.videoGameID === overdrive.uuid);
+  const overdriveLinks: VideoGameRelationImageRepositoryEntity[] =
+    allLinks.filter((link) => link.videoGameID === overdrive.uuid);
   assertEquals(overdriveLinks.map((l) => l.platform).sort(), [
     "Nintendo Switch",
     "Nintendo Switch",
@@ -137,8 +137,8 @@ async function pickEveryPhotos(): Promise<void> {
   const absolver: VideoGameRepositoryEntity = videoGamesAfterScan.find(
     (vg) => vg.title === "Absolver",
   ) as VideoGameRepositoryEntity;
-  const absolverLinks: VideoGameRelationImageRepositoryEntity[] = allLinks
-    .filter((link) => link.videoGameID === absolver.uuid);
+  const absolverLinks: VideoGameRelationImageRepositoryEntity[] =
+    allLinks.filter((link) => link.videoGameID === absolver.uuid);
   assertEquals(absolverLinks.length, 1);
   assertEquals(
     absolverLinks.map((l) => l.platform),
@@ -149,8 +149,8 @@ async function pickEveryPhotos(): Promise<void> {
   const control: VideoGameRepositoryEntity = videoGamesAfterScan.find(
     (vg) => vg.title === "Control",
   ) as VideoGameRepositoryEntity;
-  const controlLinks: VideoGameRelationImageRepositoryEntity[] = allLinks
-    .filter((link) => link.videoGameID === control.uuid);
+  const controlLinks: VideoGameRelationImageRepositoryEntity[] =
+    allLinks.filter((link) => link.videoGameID === control.uuid);
   assertEquals(controlLinks.length, 5);
   assertEquals(distinct(controlLinks.map((l) => l.platform)), ["PC"]);
 
@@ -168,8 +168,8 @@ async function pickEveryPhotos(): Promise<void> {
       new KvImageRepository(kvDriver),
     );
 
-    let pick: VideoGameScreeshotsToShare | undefined = await pickerService
-      .pick();
+    let pick: VideoGameScreeshotsToShare | undefined =
+      await pickerService.pick();
 
     const allPickedImagesNumber: number[] = [];
     const allPickedImagesIDs: string[] = [];
