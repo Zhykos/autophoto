@@ -46,19 +46,18 @@ export class PickerService {
   private async getUnpublishedVideoGamesScreenshots(): Promise<
     UnpublishedVideoGamesScreenshot[]
   > {
-    const unpublishedScreenshotRelations:
-      UnpublishedVideoGameScreenshotRelation[] = await this.relationRepository
-        .getUnpublishedVideoGameRelations();
+    const unpublishedScreenshotRelations: UnpublishedVideoGameScreenshotRelation[] =
+      await this.relationRepository.getUnpublishedVideoGameRelations();
     const unpublishedVideoGamesIDs: string[] = distinct(
       unpublishedScreenshotRelations.map((rel) => rel.videoGameID),
     );
-    const unpublishedVideoGames: VideoGame[] = await this.videoGameRepository
-      .getVideoGames(unpublishedVideoGamesIDs);
+    const unpublishedVideoGames: VideoGame[] =
+      await this.videoGameRepository.getVideoGames(unpublishedVideoGamesIDs);
     const unpublishedImagesIDs: string[] = distinct(
       unpublishedScreenshotRelations.map((rel) => rel.imageID),
     );
-    const unpublishedImages: Image[] = await this.imageRepository
-      .getVideoGameScreenshots(unpublishedImagesIDs);
+    const unpublishedImages: Image[] =
+      await this.imageRepository.getVideoGameScreenshots(unpublishedImagesIDs);
     return UnpublishedVideoGamesScreenshot.buildAll(
       unpublishedScreenshotRelations,
       unpublishedVideoGames,

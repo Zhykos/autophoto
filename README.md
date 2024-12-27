@@ -43,7 +43,7 @@
 Find the latest release [here](https://github.com/Zhykos/autophoto/releases).
 Download the latest release for your platform and run the executable.
 
-### To scan your directory for photos
+### Scan directories to save photos in a database
 
 #### Configuration file
 
@@ -76,7 +76,7 @@ A `scan` entry has the following properties:
 In the example above, the application will scan the `./test/resources/video-game` directory for photos with the following path pattern:
 `{video game title} ({release-year})/{platform}/photo-name.webp`
 
-#### Run the application to pre-scan (check) your directories
+#### Run the application to pre-scan your directories (check)
 
 Once you have your configuration file, you can run the application with the configuration file as argument: :
 
@@ -95,47 +95,62 @@ autophoto --scan=./path/to/your/configuration-file.yaml
 ```
 
 The scanned data are stored in a SQLite database in the `db.autophoto.sqlite3` file.
-You can specify a different path for the database file with the `--database` option:
 
-```shell
-autophoto --scan=./path/to/your/configuration-file.yaml --database=./path/to/your/database-file.sqlite3
-```
-
-You can also activate the debug mode with the `--debug` option.
-This will print the video games and photos detected during the scan:
-
-```shell
-autophoto --scan=./path/to/your/configuration-file.yaml --debug
-```
-
-### To publish your photos
+### Publish your photos on Bluesky
 
 You need a Bluesky account to publish your photos: [Bluesky](https://bsky.app/).
 
-Then run the application with the `--publish` option and your Bluesky credentials:
+Then run the application with the `--publish` option and your madatory Bluesky credentials:
 
 ```shell
 autophoto --publish --bluesky_login=your_login --bluesky_password=your_password
 ```
 
-You can also specify the path to the database file with the `--database` option:
+Optionnally, you can also specify the Bluesky URL with the `--bluesky_host` option:
 
 ```shell
-autophoto --publish --bluesky_login=your_login --bluesky_password=your_password --database=./path/to/your/database-file.sqlite3
+autophoto --publish --bluesky_login=your_login --bluesky_password=your_password --bluesky_host=https://bsky.app
 ```
 
-You can also activate the debug mode with the `--debug` option.
-This will print the photos published:
+### Command line options and arguments for autophoto
+
+For all actions (pre-scan, scan or publish, you can set other options in the command line.
+
+#### Specify where the database file is stored (to be written for scan or read for publish)
+
+You can specify the path to the database file with the `--database` option:
+
+```shell
+autophoto --scan=./path/to/your/configuration-file.yaml --database=./path/to/your/database-file.sqlite3
+```
+
+This option is not used for the pre-scan action.
+
+#### Debug mode
+
+You also activate the debug mode with the `--debug` option:
+* When scanning, this will print the video games and photos detected.
+* When pusblishing, this will print the photos published.
+
+Example:
 
 ```shell
 autophoto --publish --bluesky_login=your_login --bluesky_password=your_password --debug
 ```
 
-You can also specify the Bluesky URL with the `--bluesky_host` option:
+#### Change the logger style
+
+You can change the logger style with the `--logger` option:
 
 ```shell
-autophoto --publish --bluesky_login=your_login --bluesky_password=your_password --bluesky_host=https://bsky.app
+autophoto --scan=./path/to/your/configuration-file.yaml --logger=batch
 ```
+
+The following styles are available:
+- `batch`: print only the essential and raw information
+- `console`: print all the information with style and colors
+
+`console` is the default style.
 
 ## Contributing
 
@@ -216,7 +231,7 @@ It will generate a coverage report in the `coverage` directory and open it in yo
 
 This software uses the following open source packages:
 
-- Deno2: [JavaScript runtime](https://deno.com/)
+- Deno 2: [JavaScript runtime](https://deno.com/)
 - Biome: [Lint and format](https://biomejs.dev/)
 - JavaScript Standards: [jsr.io](https://jsr.io/@std)
 - To publish on Bluesky: [atproto - For Bluesky](https://atproto.com/)
@@ -229,6 +244,7 @@ This software uses the following open source packages:
 ## Authors
 
 - **Thomas Cicognani** - *Original creator* - [Zhykos](https://github.com/Zhykos)
+- **Andrea Valentini** - *Contributor* - [AndreVale69](https://github.com/AndreVale69)
 
 ## License
 

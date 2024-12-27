@@ -1,8 +1,8 @@
 import type { ValueObject } from "../../../common/domain/ValueObject.ts";
 import type { File } from "../../../common/domain/valueobject/File.ts";
-import { CLIExecutor } from "./CLIExecutor.ts";
+import { CLIAction } from "./CLIAction.ts";
 
-export class PreScannerAction extends CLIExecutor implements ValueObject {
+export class PreScannerAction extends CLIAction implements ValueObject {
   constructor(public readonly configurationFile: File) {
     super();
     this.validateObjectProperties();

@@ -1,4 +1,4 @@
-import { Log } from "@cross/log";
+import type { Log } from "@cross/log";
 import type { CLI } from "./cli/domain/aggregate/CLI.ts";
 import { BlueskyPublisherAction } from "./cli/domain/valueobject/BlueskyPublisherAction.ts";
 import type { PreScannerAction } from "./cli/domain/valueobject/PreScannerAction.ts";
@@ -12,11 +12,11 @@ import { publish } from "./publish.ts";
 import { runScanner } from "./scan.ts";
 
 export async function main(cliArgs: string[]): Promise<boolean> {
-  const logger = new Log();
+  const cli: CLI = new CLIService().read(cliArgs);
 
+  const logger: Log = cli.action.logger;
   logger.log("Starting Autophoto...");
 
-  const cli: CLI = new CLIService().read(cliArgs, logger);
   const kvDriver = new KvDriver(cli.action.databaseFilepath);
 
   try {
