@@ -12,6 +12,7 @@ const platforms = [
   "PC (early access)",
   "PlayStation 4",
   "PlayStation 4 (beta)",
+  "PlayStation 4 (demo)",
   "PlayStation 5",
   "PS Vita",
   "Steam Deck",
@@ -31,7 +32,9 @@ export class VideoGamePlatform implements ValueObject {
   public validateObjectProperties(): void {
     if (!platforms.includes(this.value)) {
       throw new DomainError(
-        `Platform (${this.value}) must be one of the following: ${platforms.sort().join(", ")}`,
+        `Platform (${this.value}) must be one of the following: ${
+          platforms.sort().join(", ")
+        }`,
       );
     }
   }
