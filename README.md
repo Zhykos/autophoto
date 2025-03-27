@@ -239,7 +239,6 @@ This software uses the following open source packages:
 - Git hook: [Hook](https://deno.land/x/deno_hooks)
 - README template by [Amit Merchant](https://github.com/amitmerchant1990)
 - I wish to not generate a header with IA so I used an image by <a href="https://unsplash.com/fr/@enikoo">eniko kis</a> on <a href="https://unsplash.com/fr/photos/appareil-photo-instantane-polaroid-one-step-2-blanc-et-noir-sur-tableau-blanc-KsLPTsYaqIQ">Unsplash</a>
-- Everyone, somehow, because I used Copilot to help me write the code
 
 ## Authors
 
