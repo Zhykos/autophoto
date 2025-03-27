@@ -278,3 +278,5 @@ the domains, the performance, etc. So, if you want to help me, I will be happy t
   - Fix number formats in logs (thanks to @AndreVale69)
   - Add a logger style option (batch or console)
   - Check PRs with GitHub Actions
+* 2.3.0
+  - Add "PlayStation 4 (demo)" platform
