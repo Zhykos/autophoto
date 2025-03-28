@@ -20,6 +20,7 @@ const platforms = [
   "Xbox 360",
   "Xbox Game Cloud",
   "Xbox One",
+  "Xbox One (beta)",
   "Xbox Series X",
   "Xbox Series X (beta)",
 ];
