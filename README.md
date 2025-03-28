@@ -279,3 +279,5 @@ the domains, the performance, etc. So, if you want to help me, I will be happy t
   - Check PRs with GitHub Actions
 * 2.3.0
   - Add "PlayStation 4 (demo)" platform
+* 2.4.0
+  - Add "Xbox One (beta)" platform
