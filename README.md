@@ -26,15 +26,17 @@
 
 ## Key Features
 
-* Pre-scan your directory for photos
+* Publish photos (or images) to a remote server
+  - Only supports Bluesky
+  - Randomly select 4 photos and publish them
+* Pre-scan your directories for photos
   - Photos are detected by a path pattern
   - Check all detected photos if they are valid (for instance BlueSky has size limitations)
 * Scan your directory for photos
   - For now only suppose to work with video game screenshots
   - Photos are detected by a path pattern
-* Publish them to a remote server
-  - Only supports Bluesky
-  - Randomly select 4 photos and publish them
+  - Save them into a file database
+* Publish database statistics
 * Application is build as native desktop app
   - CLI based
 
@@ -100,7 +102,7 @@ The scanned data are stored in a SQLite database in the `db.autophoto.sqlite3` f
 
 You need a Bluesky account to publish your photos: [Bluesky](https://bsky.app/).
 
-Then run the application with the `--publish` option and your madatory Bluesky credentials:
+Then run the application with the `--publish` option and your mandatory Bluesky credentials:
 
 ```shell
 autophoto --publish --bluesky_login=your_login --bluesky_password=your_password
@@ -112,9 +114,25 @@ Optionnally, you can also specify the Bluesky URL with the `--bluesky_host` opti
 autophoto --publish --bluesky_login=your_login --bluesky_password=your_password --bluesky_host=https://bsky.app
 ```
 
+### Publish statistics (about your gallery) on Bluesky
+
+You need a Bluesky account to publish statistics: [Bluesky](https://bsky.app/).
+
+Then run the application with the `--stats` option and your mandatory Bluesky credentials:
+
+```shell
+autophoto --stats --bluesky_login=your_login --bluesky_password=your_password
+```
+
+Optionnally, you can also specify the Bluesky URL with the `--bluesky_host` option:
+
+```shell
+autophoto --stats --bluesky_login=your_login --bluesky_password=your_password --bluesky_host=https://bsky.app
+```
+
 ### Command line options and arguments for autophoto
 
-For all actions (pre-scan, scan or publish, you can set other options in the command line.
+For all actions (pre-scan, publish scan or stats), you can set other options in the command line.
 
 #### Specify where the database file is stored (to be written for scan or read for publish)
 
@@ -227,6 +245,12 @@ deno task coverage
 
 It will generate a coverage report in the `coverage` directory and open it in your browser.
 
+### Contribute
+
+You can optionnally create an issue to describe a new feature, a bug or something else.
+
+Then create a Pull Request (see non existing yet CONTRIBUTING.md file).
+
 ## Credits
 
 This software uses the following open source packages:
@@ -239,7 +263,6 @@ This software uses the following open source packages:
 - Git hook: [Hook](https://deno.land/x/deno_hooks)
 - README template by [Amit Merchant](https://github.com/amitmerchant1990)
 - I wish to not generate a header with IA so I used an image by <a href="https://unsplash.com/fr/@enikoo">eniko kis</a> on <a href="https://unsplash.com/fr/photos/appareil-photo-instantane-polaroid-one-step-2-blanc-et-noir-sur-tableau-blanc-KsLPTsYaqIQ">Unsplash</a>
-- Everyone, somehow, because I used Copilot to help me write the code
 
 ## Authors
 
@@ -280,3 +303,6 @@ the domains, the performance, etc. So, if you want to help me, I will be happy t
   - Check PRs with GitHub Actions
 * 2.3.0
   - Add "PlayStation 4 (demo)" platform
+* 2.4.0
+  - Add "Xbox One (beta)" platform
+  - New CLI option to publish statistics

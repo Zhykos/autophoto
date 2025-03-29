@@ -1,6 +1,7 @@
 import { Log, LogTransportBase, Severity } from "@cross/log";
 import type { File } from "../../../common/domain/valueobject/File.ts";
-import { BlueskyPublisherAction } from "../valueobject/BlueskyPublisherAction.ts";
+import { BlueskyImagesPublisherAction } from "../valueobject/BlueskyImagesPublisherAction.ts";
+import { BlueskyStatsPublisherAction } from "../valueobject/BlueskyStatsPublisherAction.ts";
 import { type CLIAction, LoggerStyle } from "../valueobject/CLIAction.ts";
 import { PreScannerAction } from "../valueobject/PreScannerAction.ts";
 import { ScannerAction } from "../valueobject/ScannerAction.ts";
@@ -13,6 +14,9 @@ export class CLI {
   }
 }
 
+const ACTION_MISSING_ERROR_MESSAGE =
+  "Action is required: prescanner, publisher, scanner or statistics.";
+
 export class CLIBuilder {
   private action: CLIAction | undefined;
 
@@ -20,8 +24,12 @@ export class CLIBuilder {
     this.action = new ScannerAction(configurationFile);
   }
 
-  withBluesky(host: URL, login: string, password: string): void {
-    this.action = new BlueskyPublisherAction(host, login, password);
+  publishImagesToBluesky(host: URL, login: string, password: string): void {
+    this.action = new BlueskyImagesPublisherAction(host, login, password);
+  }
+
+  publishStatsToBluesky(host: URL, login: string, password: string): void {
+    this.action = new BlueskyStatsPublisherAction(host, login, password);
   }
 
   withPreScanner(configurationFile: File): void {
@@ -30,7 +38,7 @@ export class CLIBuilder {
 
   withDatabaseFilepath(databaseFilepath: string): void {
     if (!this.action) {
-      throw new Error("Action is required: prescanner, publisher or scanner");
+      throw new Error(ACTION_MISSING_ERROR_MESSAGE);
     }
 
     this.action.databaseFilepath = databaseFilepath;
@@ -38,7 +46,7 @@ export class CLIBuilder {
 
   withDebug(): void {
     if (!this.action) {
-      throw new Error("Action is required: prescanner, publisher or scanner");
+      throw new Error(ACTION_MISSING_ERROR_MESSAGE);
     }
 
     this.action.debug = true;
@@ -46,7 +54,7 @@ export class CLIBuilder {
 
   withLogger(loggerStyle: LoggerStyle | undefined): Log {
     if (!this.action) {
-      throw new Error("Action is required: prescanner, publisher or scanner");
+      throw new Error(ACTION_MISSING_ERROR_MESSAGE);
     }
 
     if (loggerStyle === LoggerStyle.BATCH) {
@@ -59,7 +67,7 @@ export class CLIBuilder {
 
   build(): CLI {
     if (!this.action) {
-      throw new Error("Action is required: prescanner, publisher or scanner");
+      throw new Error(ACTION_MISSING_ERROR_MESSAGE);
     }
 
     return new CLI(this.action);

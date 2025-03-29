@@ -35,7 +35,7 @@ class MockErrorImageRepository extends MockImageRepository {
   }
 }
 
-describe("main scanner", () => {
+describe("scan (root file)", () => {
   beforeEach(async () => {
     if (pathExists(tempDatabaseFilePath)) {
       Deno.removeSync(tempDatabaseFilePath);

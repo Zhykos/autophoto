@@ -16,7 +16,7 @@ describe("CLI", () => {
     assert(error instanceof Error);
     assertEquals(
       error.message,
-      "Action is required: prescanner, publisher or scanner",
+      "Action is required: prescanner, publisher, scanner or statistics.",
     );
   });
 
@@ -25,7 +25,7 @@ describe("CLI", () => {
     assert(error instanceof Error);
     assertEquals(
       error.message,
-      "Action is required: prescanner, publisher or scanner",
+      "Action is required: prescanner, publisher, scanner or statistics.",
     );
   });
 
@@ -38,7 +38,7 @@ describe("CLI", () => {
     assert(error instanceof Error);
     assertEquals(
       error.message,
-      "Action is required: prescanner, publisher or scanner",
+      "Action is required: prescanner, publisher, scanner or statistics.",
     );
   });
 
@@ -51,7 +51,7 @@ describe("CLI", () => {
     assert(error instanceof Error);
     assertEquals(
       error.message,
-      "Action is required: prescanner, publisher or scanner",
+      "Action is required: prescanner, publisher, scanner or statistics.",
     );
   });
 
@@ -93,7 +93,7 @@ describe("CLI", () => {
     assert(error instanceof Error);
     assertEquals(
       error.message,
-      "Action is required: prescanner, publisher or scanner",
+      "Action is required: prescanner, publisher, scanner or statistics.",
     );
   });
 

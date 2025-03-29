@@ -5,6 +5,7 @@ import { VideoGame } from "../domain/entity/VideoGame.ts";
 
 export interface VideoGameRepository {
   getVideoGames(filterIDs: string[]): Promise<VideoGame[]>;
+  count(): Promise<number>;
 }
 
 export class KvVideoGameRepository implements VideoGameRepository {
@@ -24,5 +25,11 @@ export class KvVideoGameRepository implements VideoGameRepository {
         (entity) =>
           new VideoGame(entity.uuid, entity.title, entity.releaseYear),
       );
+  }
+
+  async count(): Promise<number> {
+    const entities: VideoGameRepositoryEntity[] =
+      await this.commonRepository.getAllVideoGames();
+    return entities.length;
   }
 }

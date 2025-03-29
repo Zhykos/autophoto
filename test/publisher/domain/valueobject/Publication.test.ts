@@ -5,10 +5,16 @@ import { Path } from "../../../../src/common/domain/valueobject/Path.ts";
 import { Publication } from "../../../../src/publisher/domain/valueobject/Publication.ts";
 
 describe("Publication", () => {
-  it("should throw an error when no images are provided", () => {
-    const error = assertThrows(() => new Publication("message", []));
-    assert(error instanceof Error);
-    assertEquals(error.message, "Images are empty!");
+  it("should not throw an error when 0 images are provided", () => {
+    const publication = new Publication("message", []);
+    assertEquals(publication.message, "message");
+    assertEquals(publication.images, []);
+  });
+
+  it("should not throw an error when no images are provided", () => {
+    const publication = new Publication("message");
+    assertEquals(publication.message, "message");
+    assertEquals(publication.images, undefined);
   });
 
   it("should throw an error when no message is provided", () => {
@@ -62,6 +68,6 @@ describe("Publication", () => {
       () => new Publication("foo", [new File(new Path("README.md"))], [""]),
     );
     assert(error instanceof Error);
-    assertEquals(error.message, "An alt is empty!");
+    assertEquals(error.message, "There is an alt message which is empty!");
   });
 });

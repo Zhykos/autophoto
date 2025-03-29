@@ -1,16 +1,16 @@
 import { assert, assertEquals, assertFalse, assertThrows } from "@std/assert";
 import { describe, it } from "@std/testing/bdd";
-import { BlueskyPublisherAction } from "../../../../src/cli/domain/valueobject/BlueskyPublisherAction.ts";
+import { BlueskyStatsPublisherAction } from "../../../../src/cli/domain/valueobject/BlueskyStatsPublisherAction.ts";
 import { DomainError } from "../../../../src/common/domain/DomainError.ts";
 
-describe("BlueskyPublisherAction", () => {
+describe("BlueskyStatsPublisherAction", () => {
   it("should be equal when properties are the same", () => {
-    const obj1 = new BlueskyPublisherAction(
+    const obj1 = new BlueskyStatsPublisherAction(
       new URL("http://zhykos.fr"),
       "login",
       "password",
     );
-    const obj2 = new BlueskyPublisherAction(
+    const obj2 = new BlueskyStatsPublisherAction(
       new URL("http://zhykos.fr"),
       "login",
       "password",
@@ -19,7 +19,7 @@ describe("BlueskyPublisherAction", () => {
   });
 
   it("should not be equal when compared with a string", () => {
-    const obj1 = new BlueskyPublisherAction(
+    const obj1 = new BlueskyStatsPublisherAction(
       new URL("http://zhykos.fr"),
       "login",
       "password",
@@ -31,7 +31,11 @@ describe("BlueskyPublisherAction", () => {
   it("should throw an error when login is empty", () => {
     const error = assertThrows(
       () =>
-        new BlueskyPublisherAction(new URL("http://zhykos.fr"), "", "password"),
+        new BlueskyStatsPublisherAction(
+          new URL("http://zhykos.fr"),
+          "",
+          "password",
+        ),
     );
     assert(error instanceof DomainError);
     assertEquals(error.message, "Login is required");
@@ -40,7 +44,11 @@ describe("BlueskyPublisherAction", () => {
   it("should throw an error when password is empty", () => {
     const error = assertThrows(
       () =>
-        new BlueskyPublisherAction(new URL("http://zhykos.fr"), "login", ""),
+        new BlueskyStatsPublisherAction(
+          new URL("http://zhykos.fr"),
+          "login",
+          "",
+        ),
     );
     assert(error instanceof DomainError);
     assertEquals(error.message, "Password is required");

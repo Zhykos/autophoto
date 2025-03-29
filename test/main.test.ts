@@ -23,7 +23,7 @@ import { getAllVideoGamesFromRepository } from "./test-utils/getAllVideoGamesFro
 
 const tempDatabaseFilePath = "./test/it-database.sqlite3";
 
-describe("main", () => {
+describe("main (root file)", () => {
   let mockedBlueskyServer: MockBlueskyServer;
 
   beforeAll(() => {
@@ -65,7 +65,7 @@ describe("main", () => {
     assertEquals(allLinks.length, 5);
   });
 
-  it("should publish", async () => {
+  it("should publish images", async () => {
     await main([`--database=${tempDatabaseFilePath}`, "--scan=config.yml"]);
 
     await main([
@@ -97,7 +97,36 @@ describe("main", () => {
     );
   });
 
-  it("should publish nothing because database is empty", async () => {
+  it("should publish stats", async () => {
+    await main([`--database=${tempDatabaseFilePath}`, "--scan=config.yml"]);
+
+    await main([
+      `--database=${tempDatabaseFilePath}`,
+      "--scan=./test/resources/config2.yml",
+    ]);
+
+    await main([
+      `--database=${tempDatabaseFilePath}`,
+      "--stats",
+      `--bluesky_host=${mockedBlueskyServer.host}`,
+      "--bluesky_login=login",
+      "--bluesky_password=password",
+    ]);
+
+    assertNotEquals(mockedBlueskyServer.lastRecord, undefined);
+    assertEquals(
+      mockedBlueskyServer.lastRecord?.text ?? "",
+      `Hi! ✨ Here are some statistics about the gallery:
+  - 8 images
+  - 3 video games.
+
+8 images not published yet: it may take more 1 day to publish them.
+
+(automatic message)`,
+    );
+  });
+
+  it("should not publish images because database is empty", async () => {
     await main([
       `--database=${tempDatabaseFilePath}`,
       "--publish",
@@ -107,5 +136,24 @@ describe("main", () => {
     ]);
 
     assertEquals(mockedBlueskyServer.lastRecord, undefined);
+  });
+
+  it("should not publish stats because database is empty", async () => {
+    await main([
+      `--database=${tempDatabaseFilePath}`,
+      "--stats",
+      `--bluesky_host=${mockedBlueskyServer.host}`,
+      "--bluesky_login=login",
+      "--bluesky_password=password",
+    ]);
+
+    assertEquals(
+      mockedBlueskyServer.lastRecord?.text ?? "",
+      `Hi! ✨ Here are some statistics about the gallery.
+No more images to publish for now.
+See you soon 💫
+
+(automatic message)`,
+    );
   });
 });

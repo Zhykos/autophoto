@@ -8,7 +8,7 @@ import { CLI, type CLIBuilder } from "../domain/aggregate/CLI.ts";
 export class CLIService {
   read(cliArgs: string[]): CLI {
     const args: Args = parseArgs(cliArgs, {
-      boolean: ["debug", "publish"],
+      boolean: ["debug", "publish", "stats"],
       string: [
         "bluesky_host",
         "bluesky_login",
@@ -25,7 +25,15 @@ export class CLIService {
     const cliBuilder: CLIBuilder = CLI.builder();
 
     if (args.publish === true) {
-      cliBuilder.withBluesky(
+      cliBuilder.publishImagesToBluesky(
+        args.bluesky_host
+          ? new URL(args.bluesky_host)
+          : new URL("https://bsky.social"),
+        args.bluesky_login,
+        args.bluesky_password,
+      );
+    } else if (args.stats === true) {
+      cliBuilder.publishStatsToBluesky(
         args.bluesky_host
           ? new URL(args.bluesky_host)
           : new URL("https://bsky.social"),
@@ -49,10 +57,10 @@ export class CLIService {
       cliBuilder.withDatabaseFilepath(databaseFilepath);
 
       if (pathExists(databaseFilepath)) {
-        logger.log(`Using database file: ${databaseFilepath}`);
+        logger.log(`Using database file: "${databaseFilepath}".`);
       } else {
         logger.warn(
-          `Database file not found, using a new one: ${databaseFilepath}`,
+          `Database file not found, using a new one: "${databaseFilepath}".`,
         );
       }
     }
@@ -64,7 +72,7 @@ export class CLIService {
     const cliParameters: (string | number)[] = args._;
     if (cliParameters.length > 0) {
       throw new Error(
-        `Command line argument is not allowed: "${cliParameters}"`,
+        `Command line argument is not allowed: "${cliParameters}".`,
       );
     }
 
@@ -88,20 +96,26 @@ export class CLIService {
       nbArgsOptions++;
     }
 
+    if (args.stats) {
+      nbArgsOptions++;
+    }
+
     if (nbArgsOptions !== 1) {
       throw new Error(
-        'Only one option allowed: "--prescan" or "--publish" or "--scan"',
+        'Only one option allowed: "--prescan" or "--publish" or "--scan" or "--stats".',
       );
     }
   }
 
   private checkArgsCombination(args: Args): void {
     if (args.prescan && args.debug) {
-      throw new Error('Option "--prescan" is not compatible with "--debug"');
+      throw new Error('Option "--prescan" is not compatible with "--debug".');
     }
 
     if (args.prescan && args.database) {
-      throw new Error('Option "--prescan" is not compatible with "--database"');
+      throw new Error(
+        'Option "--prescan" is not compatible with "--database".',
+      );
     }
 
     if (
@@ -109,7 +123,7 @@ export class CLIService {
       (args.bluesky_host || args.bluesky_login || args.bluesky_password)
     ) {
       throw new Error(
-        'Option "--prescan" or "--scan" is not compatible with "--bluesky_host", "--bluesky_login" or "--bluesky_password"',
+        'Option "--prescan" or "--scan" is not compatible with "--bluesky_host", "--bluesky_login" or "--bluesky_password".',
       );
     }
   }
@@ -117,7 +131,7 @@ export class CLIService {
   private checkLoggerArg(args: Args): void {
     if (args.logger) {
       if (!["batch", "console"].includes(args.logger)) {
-        throw new Error('Option "--logger" must be "batch" or "console"');
+        throw new Error('Option "--logger" must be "batch" or "console".');
       }
     }
   }
