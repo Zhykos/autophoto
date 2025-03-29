@@ -1,6 +1,6 @@
 import { AtpAgent } from "@atproto/api";
 import type { Log } from "@cross/log";
-import type { BlueskyPublisherAction } from "./cli/domain/valueobject/BlueskyPublisherAction.ts";
+import type { BlueskyImagesPublisherAction } from "./cli/domain/valueobject/BlueskyImagesPublisherAction.ts";
 import type { KvDriver } from "./common/dbdriver/KvDriver.ts";
 import { File } from "./common/domain/valueobject/File.ts";
 import { Path } from "./common/domain/valueobject/Path.ts";
@@ -19,8 +19,8 @@ import { Publication } from "./publisher/domain/valueobject/Publication.ts";
 import { BlueskyPublisherService } from "./publisher/service/BlueskyPublisherService.ts";
 import { pluralFinalS } from "./utils/plural-final-s.ts";
 
-export const publish = async (
-  blueskyAction: BlueskyPublisherAction,
+export const publishImages = async (
+  blueskyAction: BlueskyImagesPublisherAction,
   kvDriver: KvDriver,
   logger: Log,
 ): Promise<string | undefined> => {
@@ -41,22 +41,28 @@ export const publish = async (
 
   logger.log(`Picked video game: ${pickedVideoGameScreeshots.title}`);
 
+  const publicationMessage = `${pluralFinalS(
+    pickedVideoGameScreeshots.screenshots.length,
+    "Screenshot",
+    false,
+  )} from video game "${pickedVideoGameScreeshots.title}" (${pickedVideoGameScreeshots.releaseYear}) taken on ${pickedVideoGameScreeshots.platform}`;
+
+  const publicationImages: File[] = pickedVideoGameScreeshots.screenshots.map(
+    (s) => new File(new Path(s.path)),
+  );
+
+  const publicationAlts: string[] = pickedVideoGameScreeshots.screenshots.map(
+    (_) =>
+      `Screenshot from video game ${pickedVideoGameScreeshots.title} (no more details given by the bot)`, // TODO
+  );
+
   const resultPublication: string = await new BlueskyPublisherService().publish(
     new BlueskyPublication(
       new AtpAgent({
         service: blueskyAction.host.toString(),
       }),
       new Credentials(blueskyAction.login, blueskyAction.password),
-      new Publication(
-        `${pluralFinalS(pickedVideoGameScreeshots.screenshots.length, "Screenshot", false)} from video game "${pickedVideoGameScreeshots.title}" (${pickedVideoGameScreeshots.releaseYear}) taken on ${pickedVideoGameScreeshots.platform}`,
-        pickedVideoGameScreeshots.screenshots.map(
-          (s) => new File(new Path(s.path)),
-        ),
-        pickedVideoGameScreeshots.screenshots.map(
-          (_) =>
-            `Screenshot from video game ${pickedVideoGameScreeshots.title} (no more details given by the bot)`, // TODO
-        ),
-      ),
+      new Publication(publicationMessage, publicationImages, publicationAlts),
     ),
   );
 
@@ -107,5 +113,11 @@ ${publishedVideoGameScreeshots.screenshots
   .sort()
   .join("\n")}
 
-${pluralFinalS(unpublishedVideoGameRelations.length, "image")} not published yet: it may take another ${pluralFinalS(possibleRemainingDays, "publication")} to publish them (if 1 publication per day).`;
+${pluralFinalS(
+  unpublishedVideoGameRelations.length,
+  "image",
+)} not published yet: it may take another ${pluralFinalS(
+    possibleRemainingDays,
+    "publication",
+  )} to publish them (if 1 publication per day).`;
 }

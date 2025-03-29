@@ -1,10 +1,12 @@
+import { formatNumber } from "./format-number.ts";
+
 export const pluralFinalS = (
   count: number,
   str: string,
   displayCount = true,
 ): string => {
   if (displayCount) {
-    return `${count} ${stringWithFinalS(count, str)}`;
+    return `${formatNumber(count)} ${stringWithFinalS(count, str)}`;
   }
 
   return stringWithFinalS(count, str);
