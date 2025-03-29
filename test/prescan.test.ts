@@ -14,7 +14,7 @@ import { MockLoggerTransport } from "./mock/logger/MockLoggerTransport.ts";
 import { MockLogger } from "./mock/logger/mockLogger.ts";
 import { assertContainsMatch } from "./test-utils/assertContainsMatch.ts";
 
-describe("main prescan", () => {
+describe("prescan (root file)", () => {
   it("should prescan with main", async () => {
     const result: boolean = await main(["--prescan=config.yml"]);
 

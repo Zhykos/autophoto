@@ -5,7 +5,8 @@ import {
   BatchLogger,
   type CLI,
 } from "../../../src/cli/domain/aggregate/CLI.ts";
-import { BlueskyPublisherAction } from "../../../src/cli/domain/valueobject/BlueskyPublisherAction.ts";
+import { BlueskyImagesPublisherAction } from "../../../src/cli/domain/valueobject/BlueskyImagesPublisherAction.ts";
+import { BlueskyStatsPublisherAction } from "../../../src/cli/domain/valueobject/BlueskyStatsPublisherAction.ts";
 import { ScannerAction } from "../../../src/cli/domain/valueobject/ScannerAction.ts";
 import { CLIService } from "../../../src/cli/service/CLIService.ts";
 
@@ -15,7 +16,7 @@ describe("CLIService", () => {
     assert(error instanceof Error);
     assertEquals(
       error.message,
-      'Only one option allowed: "--prescan" or "--publish" or "--scan"',
+      'Only one option allowed: "--prescan" or "--publish" or "--scan" or "--stats".',
     );
   });
 
@@ -26,14 +27,14 @@ describe("CLIService", () => {
     assert(error instanceof Error);
     assertEquals(
       error.message,
-      'Command line argument is not allowed: "README.md,LICENSE"',
+      'Command line argument is not allowed: "README.md,LICENSE".',
     );
   });
 
   it("should fail if one arg", () => {
     const error = assertThrows(() => new CLIService().read(["foo"]));
     assert(error instanceof Error);
-    assertEquals(error.message, 'Command line argument is not allowed: "foo"');
+    assertEquals(error.message, 'Command line argument is not allowed: "foo".');
   });
 
   it("should fail if scanner option is a directory", () => {
@@ -47,7 +48,7 @@ describe("CLIService", () => {
     assert(error instanceof Error);
     assertEquals(
       error.message,
-      'Command line argument is not allowed: "README.md"',
+      'Command line argument is not allowed: "README.md".',
     );
   });
 
@@ -61,13 +62,22 @@ describe("CLIService", () => {
     assertFalse(cliResult.action.debug);
   });
 
-  it("should create publisher", () => {
+  it("should create images publisher", () => {
     const cliResult: CLI = new CLIService().read([
       "--publish",
       "--bluesky_login=login",
       "--bluesky_password=password",
     ]);
-    assert(cliResult.action instanceof BlueskyPublisherAction);
+    assert(cliResult.action instanceof BlueskyImagesPublisherAction);
+  });
+
+  it("should create stats publisher", () => {
+    const cliResult: CLI = new CLIService().read([
+      "--stats",
+      "--bluesky_login=login",
+      "--bluesky_password=password",
+    ]);
+    assert(cliResult.action instanceof BlueskyStatsPublisherAction);
   });
 
   it("should specify database", () => {
@@ -99,7 +109,7 @@ describe("CLIService", () => {
     assert(error instanceof Error);
     assertEquals(
       error.message,
-      'Option "--prescan" is not compatible with "--debug"',
+      'Option "--prescan" is not compatible with "--debug".',
     );
   });
 
@@ -110,11 +120,11 @@ describe("CLIService", () => {
     assert(error instanceof Error);
     assertEquals(
       error.message,
-      'Option "--prescan" is not compatible with "--database"',
+      'Option "--prescan" is not compatible with "--database".',
     );
   });
 
-  it("should fail if using scanner with bluesky publisher", () => {
+  it("should fail if using scanner with bluesky images publisher", () => {
     const error = assertThrows(() =>
       new CLIService().read([
         "--bluesky_host=https://bsky.social",
@@ -124,7 +134,7 @@ describe("CLIService", () => {
     assert(error instanceof Error);
     assertEquals(
       error.message,
-      'Option "--prescan" or "--scan" is not compatible with "--bluesky_host", "--bluesky_login" or "--bluesky_password"',
+      'Option "--prescan" or "--scan" is not compatible with "--bluesky_host", "--bluesky_login" or "--bluesky_password".',
     );
   });
 
@@ -135,7 +145,7 @@ describe("CLIService", () => {
     assert(error instanceof Error);
     assertEquals(
       error.message,
-      'Option "--logger" must be "batch" or "console"',
+      'Option "--logger" must be "batch" or "console".',
     );
   });
 
@@ -146,5 +156,20 @@ describe("CLIService", () => {
     ]);
     assert(cliResult.action.logger.transports.length === 1);
     assert(cliResult.action.logger.transports[0] instanceof BatchLogger);
+  });
+
+  it("should fail if using images and stats bluesky publishers", () => {
+    const error = assertThrows(() =>
+      new CLIService().read([
+        "--stats",
+        "--publish",
+        "--bluesky_host=https://bsky.social",
+      ]),
+    );
+    assert(error instanceof Error);
+    assertEquals(
+      error.message,
+      'Only one option allowed: "--prescan" or "--publish" or "--scan" or "--stats".',
+    );
   });
 });

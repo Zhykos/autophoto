@@ -33,9 +33,9 @@ export class VideoGamePlatform implements ValueObject {
   public validateObjectProperties(): void {
     if (!platforms.includes(this.value)) {
       throw new DomainError(
-        `Platform (${this.value}) must be one of the following: ${
-          platforms.sort().join(", ")
-        }`,
+        `Platform (${this.value}) must be one of the following: ${platforms
+          .sort()
+          .join(", ")}`,
       );
     }
   }

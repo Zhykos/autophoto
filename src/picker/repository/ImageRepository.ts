@@ -5,6 +5,7 @@ import { Image } from "../domain/entity/Image.ts";
 
 export interface ImageRepository {
   getVideoGameScreenshots(filterIDs: string[]): Promise<Image[]>;
+  count(): Promise<number>;
 }
 
 export class KvImageRepository implements ImageRepository {
@@ -23,5 +24,11 @@ export class KvImageRepository implements ImageRepository {
       .map((entity) => {
         return new Image(entity.uuid, entity.path);
       });
+  }
+
+  async count(): Promise<number> {
+    const entities: ImageRepositoryRepositoryEntity[] =
+      await this.commonRepository.getAllVideoGameScreenshots();
+    return entities.length;
   }
 }

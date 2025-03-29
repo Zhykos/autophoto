@@ -24,10 +24,12 @@ export class BlueskyPublisherService implements PublisherService {
 
     for (
       let index = 0;
-      index < blueskyPublication.publication.images.length;
+      index < (blueskyPublication.publication.images?.length as number);
       index++
     ) {
-      const imageFile: File = blueskyPublication.publication.images[index];
+      const imageFile: File = blueskyPublication.publication?.images?.at(
+        index,
+      ) as File;
       const alt: string | undefined =
         blueskyPublication.publication.alts?.at(index);
 

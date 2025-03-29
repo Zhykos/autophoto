@@ -2,7 +2,10 @@ import { DomainError } from "../../../common/domain/DomainError.ts";
 import type { ValueObject } from "../../../common/domain/ValueObject.ts";
 import { CLIAction } from "./CLIAction.ts";
 
-export class BlueskyPublisherAction extends CLIAction implements ValueObject {
+export abstract class AbstractBlueskyPublisherAction
+  extends CLIAction
+  implements ValueObject
+{
   constructor(
     public readonly host: URL,
     public readonly login: string,
@@ -22,14 +25,11 @@ export class BlueskyPublisherAction extends CLIAction implements ValueObject {
     }
   }
 
-  equals(other: unknown): boolean {
-    if (other instanceof BlueskyPublisherAction) {
-      return (
-        this.login === other.login &&
-        this.password === other.password &&
-        this.host.toString() === other.host.toString()
-      );
-    }
-    return false;
+  equals(other: AbstractBlueskyPublisherAction): boolean {
+    return (
+      this.login === other.login &&
+      this.password === other.password &&
+      this.host.toString() === other.host.toString()
+    );
   }
 }

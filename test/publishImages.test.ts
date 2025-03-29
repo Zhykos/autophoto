@@ -11,7 +11,7 @@ import {
   describe,
   it,
 } from "@std/testing/bdd";
-import { BlueskyPublisherAction } from "../src/cli/domain/valueobject/BlueskyPublisherAction.ts";
+import { BlueskyImagesPublisherAction } from "../src/cli/domain/valueobject/BlueskyImagesPublisherAction.ts";
 import { KvDriver } from "../src/common/dbdriver/KvDriver.ts";
 import type { VideoGameRelationImageRepositoryEntity } from "../src/common/repository/entity/VideoGameRelationImageRepositoryEntity.ts";
 import { main } from "../src/main.ts";
@@ -19,7 +19,10 @@ import { VideoGameScreeshotsToShare } from "../src/picker/domain/aggregate/Video
 import { Image } from "../src/picker/domain/entity/Image.ts";
 import { UnpublishedVideoGameScreenshotRelation } from "../src/picker/domain/entity/UnpublishedVideoGameScreenshotRelation.ts";
 import type { RelationRepository } from "../src/picker/repository/RelationRepository.ts";
-import { debugDatabaseInformation, publish } from "../src/publish.ts";
+import {
+  debugDatabaseInformation,
+  publishImages,
+} from "../src/publishImages.ts";
 import { pathExists } from "../src/utils/file.ts";
 import { MockBlueskyServer } from "./mock/distant-server/MockBlueskyServer.ts";
 import { mockLogger } from "./mock/logger/mockLogger.ts";
@@ -29,7 +32,7 @@ import { getAllVideoGamesFromRepository } from "./test-utils/getAllVideoGamesFro
 
 const tempDatabaseFilePath = "./test/it-database.sqlite3";
 
-describe("main publish", () => {
+describe("publish images (root file)", () => {
   let mockedBlueskyServer: MockBlueskyServer;
 
   beforeAll(() => {
@@ -53,18 +56,18 @@ describe("main publish", () => {
     await mockedBlueskyServer.stop();
   });
 
-  it("should publish", async () => {
-    await main(["--database=./test/it-database.sqlite3", "--scan=config.yml"]);
+  it("should publish images", async () => {
+    await main([`--database=${tempDatabaseFilePath}`, "--scan=config.yml"]);
 
     await main([
-      "--database=./test/it-database.sqlite3",
+      `--database=${tempDatabaseFilePath}`,
       "--scan=./test/resources/config2.yml",
     ]);
 
-    const driver = new KvDriver("./test/it-database.sqlite3");
+    const driver = new KvDriver(tempDatabaseFilePath);
 
     try {
-      const action = new BlueskyPublisherAction(
+      const action = new BlueskyImagesPublisherAction(
         new URL(mockedBlueskyServer.host),
         "login",
         "password",
@@ -72,7 +75,7 @@ describe("main publish", () => {
 
       action.debug = true;
 
-      await publish(action, driver, mockLogger());
+      await publishImages(action, driver, mockLogger());
 
       assertNotEquals(mockedBlueskyServer.lastRecord, undefined);
       assertMatch(
@@ -105,7 +108,7 @@ describe("main publish", () => {
     }
   });
 
-  it("should debug publication", async () => {
+  it("should debug images publication", async () => {
     const relationRepository = new MockRelationRepository();
 
     const debug: string = await debugDatabaseInformation(
