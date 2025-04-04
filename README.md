@@ -306,3 +306,5 @@ the domains, the performance, etc. So, if you want to help me, I will be happy t
 * 2.4.0
   - Add "Xbox One (beta)" platform
   - New CLI option to publish statistics
+* 2.5.0
+  - Add "Nintendo Switch (demo)" platform
