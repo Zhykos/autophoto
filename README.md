@@ -170,18 +170,48 @@ The following styles are available:
 
 `console` is the default style.
 
-## Run the app with the development environment in real world
+## Run the app within the development environment and execute tasks into the real world
 
-### Statistics
+### Run the pre-scanner
+
+You can execute a scan with the following command:
+
+```shell
+deno task e2e:prescan
+```
+
+### Run the scanner
+
+You can execute a scan with the following command:
+
+```shell
+deno task e2e:scan
+```
+
+It will use the configuration files `config.yml` and `./test/resources/config2.yml`, and create a local database `./test/e2e-debug.sqlite3`.
+
+### Publish images
 
 > Careful this section will publish a message on a real Bluesky account!
 
-There is a small debug database in this project. If you want to publish a statistics message, follow these instructions. Be sure to have your Bluesky credentials (email and password).
+There is a small debug database in this project (created with the previous paragraph `Run the scanner`). If you want to publish a statistics message, follow these instructions. Be sure to have your Bluesky credentials (email and password).
+
+You can execute a publication with the following command:
+
+```shell
+LOGIN=your_login PASSWORD=your_password deno task e2e:publish
+```
+
+### Publish statistics
+
+> Careful this section will publish a message on a real Bluesky account!
+
+There is a small debug database in this project (created with the previous paragraph `Run the scanner`). If you want to publish a statistics message, follow these instructions. Be sure to have your Bluesky credentials (email and password).
 
 You can check a real execution with the following command line:
 
 ```shell
-LOGIN=XXX PASSWORD=YYY deno task e2e:stats
+LOGIN=your_login PASSWORD=your_password deno task e2e:stats
 ```
 
 ## Contributing
@@ -227,21 +257,7 @@ It will run the linter and tests before each commit.
 
 ### Run the project
 
-There is no run configuration for the project because I just used unit tests to develop the project.
-
-However you can execute a scan with the following command:
-
-```shell
-deno task e2e:scan
-```
-
-It will use the configuration files `config.yml` and `./test/resources/config2.yml`.
-
-You can execute a publish with the following command:
-
-```shell
-LOGIN=your_login PASSWORD=your_password deno task e2e:publish
-```
+See the previous paragraph `Run the app within the development environment and execute tasks into the real world`.
 
 ### Run the tests
 
@@ -259,7 +275,7 @@ deno task coverage
 
 It will generate a coverage report in the `coverage` directory and open it in your browser.
 
-### Contribute
+### Send a contribution
 
 You can optionnally create an issue to describe a new feature, a bug or something else.
 
