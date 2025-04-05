@@ -26,7 +26,9 @@ jobs:
           deno-version: v2.x
 
       - name: Build Linux binary ARM
-        run: deno task build:linux-arm
+        run: |
+          deno install --allow-scripts=npm:puppeteer@23.11.1,npm:vue-demi@0.14.10
+          deno task build:linux-arm
 
       - name: Archive Linux binary ARM
         uses: actions/upload-artifact@v4
