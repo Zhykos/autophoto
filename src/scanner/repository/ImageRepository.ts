@@ -4,7 +4,7 @@ import { Directory } from "../../common/domain/valueobject/Directory.ts";
 import { File } from "../../common/domain/valueobject/File.ts";
 import { Path } from "../../common/domain/valueobject/Path.ts";
 import { CommonKvImageRepository } from "../../common/repository/CommonKvImageRepository.ts";
-import type { ImageRepositoryRepositoryEntity } from "../../common/repository/entity/ImageRepositoryRepositoryEntity.ts";
+import type { ImageRepositoryEntity } from "../../common/repository/entity/ImageRepositoryEntity.ts";
 import { VideoGameScreenshot } from "../domain/entity/VideoGameScreenshot.ts";
 import { Image } from "../domain/valueobject/Image.ts";
 
@@ -26,22 +26,20 @@ export class KvImageRepository implements ImageRepository {
   async saveVideoGameScreenshots(
     screenshots: VideoGameScreenshot[],
   ): Promise<void> {
-    const entities: ImageRepositoryRepositoryEntity[] = screenshots.map(
-      (screenshot) => {
-        return {
-          uuid: screenshot.id,
-          scanRootDirectory: screenshot.image.scannerRootDirectory.path.value,
-          path: screenshot.image.file.path.value,
-          checksum: screenshot.image.file.getChecksum(),
-        } satisfies ImageRepositoryRepositoryEntity;
-      },
-    );
+    const entities: ImageRepositoryEntity[] = screenshots.map((screenshot) => {
+      return {
+        uuid: screenshot.id,
+        scanRootDirectory: screenshot.image.scannerRootDirectory.path.value,
+        path: screenshot.image.file.path.value,
+        checksum: screenshot.image.file.getChecksum(),
+      } satisfies ImageRepositoryEntity;
+    });
 
     await this.commonRepository.saveVideoGameScreenshots(entities);
   }
 
   async getAllVideoGameScreenshots(): Promise<VideoGameScreenshot[]> {
-    const dbEntities: ImageRepositoryRepositoryEntity[] =
+    const dbEntities: ImageRepositoryEntity[] =
       await this.commonRepository.getAllVideoGameScreenshots();
 
     return dbEntities.map((dbEntity) => {

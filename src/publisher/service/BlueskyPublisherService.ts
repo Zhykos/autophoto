@@ -27,17 +27,18 @@ export class BlueskyPublisherService implements PublisherService {
       index < (blueskyPublication.publication.images?.length as number);
       index++
     ) {
-      const imageFile: File = blueskyPublication.publication?.images?.at(
-        index,
-      ) as File;
+      const image: File | Uint8Array =
+        blueskyPublication.publication?.images?.at(index) as File | Uint8Array;
+
       const alt: string | undefined =
         blueskyPublication.publication.alts?.at(index);
 
       const blob: BlobRef = await this.uploadImage(
         blueskyPublication.agent,
-        imageFile,
+        image,
       );
-      const blueskyImage = BlueskyImage.fromFile(imageFile, blob, alt);
+
+      const blueskyImage = BlueskyImage.fromFile(blob, alt);
       images.push(blueskyImage);
     }
 
@@ -60,13 +61,20 @@ export class BlueskyPublisherService implements PublisherService {
     return postResponse.uri;
   }
 
-  private async uploadImage(agent: AtpAgent, file: File): Promise<BlobRef> {
-    const { data } = await agent.uploadBlob(this.convertFileToUint8Array(file));
+  private async uploadImage(
+    agent: AtpAgent,
+    image: File | Uint8Array,
+  ): Promise<BlobRef> {
+    const { data } = await agent.uploadBlob(this.convertToUint8Array(image));
     return data.blob;
   }
 
-  private convertFileToUint8Array(file: File): Uint8Array {
-    const fileStr = Deno.readFileSync(file.path.value);
+  private convertToUint8Array(image: File | Uint8Array): Uint8Array {
+    if (image instanceof Uint8Array) {
+      return image;
+    }
+
+    const fileStr = Deno.readFileSync(image.path.value);
     return new Uint8Array(fileStr);
   }
 }
