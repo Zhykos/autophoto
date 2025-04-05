@@ -1,11 +1,11 @@
 import { DomainError } from "../../../common/domain/DomainError.ts";
 import type { ValueObject } from "../../../common/domain/ValueObject.ts";
-import type { File } from "../../../common/domain/valueobject/File.ts";
+import { File } from "../../../common/domain/valueobject/File.ts";
 
 export class Publication implements ValueObject {
   constructor(
     public readonly message: string,
-    public readonly images?: File[],
+    public readonly images?: File[] | Uint8Array[],
     public readonly alts?: string[],
   ) {
     this.validateObjectProperties();
@@ -34,8 +34,12 @@ export class Publication implements ValueObject {
       return (
         this.message === other.message &&
         this.images?.length === other.images?.length &&
-        this.images?.every((image, index) =>
-          image.equals(other.images?.at(index)),
+        this.images?.every(
+          (image, index) =>
+            (image instanceof File && image.equals(other.images?.at(index))) ||
+            (image instanceof Uint8Array &&
+              other.images?.at(index) instanceof Uint8Array &&
+              image.join() === (other.images.at(index) as Uint8Array).join()),
         ) === true
       );
     }

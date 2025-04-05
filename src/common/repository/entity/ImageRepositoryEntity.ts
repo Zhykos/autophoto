@@ -1,4 +1,4 @@
-export type ImageRepositoryRepositoryEntity = {
+export type ImageRepositoryEntity = {
   uuid: string;
   scanRootDirectory: string;
   path: string;

@@ -4,7 +4,7 @@ import { beforeEach, describe, it } from "@std/testing/bdd";
 import { KvDriver } from "../../../src/common/dbdriver/KvDriver.ts";
 import { Directory } from "../../../src/common/domain/valueobject/Directory.ts";
 import { Path } from "../../../src/common/domain/valueobject/Path.ts";
-import type { ImageRepositoryRepositoryEntity } from "../../../src/common/repository/entity/ImageRepositoryRepositoryEntity.ts";
+import type { ImageRepositoryEntity } from "../../../src/common/repository/entity/ImageRepositoryEntity.ts";
 import type { VideoGameRelationImageRepositoryEntity } from "../../../src/common/repository/entity/VideoGameRelationImageRepositoryEntity.ts";
 import type { VideoGameRepositoryEntity } from "../../../src/common/repository/entity/VideoGameRepositoryEntity.ts";
 import { ConfigurationDataPattern } from "../../../src/configuration/domain/valueobject/ConfigurationDataPattern.ts";
@@ -78,7 +78,7 @@ describe("Scanner", () => {
         mockLogger(),
       );
 
-      const filesAfterScan: ImageRepositoryRepositoryEntity[] =
+      const filesAfterScan: ImageRepositoryEntity[] =
         await getAllImagesFromRepository(tempDatabaseFilePath);
       filesAfterScan.sort((a, b) => a.path.localeCompare(b.path));
       assertEquals(filesAfterScan.length, 8);
@@ -265,7 +265,7 @@ describe("Scanner", () => {
 
       await scanner.scanAndSaveNewImages(imageDirectory);
 
-      const filesAfterScan1: ImageRepositoryRepositoryEntity[] =
+      const filesAfterScan1: ImageRepositoryEntity[] =
         await getAllImagesFromRepository(tempDatabaseFilePath);
       assertEquals(filesAfterScan1.length, 1);
       assertEquals(
@@ -284,7 +284,7 @@ describe("Scanner", () => {
 
       await scanner.scanAndSaveNewImages(imageDirectory);
 
-      const filesAfterScan2: ImageRepositoryRepositoryEntity[] =
+      const filesAfterScan2: ImageRepositoryEntity[] =
         await getAllImagesFromRepository(tempDatabaseFilePath);
       assertEquals(filesAfterScan2.length, 1);
       assertEquals(

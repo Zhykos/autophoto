@@ -170,6 +170,20 @@ The following styles are available:
 
 `console` is the default style.
 
+## Run the app with the development environment in real world
+
+### Statistics
+
+> Careful this section will publish a message on a real Bluesky account!
+
+There is a small debug database in this project. If you want to publish a statistics message, follow these instructions. Be sure to have your Bluesky credentials (email and password).
+
+You can check a real execution with the following command line:
+
+```shell
+LOGIN=XXX PASSWORD=YYY deno task e2e:stats
+```
+
 ## Contributing
 
 ### Install the project
@@ -255,12 +269,13 @@ Then create a Pull Request (see non existing yet CONTRIBUTING.md file).
 
 This software uses the following open source packages:
 
-- Deno 2: [JavaScript runtime](https://deno.com/)
-- Biome: [Lint and format](https://biomejs.dev/)
+- JavaScript runtime: [Deno 2](https://deno.com/)
+- Lint and format: [Biome](https://biomejs.dev/)
 - JavaScript Standards: [jsr.io](https://jsr.io/@std)
 - To publish on Bluesky: [atproto - For Bluesky](https://atproto.com/)
 - Multiformats library: [Multiformats](https://multiformats.io/)
 - Git hook: [Hook](https://deno.land/x/deno_hooks)
+- Diagrams: [Mermaid](https://mermaid.js.org/)
 - README template by [Amit Merchant](https://github.com/amitmerchant1990)
 - I wish to not generate a header with IA so I used an image by <a href="https://unsplash.com/fr/@enikoo">eniko kis</a> on <a href="https://unsplash.com/fr/photos/appareil-photo-instantane-polaroid-one-step-2-blanc-et-noir-sur-tableau-blanc-KsLPTsYaqIQ">Unsplash</a>
 
@@ -275,7 +290,7 @@ This software uses the following open source packages:
 
 ## Projects using autophoto
 
-- [🖼️ Gallery of video games screenshots: more than 10.000 photos](https://bsky.app/profile/galleryvideogames.bsky.social)
+- [🖼️ Gallery of video games screenshots: more than 15.000 photos](https://bsky.app/profile/galleryvideogames.bsky.social)
 
 ---
 
@@ -308,3 +323,4 @@ the domains, the performance, etc. So, if you want to help me, I will be happy t
   - New CLI option to publish statistics
 * 2.5.0
   - Add "Nintendo Switch (demo)" platform
+  - Diagrams for statistics
