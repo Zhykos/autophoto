@@ -169,6 +169,7 @@ ${mapPlatformVideoGameIds
       `"${k}" : ${distinct(mapPlatformVideoGameIds.get(k) as string[]).length}`,
   )
   .toArray()
+  .sort()
   .join("\n")}`;
 
   const image: Uint8Array = await statsDiagramImage(graphDefinition);
@@ -192,6 +193,7 @@ ${mapPlatformVideoGameIds
     }%)`;
   })
   .toArray()
+  .sort()
   .join("\n")}`;
 
   return { image, alt };
@@ -215,6 +217,7 @@ ${mapYearCount
   .keys()
   .map((k) => `"${k}" : ${mapYearCount.get(k)}`)
   .toArray()
+  .sort()
   .join("\n")}`;
 
   const image: Uint8Array = await statsDiagramImage(graphDefinition);
@@ -233,6 +236,7 @@ ${mapYearCount
       }%)`,
   )
   .toArray()
+  .sort()
   .join("\n")}`;
 
   return { image, alt };
@@ -256,6 +260,7 @@ ${mapPlaformCount
   .keys()
   .map((k) => `"${k}" : ${mapPlaformCount.get(k)}`)
   .toArray()
+  .sort()
   .join("\n")}`;
 
   const image: Uint8Array = await statsDiagramImage(graphDefinition);
@@ -274,6 +279,7 @@ ${mapPlaformCount
       }%)`,
   )
   .toArray()
+  .sort()
   .join("\n")}`;
 
   return { image, alt };
