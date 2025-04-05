@@ -18,7 +18,7 @@
     "jsr:@std/random@0.1": "0.1.0",
     "jsr:@std/testing@^1.0.10": "1.0.10",
     "jsr:@std/yaml@^1.0.5": "1.0.5",
-    "npm:@atproto/api@~0.14.14": "0.14.14",
+    "npm:@atproto/api@~0.14.20": "0.14.20",
     "npm:@biomejs/biome@*": "1.9.3",
     "npm:@biomejs/biome@1.9.4": "1.9.4",
     "npm:@mermaid-js/mermaid-cli@^11.4.2": "11.4.2_puppeteer@23.11.1__devtools-protocol@0.0.1367902_mermaid@11.6.0__cytoscape@3.31.2",
@@ -114,8 +114,8 @@
     "@antfu/utils@8.1.1": {
       "integrity": "sha512-Mex9nXf9vR6AhcXmMrlz/HVgYYZpVGJ6YlPgwl7UnaFpnshXs6EK/oa5Gpf3CzENMjkvEx2tQtntGnb7UtSTOQ=="
     },
-    "@atproto/api@0.14.14": {
-      "integrity": "sha512-ryawcnmazVSWYfq11ujPHauY77GfkM3mF0rZOkqENN2Ptnl6BZXJvpA0zLA/sQ5YBLcHXSEWg5Xdq+8i1l+8gA==",
+    "@atproto/api@0.14.20": {
+      "integrity": "sha512-Daip22+u9N+EVPk9PsEEVrTfjIqGczXnAT7o2EHGd0JsOzMbp3a6wmW1beKqYDzPf+Dc36/39JeUYYqhB3fKjg==",
       "dependencies": [
         "@atproto/common-web",
         "@atproto/lexicon",
@@ -124,36 +124,36 @@
         "await-lock",
         "multiformats@9.9.0",
         "tlds",
-        "zod@3.24.2"
+        "zod"
       ]
     },
-    "@atproto/common-web@0.4.0": {
-      "integrity": "sha512-ZYL0P9myHybNgwh/hBY0HaBzqiLR1B5/ie5bJpLQAg0whRzNA28t8/nU2vh99tbsWcAF0LOD29M8++LyENJLNQ==",
+    "@atproto/common-web@0.4.1": {
+      "integrity": "sha512-Ghh+djHYMAUCktLKwr2IuGgtjcwSWGudp+K7+N7KBA9pDDloOXUEY8Agjc5SHSo9B1QIEFkegClU5n+apn2e0w==",
       "dependencies": [
         "graphemer",
         "multiformats@9.9.0",
         "uint8arrays",
-        "zod@3.24.2"
+        "zod"
       ]
     },
-    "@atproto/lexicon@0.4.9": {
-      "integrity": "sha512-/tmEuHQFr51V2V7EAVJzaA40sqJ7ylAZpR962VbOsPtmcdOHvezbjVHYEMXgfb927hS+xqbVyzBTbu5w9v8prA==",
+    "@atproto/lexicon@0.4.10": {
+      "integrity": "sha512-uDbP20vetBgtXPuxoyRcvOGBt2gNe1dFc9yYKcb6jWmXfseHiGTnIlORJOLBXIT2Pz15Eap4fLxAu6zFAykD5A==",
       "dependencies": [
         "@atproto/common-web",
         "@atproto/syntax",
         "iso-datestring-validator",
         "multiformats@9.9.0",
-        "zod@3.24.2"
+        "zod"
       ]
     },
     "@atproto/syntax@0.4.0": {
       "integrity": "sha512-b9y5ceHS8YKOfP3mdKmwAx5yVj9294UN7FG2XzP6V5aKUdFazEYRnR9m5n5ZQFKa3GNvz7de9guZCJ/sUTcOAA=="
     },
-    "@atproto/xrpc@0.6.11": {
-      "integrity": "sha512-J2cZP8FjoDN0UkyTYBlCvKvxwBbDm4dld47u6FQK30RJy9YpSiUkdxJJ10NYqpi7JVny3M0qWQgpWJDV94+PdA==",
+    "@atproto/xrpc@0.6.12": {
+      "integrity": "sha512-Ut3iISNLujlmY9Gu8sNU+SPDJDvqlVzWddU8qUr0Yae5oD4SguaUFjjhireMGhQ3M5E0KljQgDbTmnBo1kIZ3w==",
       "dependencies": [
         "@atproto/lexicon",
-        "zod@3.24.2"
+        "zod"
       ]
     },
     "@babel/code-frame@7.26.2": {
@@ -928,7 +928,7 @@
       "dependencies": [
         "devtools-protocol",
         "mitt",
-        "zod@3.23.8"
+        "zod"
       ]
     },
     "cliui@8.0.1": {
@@ -2419,9 +2419,6 @@
     },
     "zod@3.23.8": {
       "integrity": "sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g=="
-    },
-    "zod@3.24.2": {
-      "integrity": "sha512-lY7CDW43ECgW9u1TcT3IoXHflywfVqDYze4waEz812jR/bZ8FHDsl7pFQoSZTz5N+2NqRXs8GBwnAwo3ZNxqhQ=="
     }
   },
   "workspace": {
@@ -2435,7 +2432,7 @@
       "jsr:@std/random@0.1",
       "jsr:@std/testing@^1.0.10",
       "jsr:@std/yaml@^1.0.5",
-      "npm:@atproto/api@~0.14.14",
+      "npm:@atproto/api@~0.14.20",
       "npm:@biomejs/biome@1.9.4",
       "npm:@mermaid-js/mermaid-cli@^11.4.2",
       "npm:multiformats@^13.3.2"

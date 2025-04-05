@@ -15,7 +15,7 @@
     "update-dependencies": "deno outdated --update"
   },
   "imports": {
-    "@atproto/api": "npm:@atproto/api@^0.14.14",
+    "@atproto/api": "npm:@atproto/api@^0.14.20",
     "@biomejs/biome": "npm:@biomejs/biome@1.9.4",
     "@cross/log": "jsr:@cross/log@^0.10.5",
     "@mermaid-js/mermaid-cli": "npm:@mermaid-js/mermaid-cli@^11.4.2",
