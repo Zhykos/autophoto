@@ -170,50 +170,6 @@ The following styles are available:
 
 `console` is the default style.
 
-## Run the app within the development environment and execute tasks into the real world
-
-### Run the pre-scanner
-
-You can execute a scan with the following command:
-
-```shell
-deno task e2e:prescan
-```
-
-### Run the scanner
-
-You can execute a scan with the following command:
-
-```shell
-deno task e2e:scan
-```
-
-It will use the configuration files `config.yml` and `./test/resources/config2.yml`, and create a local database `./test/e2e-debug.sqlite3`.
-
-### Publish images
-
-> Careful this section will publish a message on a real Bluesky account!
-
-There is a small debug database in this project (created with the previous paragraph `Run the scanner`). If you want to publish a statistics message, follow these instructions. Be sure to have your Bluesky credentials (email and password).
-
-You can execute a publication with the following command:
-
-```shell
-LOGIN=your_login PASSWORD=your_password deno task e2e:publish
-```
-
-### Publish statistics
-
-> Careful this section will publish a message on a real Bluesky account!
-
-There is a small debug database in this project (created with the previous paragraph `Run the scanner`). If you want to publish a statistics message, follow these instructions. Be sure to have your Bluesky credentials (email and password).
-
-You can check a real execution with the following command line:
-
-```shell
-LOGIN=your_login PASSWORD=your_password deno task e2e:stats
-```
-
 ## Contributing
 
 ### Install the project
@@ -255,11 +211,65 @@ deno task hook install
 
 It will run the linter and tests before each commit.
 
-### Run the project
+#### Puppeteer
 
-See the previous paragraph `Run the app within the development environment and execute tasks into the real world`.
+Puppeteer is a lib used to generate the statistics diagrams.
+
+Code is executed within an embedded Chrome browser in order to generate images.
+
+Execute the following command if you will use the statistics message publisher:
+
+```bash
+deno install --allow-scripts=npm:puppeteer@23.11.1,npm:vue-demi@0.14.10
+```
+
+### Run the app within the development environment and execute tasks into the real world
+
+#### Run the pre-scanner
+
+You can execute a scan with the following command:
+
+```shell
+deno task e2e:prescan
+```
+
+#### Run the scanner
+
+You can execute a scan with the following command:
+
+```shell
+deno task e2e:scan
+```
+
+It will use the configuration files `config.yml` and `./test/resources/config2.yml`, and create a local database `./test/e2e-debug.sqlite3`.
+
+#### Publish images
+
+> Careful this section will publish a message on a real Bluesky account!
+
+There is a small debug database in this project (created with the previous paragraph `Run the scanner`). If you want to publish a statistics message, follow these instructions. Be sure to have your Bluesky credentials (email and password).
+
+You can execute a publication with the following command:
+
+```shell
+LOGIN=your_login PASSWORD=your_password deno task e2e:publish
+```
+
+#### Publish statistics
+
+> Careful this section will publish a message on a real Bluesky account!
+
+There is a small debug database in this project (created with the previous paragraph `Run the scanner`). If you want to publish a statistics message, follow these instructions. Be sure to have your Bluesky credentials (email and password).
+
+You can check a real execution with the following command line:
+
+```shell
+LOGIN=your_login PASSWORD=your_password deno task e2e:stats
+```
 
 ### Run the tests
+
+Be sure to install Puppeteer before launching tests (see paragraph "Puppeteer").
 
 You can run the unit tests with the following command:
 
