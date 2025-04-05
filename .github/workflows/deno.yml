@@ -25,7 +25,7 @@ jobs:
 
       # https://github.com/denoland/setup-deno/releases
       - name: Setup Deno
-        uses: denoland/setup-deno@4606d5cc6fb3f673efd4f594850e3f4b3e9d29cd
+        uses: denoland/setup-deno@909cc5acb0fdd60627fb858598759246509fa755
         with:
           deno-version: v2.x
 
@@ -33,7 +33,7 @@ jobs:
         run: deno lint
 
       - name: Run tests and activate coverage
-        run: deno test --allow-read --allow-write --unstable-kv --allow-env --allow-net --coverage -- --database=./test/it-database.sqlite3 --scan=config.yml
+        run: deno test --allow-read --allow-write --allow-env --allow-net --allow-sys --allow-run --unstable-kv --coverage -- --database=./test/it-database.sqlite3 --scan=config.yml
 
       - name: Generate lcov report
         run: deno task lcov
