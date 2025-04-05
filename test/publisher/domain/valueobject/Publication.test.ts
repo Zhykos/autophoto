@@ -70,4 +70,17 @@ describe("Publication", () => {
     assert(error instanceof Error);
     assertEquals(error.message, "There is an alt message which is empty!");
   });
+
+  it("should return false when comparing publications with an image and a byte array", () => {
+    const obj1 = new Publication("message", [new File(new Path("README.md"))]);
+    const obj2 = new Publication("message", [new Uint8Array()]);
+    assertFalse(obj1.equals(obj2));
+  });
+
+  it("should return true when comparing publications with the same byte array", () => {
+    const byteArray = new Uint8Array();
+    const obj1 = new Publication("message", [byteArray]);
+    const obj2 = new Publication("message", [byteArray]);
+    assert(obj1.equals(obj2));
+  });
 });
