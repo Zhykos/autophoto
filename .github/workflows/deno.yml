@@ -33,7 +33,9 @@ jobs:
         run: deno lint
 
       - name: Run tests and activate coverage
-        run: deno test --allow-read --allow-write --allow-env --allow-net --allow-sys --allow-run --unstable-kv --coverage -- --database=./test/it-database.sqlite3 --scan=config.yml
+        run: |
+          deno install --allow-scripts=npm:puppeteer@23.11.1,npm:vue-demi@0.14.10
+          deno test --allow-read --allow-write --allow-env --allow-net --allow-sys --allow-run --unstable-kv --coverage -- --database=./test/it-database.sqlite3 --scan=config.yml
 
       - name: Generate lcov report
         run: deno task lcov
