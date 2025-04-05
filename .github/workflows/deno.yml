@@ -45,3 +45,11 @@ jobs:
         with:
           coverage-file: cov.lcov
           minimum-coverage: 90
+
+      - name: Upload tests snapshots
+        uses: actions/upload-artifact@v4
+        if: ${{ failure() }}
+        with:
+          name: tests-snapshots
+          path: ./test/resources/snapshots
+          retention-days: 30
