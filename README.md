@@ -289,7 +289,7 @@ This software uses the following open source packages:
 - To publish on Bluesky: [atproto - For Bluesky](https://atproto.com/)
 - Multiformats library: [Multiformats](https://multiformats.io/)
 - Git hook: [Hook](https://deno.land/x/deno_hooks)
-- Diagrams: [Mermaid](https://mermaid.js.org/)
+- Diagrams: [Chart.js](https://www.chartjs.org/)
 - README template by [Amit Merchant](https://github.com/amitmerchant1990)
 - I wish to not generate a header with IA so I used an image by <a href="https://unsplash.com/fr/@enikoo">eniko kis</a> on <a href="https://unsplash.com/fr/photos/appareil-photo-instantane-polaroid-one-step-2-blanc-et-noir-sur-tableau-blanc-KsLPTsYaqIQ">Unsplash</a>
 
