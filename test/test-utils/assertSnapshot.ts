@@ -29,6 +29,6 @@ const filename = (originFilename: string, suffix?: string): string => {
   const split: string[] = originFilename.split(".");
   const extension: string | undefined = split.pop();
   return `${split.join(".")}_${Deno.build.os}_${Deno.build.arch}${
-    suffix ? "." + suffix : ""
+    suffix ? `.${suffix}` : ""
   }.${extension}`;
 };

@@ -45,6 +45,8 @@
 Find the latest release [here](https://github.com/Zhykos/autophoto/releases).
 Download the latest release for your platform and run the executable.
 
+Read the following instructions to use it with command lines.
+
 ### Scan directories to save photos in a database
 
 #### Configuration file
@@ -128,6 +130,14 @@ Optionnally, you can also specify the Bluesky URL with the `--bluesky_host` opti
 
 ```shell
 autophoto --stats --bluesky_login=your_login --bluesky_password=your_password --bluesky_host=https://bsky.app
+```
+
+> Warning: diagrams are generated with statistics. To create theses images, (Puppeteer)[https://pptr.dev/] library is used. It opens a real web browser to work and it is not embedded with the autophoto release binary.
+
+You can use a free account with https://www.browserless.io/ for instance and use it via the option `--browser_url`. Example:
+
+```shell
+autophoto --stats --bluesky_login=your_login --bluesky_password=your_password --browser_url="wss://chrome.browserless.io?token=<<<YOUR_TOKEN>>>&stealth"
 ```
 
 ### Command line options and arguments for autophoto

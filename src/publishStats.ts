@@ -36,8 +36,9 @@ export const publishStats = async (
   const relationCommonRepository = new CommonKvRelationRepository(kvDriver);
   const videoGameCommonRepository = new CommonKvVideoGameRepository(kvDriver);
 
-  const unpublishedVideoGameRelations: UnpublishedVideoGameScreenshotRelation[] =
-    await relationRepository.getUnpublishedVideoGameRelations();
+  const unpublishedVideoGameRelations:
+    UnpublishedVideoGameScreenshotRelation[] = await relationRepository
+      .getUnpublishedVideoGameRelations();
 
   const publicationMessage: string = await statsMessage(
     imageRepository,
@@ -46,7 +47,12 @@ export const publishStats = async (
   );
 
   const diagrams: { images: Uint8Array[]; alts: string[] } =
-    await statsDiagrams(relationCommonRepository, videoGameCommonRepository);
+    await statsDiagrams(
+      logger,
+      relationCommonRepository,
+      videoGameCommonRepository,
+      blueskyAction.diagramBrowserExecutorURL,
+    );
 
   const resultPublication: string = await new BlueskyPublisherService().publish(
     new BlueskyPublication(
@@ -124,15 +130,32 @@ ${unpublishedImagesPhrase} not published yet: it may take more ${daysWord} to pu
 }
 
 export async function statsDiagrams(
+  logger: Log,
   relationRepository: CommonKvRelationRepository,
   videoGameRepository: CommonKvVideoGameRepository,
+  diagramBrowserExecutorURL?: URL,
 ): Promise<{ images: Uint8Array[]; alts: string[] }> {
   const diagramVideoGamePlatform: { image: Uint8Array; alt: string } =
-    await statsDiagramVideoGameByPlatform(relationRepository);
+    await statsDiagramVideoGameByPlatform(
+      logger,
+      relationRepository,
+      diagramBrowserExecutorURL,
+    );
+
   const diagramVideoGameYear: { image: Uint8Array; alt: string } =
-    await statsDiagramVideoGameByYear(videoGameRepository);
+    await statsDiagramVideoGameByYear(
+      logger,
+      videoGameRepository,
+      diagramBrowserExecutorURL,
+    );
+
   const diagramScreenshotsPlatform: { image: Uint8Array; alt: string } =
-    await statsDiagramScreenshotsByPlatform(relationRepository);
+    await statsDiagramScreenshotsByPlatform(
+      logger,
+      relationRepository,
+      diagramBrowserExecutorURL,
+    );
+
   return {
     images: [
       diagramVideoGamePlatform.image,
@@ -148,7 +171,9 @@ export async function statsDiagrams(
 }
 
 async function statsDiagramVideoGameByPlatform(
+  logger: Log,
   relationRepository: CommonKvRelationRepository,
+  diagramBrowserExecutorURL?: URL,
 ): Promise<{ image: Uint8Array; alt: string }> {
   const allRelations: VideoGameRelationImageRepositoryEntity[] =
     await relationRepository.getAllVideoGameRelations();
@@ -162,17 +187,25 @@ async function statsDiagramVideoGameByPlatform(
   }
 
   const graphDefinition = `pie showData title Video games by platform
-${mapPlatformVideoGameIds
-  .keys()
-  .map(
-    (k) =>
-      `"${k}" : ${distinct(mapPlatformVideoGameIds.get(k) as string[]).length}`,
-  )
-  .toArray()
-  .sort()
-  .join("\n")}`;
+${
+    mapPlatformVideoGameIds
+      .keys()
+      .map(
+        (k) =>
+          `"${k}" : ${
+            distinct(mapPlatformVideoGameIds.get(k) as string[]).length
+          }`,
+      )
+      .toArray()
+      .sort()
+      .join("\n")
+  }`;
 
-  const image: Uint8Array = await statsDiagramImage(graphDefinition);
+  const image: Uint8Array = await statsDiagramImage(
+    logger,
+    graphDefinition,
+    diagramBrowserExecutorURL,
+  );
 
   let videoGamesCount = 0;
   for (const k of mapPlatformVideoGameIds.keys()) {
@@ -182,28 +215,32 @@ ${mapPlatformVideoGameIds
   }
 
   const alt = `Statistics about this gallery. Video games by platform are:
-${mapPlatformVideoGameIds
-  .keys()
-  .map((k) => {
-    const countByPlatform: number = distinct(
-      mapPlatformVideoGameIds.get(k) as string[],
-    ).length;
-    return `  - ${k}: ${pluralFinalS(countByPlatform, "game", true)} (or ${
-      (100 * countByPlatform) / videoGamesCount
-    }%)`;
-  })
-  .toArray()
-  .sort()
-  .join("\n")}`;
+${
+    mapPlatformVideoGameIds
+      .keys()
+      .map((k) => {
+        const countByPlatform: number = distinct(
+          mapPlatformVideoGameIds.get(k) as string[],
+        ).length;
+        return `  - ${k}: ${pluralFinalS(countByPlatform, "game", true)} (or ${
+          (100 * countByPlatform) / videoGamesCount
+        }%)`;
+      })
+      .toArray()
+      .sort()
+      .join("\n")
+  }`;
 
   return { image, alt };
 }
 
 async function statsDiagramVideoGameByYear(
+  logger: Log,
   videoGameRepository: CommonKvVideoGameRepository,
+  diagramBrowserExecutorURL?: URL,
 ): Promise<{ image: Uint8Array; alt: string }> {
-  const allVideoGames: VideoGameRepositoryEntity[] =
-    await videoGameRepository.getAllVideoGames();
+  const allVideoGames: VideoGameRepositoryEntity[] = await videoGameRepository
+    .getAllVideoGames();
 
   const mapYearCount = new Map<number, number>();
   for (const vg of allVideoGames) {
@@ -212,38 +249,52 @@ async function statsDiagramVideoGameByYear(
     mapYearCount.set(year, yearCount + 1);
   }
 
-  const graphDefinition = `pie showData title Video games by original release year
-${mapYearCount
-  .keys()
-  .map((k) => `"${k}" : ${mapYearCount.get(k)}`)
-  .toArray()
-  .sort()
-  .join("\n")}`;
+  const graphDefinition =
+    `pie showData title Video games by original release year
+${
+      mapYearCount
+        .keys()
+        .map((k) => `"${k}" : ${mapYearCount.get(k)}`)
+        .toArray()
+        .sort()
+        .join("\n")
+    }`;
 
-  const image: Uint8Array = await statsDiagramImage(graphDefinition);
+  const image: Uint8Array = await statsDiagramImage(
+    logger,
+    graphDefinition,
+    diagramBrowserExecutorURL,
+  );
 
-  const alt = `Statistics about this gallery. Video games by original release year are:
-${mapYearCount
-  .keys()
-  .map(
-    (k) =>
-      `  - ${k}: ${pluralFinalS(
-        mapYearCount.get(k) as number,
-        "game",
-        true,
-      )} (or ${
-        (100 * (mapYearCount.get(k) as number)) / allVideoGames.length
-      }%)`,
-  )
-  .toArray()
-  .sort()
-  .join("\n")}`;
+  const alt =
+    `Statistics about this gallery. Video games by original release year are:
+${
+      mapYearCount
+        .keys()
+        .map(
+          (k) =>
+            `  - ${k}: ${
+              pluralFinalS(
+                mapYearCount.get(k) as number,
+                "game",
+                true,
+              )
+            } (or ${
+              (100 * (mapYearCount.get(k) as number)) / allVideoGames.length
+            }%)`,
+        )
+        .toArray()
+        .sort()
+        .join("\n")
+    }`;
 
   return { image, alt };
 }
 
 async function statsDiagramScreenshotsByPlatform(
+  logger: Log,
   relationRepository: CommonKvRelationRepository,
+  diagramBrowserExecutorURL?: URL,
 ): Promise<{ image: Uint8Array; alt: string }> {
   const allRelations: VideoGameRelationImageRepositoryEntity[] =
     await relationRepository.getAllVideoGameRelations();
@@ -255,45 +306,68 @@ async function statsDiagramScreenshotsByPlatform(
     mapPlaformCount.set(platform, count + 1);
   }
 
-  const graphDefinition = `pie showData title Video games screenshots by platform
-${mapPlaformCount
-  .keys()
-  .map((k) => `"${k}" : ${mapPlaformCount.get(k)}`)
-  .toArray()
-  .sort()
-  .join("\n")}`;
+  const graphDefinition =
+    `pie showData title Video games screenshots by platform
+${
+      mapPlaformCount
+        .keys()
+        .map((k) => `"${k}" : ${mapPlaformCount.get(k)}`)
+        .toArray()
+        .sort()
+        .join("\n")
+    }`;
 
-  const image: Uint8Array = await statsDiagramImage(graphDefinition);
+  const image: Uint8Array = await statsDiagramImage(
+    logger,
+    graphDefinition,
+    diagramBrowserExecutorURL,
+  );
 
-  const alt = `Statistics about this gallery. Video games screenshots by platform are:
-${mapPlaformCount
-  .keys()
-  .map(
-    (k) =>
-      `  - ${k}: ${pluralFinalS(
-        mapPlaformCount.get(k) as number,
-        "image",
-        true,
-      )} (or ${
-        (100 * (mapPlaformCount.get(k) as number)) / allRelations.length
-      }%)`,
-  )
-  .toArray()
-  .sort()
-  .join("\n")}`;
+  const alt =
+    `Statistics about this gallery. Video games screenshots by platform are:
+${
+      mapPlaformCount
+        .keys()
+        .map(
+          (k) =>
+            `  - ${k}: ${
+              pluralFinalS(
+                mapPlaformCount.get(k) as number,
+                "image",
+                true,
+              )
+            } (or ${
+              (100 * (mapPlaformCount.get(k) as number)) / allRelations.length
+            }%)`,
+        )
+        .toArray()
+        .sort()
+        .join("\n")
+    }`;
 
   return { image, alt };
 }
 
 async function statsDiagramImage(
+  logger: Log,
   diagramDefinition: string,
+  diagramBrowserExecutorURL?: URL,
 ): Promise<Uint8Array> {
   let browser: Browser | undefined;
   try {
-    browser = await puppeteer.launch();
+    if (diagramBrowserExecutorURL) {
+      logger.info("Using external browser to generate diagram.");
+      browser = await puppeteer.connect({
+        browserWSEndpoint: diagramBrowserExecutorURL.toString(),
+      });
+    } else {
+      browser = await puppeteer.launch();
+    }
+
     const { data } = await renderMermaid(browser, diagramDefinition, "png");
     return data;
   } finally {
+    browser?.disconnect();
     browser?.close();
   }
 }

@@ -13,6 +13,7 @@ export class CLIService {
         "bluesky_host",
         "bluesky_login",
         "bluesky_passord",
+        "browser_url",
         "database",
         "logger",
         "prescan",
@@ -39,6 +40,7 @@ export class CLIService {
           : new URL("https://bsky.social"),
         args.bluesky_login,
         args.bluesky_password,
+        args.browser_url ? new URL(args.browser_url) : undefined,
       );
     } else if (args.scan) {
       cliBuilder.withScanner(new File(new Path(args.scan)));
@@ -124,6 +126,12 @@ export class CLIService {
     ) {
       throw new Error(
         'Option "--prescan" or "--scan" is not compatible with "--bluesky_host", "--bluesky_login" or "--bluesky_password".',
+      );
+    }
+
+    if (args.browser_url && !args.stats) {
+      throw new Error(
+        'Option "--browser_url" is only compatible with "--stats".',
       );
     }
   }

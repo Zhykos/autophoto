@@ -28,8 +28,18 @@ export class CLIBuilder {
     this.action = new BlueskyImagesPublisherAction(host, login, password);
   }
 
-  publishStatsToBluesky(host: URL, login: string, password: string): void {
-    this.action = new BlueskyStatsPublisherAction(host, login, password);
+  publishStatsToBluesky(
+    host: URL,
+    login: string,
+    password: string,
+    browserURL?: URL,
+  ): void {
+    this.action = new BlueskyStatsPublisherAction(
+      host,
+      login,
+      password,
+      browserURL,
+    );
   }
 
   withPreScanner(configurationFile: File): void {
