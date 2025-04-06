@@ -1,8 +1,7 @@
-import puppeteer, { type Browser } from "npm:puppeteer";
 import { AtpAgent } from "@atproto/api";
 import type { Log } from "@cross/log";
-import { renderMermaid } from "@mermaid-js/mermaid-cli";
 import { distinct } from "@std/collections";
+import ChartJsImage from "chartjs-to-image";
 import type { BlueskyStatsPublisherAction } from "./cli/domain/valueobject/BlueskyStatsPublisherAction.ts";
 import type { KvDriver } from "./common/dbdriver/KvDriver.ts";
 import { CommonKvRelationRepository } from "./common/repository/CommonKvRelationRepository.ts";
@@ -36,9 +35,8 @@ export const publishStats = async (
   const relationCommonRepository = new CommonKvRelationRepository(kvDriver);
   const videoGameCommonRepository = new CommonKvVideoGameRepository(kvDriver);
 
-  const unpublishedVideoGameRelations:
-    UnpublishedVideoGameScreenshotRelation[] = await relationRepository
-      .getUnpublishedVideoGameRelations();
+  const unpublishedVideoGameRelations: UnpublishedVideoGameScreenshotRelation[] =
+    await relationRepository.getUnpublishedVideoGameRelations();
 
   const publicationMessage: string = await statsMessage(
     imageRepository,
@@ -47,12 +45,7 @@ export const publishStats = async (
   );
 
   const diagrams: { images: Uint8Array[]; alts: string[] } =
-    await statsDiagrams(
-      logger,
-      relationCommonRepository,
-      videoGameCommonRepository,
-      blueskyAction.diagramBrowserExecutorURL,
-    );
+    await statsDiagrams(relationCommonRepository, videoGameCommonRepository);
 
   const resultPublication: string = await new BlueskyPublisherService().publish(
     new BlueskyPublication(
@@ -130,31 +123,17 @@ ${unpublishedImagesPhrase} not published yet: it may take more ${daysWord} to pu
 }
 
 export async function statsDiagrams(
-  logger: Log,
   relationRepository: CommonKvRelationRepository,
   videoGameRepository: CommonKvVideoGameRepository,
-  diagramBrowserExecutorURL?: URL,
 ): Promise<{ images: Uint8Array[]; alts: string[] }> {
   const diagramVideoGamePlatform: { image: Uint8Array; alt: string } =
-    await statsDiagramVideoGameByPlatform(
-      logger,
-      relationRepository,
-      diagramBrowserExecutorURL,
-    );
+    await statsDiagramVideoGameByPlatform(relationRepository);
 
   const diagramVideoGameYear: { image: Uint8Array; alt: string } =
-    await statsDiagramVideoGameByYear(
-      logger,
-      videoGameRepository,
-      diagramBrowserExecutorURL,
-    );
+    await statsDiagramVideoGameByYear(videoGameRepository);
 
   const diagramScreenshotsPlatform: { image: Uint8Array; alt: string } =
-    await statsDiagramScreenshotsByPlatform(
-      logger,
-      relationRepository,
-      diagramBrowserExecutorURL,
-    );
+    await statsDiagramScreenshotsByPlatform(relationRepository);
 
   return {
     images: [
@@ -171,9 +150,7 @@ export async function statsDiagrams(
 }
 
 async function statsDiagramVideoGameByPlatform(
-  logger: Log,
   relationRepository: CommonKvRelationRepository,
-  diagramBrowserExecutorURL?: URL,
 ): Promise<{ image: Uint8Array; alt: string }> {
   const allRelations: VideoGameRelationImageRepositoryEntity[] =
     await relationRepository.getAllVideoGameRelations();
@@ -186,26 +163,18 @@ async function statsDiagramVideoGameByPlatform(
     mapPlatformVideoGameIds.set(platform, videoGameIds);
   }
 
-  const graphDefinition = `pie showData title Video games by platform
-${
+  const graphDefinition: { label: string; value: number }[] =
     mapPlatformVideoGameIds
       .keys()
-      .map(
-        (k) =>
-          `"${k}" : ${
-            distinct(mapPlatformVideoGameIds.get(k) as string[]).length
-          }`,
-      )
-      .toArray()
-      .sort()
-      .join("\n")
-  }`;
+      .map((k) => {
+        return {
+          label: k,
+          value: distinct(mapPlatformVideoGameIds.get(k) as string[]).length,
+        };
+      })
+      .toArray();
 
-  const image: Uint8Array = await statsDiagramImage(
-    logger,
-    graphDefinition,
-    diagramBrowserExecutorURL,
-  );
+  const image: Uint8Array = await statsDiagramImage(graphDefinition);
 
   let videoGamesCount = 0;
   for (const k of mapPlatformVideoGameIds.keys()) {
@@ -215,32 +184,28 @@ ${
   }
 
   const alt = `Statistics about this gallery. Video games by platform are:
-${
-    mapPlatformVideoGameIds
-      .keys()
-      .map((k) => {
-        const countByPlatform: number = distinct(
-          mapPlatformVideoGameIds.get(k) as string[],
-        ).length;
-        return `  - ${k}: ${pluralFinalS(countByPlatform, "game", true)} (or ${
-          (100 * countByPlatform) / videoGamesCount
-        }%)`;
-      })
-      .toArray()
-      .sort()
-      .join("\n")
-  }`;
+${mapPlatformVideoGameIds
+  .keys()
+  .map((k) => {
+    const countByPlatform: number = distinct(
+      mapPlatformVideoGameIds.get(k) as string[],
+    ).length;
+    return `  - ${k}: ${pluralFinalS(countByPlatform, "game", true)} (or ${
+      (100 * countByPlatform) / videoGamesCount
+    }%)`;
+  })
+  .toArray()
+  .sort()
+  .join("\n")}`;
 
   return { image, alt };
 }
 
 async function statsDiagramVideoGameByYear(
-  logger: Log,
   videoGameRepository: CommonKvVideoGameRepository,
-  diagramBrowserExecutorURL?: URL,
 ): Promise<{ image: Uint8Array; alt: string }> {
-  const allVideoGames: VideoGameRepositoryEntity[] = await videoGameRepository
-    .getAllVideoGames();
+  const allVideoGames: VideoGameRepositoryEntity[] =
+    await videoGameRepository.getAllVideoGames();
 
   const mapYearCount = new Map<number, number>();
   for (const vg of allVideoGames) {
@@ -249,52 +214,37 @@ async function statsDiagramVideoGameByYear(
     mapYearCount.set(year, yearCount + 1);
   }
 
-  const graphDefinition =
-    `pie showData title Video games by original release year
-${
-      mapYearCount
-        .keys()
-        .map((k) => `"${k}" : ${mapYearCount.get(k)}`)
-        .toArray()
-        .sort()
-        .join("\n")
-    }`;
+  const graphDefinition: { label: string; value: number }[] = mapYearCount
+    .keys()
+    .map((k) => {
+      return { label: k.toString(), value: mapYearCount.get(k) as number };
+    })
+    .toArray();
 
-  const image: Uint8Array = await statsDiagramImage(
-    logger,
-    graphDefinition,
-    diagramBrowserExecutorURL,
-  );
+  const image: Uint8Array = await statsDiagramImage(graphDefinition);
 
-  const alt =
-    `Statistics about this gallery. Video games by original release year are:
-${
-      mapYearCount
-        .keys()
-        .map(
-          (k) =>
-            `  - ${k}: ${
-              pluralFinalS(
-                mapYearCount.get(k) as number,
-                "game",
-                true,
-              )
-            } (or ${
-              (100 * (mapYearCount.get(k) as number)) / allVideoGames.length
-            }%)`,
-        )
-        .toArray()
-        .sort()
-        .join("\n")
-    }`;
+  const alt = `Statistics about this gallery. Video games by original release year are:
+${mapYearCount
+  .keys()
+  .map(
+    (k) =>
+      `  - ${k}: ${pluralFinalS(
+        mapYearCount.get(k) as number,
+        "game",
+        true,
+      )} (or ${
+        (100 * (mapYearCount.get(k) as number)) / allVideoGames.length
+      }%)`,
+  )
+  .toArray()
+  .sort()
+  .join("\n")}`;
 
   return { image, alt };
 }
 
 async function statsDiagramScreenshotsByPlatform(
-  logger: Log,
   relationRepository: CommonKvRelationRepository,
-  diagramBrowserExecutorURL?: URL,
 ): Promise<{ image: Uint8Array; alt: string }> {
   const allRelations: VideoGameRelationImageRepositoryEntity[] =
     await relationRepository.getAllVideoGameRelations();
@@ -306,68 +256,55 @@ async function statsDiagramScreenshotsByPlatform(
     mapPlaformCount.set(platform, count + 1);
   }
 
-  const graphDefinition =
-    `pie showData title Video games screenshots by platform
-${
-      mapPlaformCount
-        .keys()
-        .map((k) => `"${k}" : ${mapPlaformCount.get(k)}`)
-        .toArray()
-        .sort()
-        .join("\n")
-    }`;
+  const graphDefinition: { label: string; value: number }[] = mapPlaformCount
+    .keys()
+    .map((k) => {
+      return { label: k, value: mapPlaformCount.get(k) as number };
+    })
+    .toArray();
 
-  const image: Uint8Array = await statsDiagramImage(
-    logger,
-    graphDefinition,
-    diagramBrowserExecutorURL,
-  );
+  const image: Uint8Array = await statsDiagramImage(graphDefinition);
 
-  const alt =
-    `Statistics about this gallery. Video games screenshots by platform are:
-${
-      mapPlaformCount
-        .keys()
-        .map(
-          (k) =>
-            `  - ${k}: ${
-              pluralFinalS(
-                mapPlaformCount.get(k) as number,
-                "image",
-                true,
-              )
-            } (or ${
-              (100 * (mapPlaformCount.get(k) as number)) / allRelations.length
-            }%)`,
-        )
-        .toArray()
-        .sort()
-        .join("\n")
-    }`;
+  const alt = `Statistics about this gallery. Video games screenshots by platform are:
+${mapPlaformCount
+  .keys()
+  .map(
+    (k) =>
+      `  - ${k}: ${pluralFinalS(
+        mapPlaformCount.get(k) as number,
+        "image",
+        true,
+      )} (or ${
+        (100 * (mapPlaformCount.get(k) as number)) / allRelations.length
+      }%)`,
+  )
+  .toArray()
+  .sort()
+  .join("\n")}`;
 
   return { image, alt };
 }
 
 async function statsDiagramImage(
-  logger: Log,
-  diagramDefinition: string,
-  diagramBrowserExecutorURL?: URL,
+  dataSet: { label: string; value: number }[],
 ): Promise<Uint8Array> {
-  let browser: Browser | undefined;
-  try {
-    if (diagramBrowserExecutorURL) {
-      logger.info("Using external browser to generate diagram.");
-      browser = await puppeteer.connect({
-        browserWSEndpoint: diagramBrowserExecutorURL.toString(),
-      });
-    } else {
-      browser = await puppeteer.launch();
-    }
+  const sortedDataSet: { label: string; value: number }[] = dataSet.toSorted(
+    (a, b) => a.label.localeCompare(b.label),
+  );
 
-    const { data } = await renderMermaid(browser, diagramDefinition, "png");
-    return data;
-  } finally {
-    browser?.disconnect();
-    browser?.close();
-  }
+  const chart = new ChartJsImage();
+  chart.setConfig({
+    type: "pie",
+    data: {
+      labels: sortedDataSet.map((d) => d.label),
+      datasets: [
+        {
+          data: sortedDataSet.map((d) => d.value),
+          hoverOffset: 4,
+        },
+      ],
+    },
+  });
+
+  return new Uint8Array(await chart.toBinary());
 }

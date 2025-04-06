@@ -1,4 +1,4 @@
-import { assertEquals, assertNotEquals, assertRejects } from "@std/assert";
+import { assertEquals, assertNotEquals } from "@std/assert";
 import {
   afterAll,
   beforeAll,
@@ -14,7 +14,7 @@ import { main } from "../src/main.ts";
 import { publishStats, statsDiagrams } from "../src/publishStats.ts";
 import { pathExists } from "../src/utils/file.ts";
 import { MockBlueskyServer } from "./mock/distant-server/MockBlueskyServer.ts";
-import { MockLogger, mockLogger } from "./mock/logger/mockLogger.ts";
+import { mockLogger } from "./mock/logger/mockLogger.ts";
 import { assertSnapshot } from "./test-utils/assertSnapshot.ts";
 import { getAllImagesFromRepository } from "./test-utils/getAllImagesFromRepository.ts";
 import { getAllRelationsFromRepository } from "./test-utils/getAllRelationsFromRepository.ts";
@@ -129,7 +129,6 @@ describe("publish stats (root file)", () => {
 
       const diagrams: { images: Uint8Array[]; alts: string[] } =
         await statsDiagrams(
-          mockLogger(),
           relationCommonRepository,
           videoGameCommonRepository,
         );
@@ -172,34 +171,6 @@ describe("publish stats (root file)", () => {
         diagrams.images[2],
         "./test/resources/snapshots/diagram03.png",
       );
-    } finally {
-      driver.close();
-    }
-  });
-
-  it("should publish diagrams with external browser", async () => {
-    await main([`--database=${tempDatabaseFilePath}`, "--scan=config.yml"]);
-
-    const driver = new KvDriver(tempDatabaseFilePath);
-
-    try {
-      const relationCommonRepository = new CommonKvRelationRepository(driver);
-      const videoGameCommonRepository = new CommonKvVideoGameRepository(driver);
-      const logger = new MockLogger();
-
-      await assertRejects(
-        async () =>
-          await statsDiagrams(
-            logger.logger(),
-            relationCommonRepository,
-            videoGameCommonRepository,
-            new URL("http://localhost"),
-          ),
-      );
-
-      assertEquals(logger.infoMessages, [
-        "Using external browser to generate diagram.",
-      ]);
     } finally {
       driver.close();
     }

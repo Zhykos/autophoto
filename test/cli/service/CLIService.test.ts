@@ -172,29 +172,4 @@ describe("CLIService", () => {
       'Only one option allowed: "--prescan" or "--publish" or "--scan" or "--stats".',
     );
   });
-
-  it("should fail if using browser_url and not stats", () => {
-    const error = assertThrows(() =>
-      new CLIService().read(["--publish", "--browser_url=https://bsky.social"]),
-    );
-    assert(error instanceof Error);
-    assertEquals(
-      error.message,
-      'Option "--browser_url" is only compatible with "--stats".',
-    );
-  });
-
-  it("should ezeezl and not stats", () => {
-    const cliResult: CLI = new CLIService().read([
-      "--stats",
-      "--bluesky_login=login",
-      "--bluesky_password=password",
-      "--browser_url=https://bsky.social",
-    ]);
-    assertEquals(
-      (cliResult.action as BlueskyStatsPublisherAction)
-        .diagramBrowserExecutorURL,
-      new URL("https://bsky.social"),
-    );
-  });
 });

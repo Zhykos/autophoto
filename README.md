@@ -132,14 +132,6 @@ Optionnally, you can also specify the Bluesky URL with the `--bluesky_host` opti
 autophoto --stats --bluesky_login=your_login --bluesky_password=your_password --bluesky_host=https://bsky.app
 ```
 
-> Warning: diagrams are generated with statistics. To create theses images, (Puppeteer)[https://pptr.dev/] library is used. It opens a real web browser to work and it is not embedded with the autophoto release binary.
-
-You can use a free account with https://www.browserless.io/ for instance and use it via the option `--browser_url`. Example:
-
-```shell
-autophoto --stats --bluesky_login=your_login --bluesky_password=your_password --browser_url="wss://chrome.browserless.io?token=<<<YOUR_TOKEN>>>&stealth"
-```
-
 ### Command line options and arguments for autophoto
 
 For all actions (pre-scan, publish scan or stats), you can set other options in the command line.
@@ -221,18 +213,6 @@ deno task hook install
 
 It will run the linter and tests before each commit.
 
-#### Puppeteer
-
-Puppeteer is a lib used to generate the statistics diagrams.
-
-Code is executed within an embedded Chrome browser in order to generate images.
-
-Execute the following command if you will use the statistics message publisher:
-
-```bash
-deno install --allow-scripts=npm:puppeteer@23.11.1,npm:vue-demi@0.14.10
-```
-
 ### Run the app within the development environment and execute tasks into the real world
 
 #### Run the pre-scanner
@@ -278,8 +258,6 @@ LOGIN=your_login PASSWORD=your_password deno task e2e:stats
 ```
 
 ### Run the tests
-
-Be sure to install Puppeteer before launching tests (see paragraph "Puppeteer").
 
 You can run the unit tests with the following command:
 
