@@ -1,6 +1,6 @@
 import type { KvDriver } from "../../common/dbdriver/KvDriver.ts";
 import { CommonKvImageRepository } from "../../common/repository/CommonKvImageRepository.ts";
-import type { ImageRepositoryRepositoryEntity } from "../../common/repository/entity/ImageRepositoryRepositoryEntity.ts";
+import type { ImageRepositoryEntity } from "../../common/repository/entity/ImageRepositoryEntity.ts";
 import { Image } from "../domain/entity/Image.ts";
 
 export interface ImageRepository {
@@ -16,7 +16,7 @@ export class KvImageRepository implements ImageRepository {
   }
 
   async getVideoGameScreenshots(filterIDs: string[]): Promise<Image[]> {
-    const entities: ImageRepositoryRepositoryEntity[] =
+    const entities: ImageRepositoryEntity[] =
       await this.commonRepository.getAllVideoGameScreenshots();
 
     return entities
@@ -27,7 +27,7 @@ export class KvImageRepository implements ImageRepository {
   }
 
   async count(): Promise<number> {
-    const entities: ImageRepositoryRepositoryEntity[] =
+    const entities: ImageRepositoryEntity[] =
       await this.commonRepository.getAllVideoGameScreenshots();
     return entities.length;
   }

@@ -11,7 +11,7 @@ import {
   describe,
   it,
 } from "@std/testing/bdd";
-import type { ImageRepositoryRepositoryEntity } from "../src/common/repository/entity/ImageRepositoryRepositoryEntity.ts";
+import type { ImageRepositoryEntity } from "../src/common/repository/entity/ImageRepositoryEntity.ts";
 import type { VideoGameRelationImageRepositoryEntity } from "../src/common/repository/entity/VideoGameRelationImageRepositoryEntity.ts";
 import type { VideoGameRepositoryEntity } from "../src/common/repository/entity/VideoGameRepositoryEntity.ts";
 import { main } from "../src/main.ts";
@@ -52,7 +52,7 @@ describe("main (root file)", () => {
   it("should scan", async () => {
     await main([`--database=${tempDatabaseFilePath}`, "--scan=config.yml"]);
 
-    const filesAfterScan: ImageRepositoryRepositoryEntity[] =
+    const filesAfterScan: ImageRepositoryEntity[] =
       await getAllImagesFromRepository(tempDatabaseFilePath);
     assertEquals(filesAfterScan.length, 5);
 

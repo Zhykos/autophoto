@@ -1,7 +1,7 @@
 import { assertEquals } from "@std/assert";
 import { describe, it } from "@std/testing/bdd";
 import { KvDriver } from "../../../src/common/dbdriver/KvDriver.ts";
-import type { ImageRepositoryRepositoryEntity } from "../../../src/common/repository/entity/ImageRepositoryRepositoryEntity.ts";
+import type { ImageRepositoryEntity } from "../../../src/common/repository/entity/ImageRepositoryEntity.ts";
 import { KvImageRepository } from "../../../src/scanner/repository/ImageRepository.ts";
 import { pathExists } from "../../../src/utils/file.ts";
 import { MockLogger } from "../../mock/logger/mockLogger.ts";
@@ -26,7 +26,7 @@ describe("KvImageRepository", () => {
         scanRootDirectory: "test/resources/video-game",
         path: "test/resources/video-game/8-Bit Bayonetta (2015)/PC/8-Bit Bayonetta - 00001.webp",
         checksum: "toto",
-      } satisfies ImageRepositoryRepositoryEntity);
+      } satisfies ImageRepositoryEntity);
 
       await repository.getAllVideoGameScreenshots();
 

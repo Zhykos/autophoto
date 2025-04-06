@@ -2,7 +2,7 @@ import { assertEquals } from "@std/assert";
 import { distinct } from "@std/collections";
 import { beforeEach, describe, it } from "@std/testing/bdd";
 import { KvDriver } from "../../../src/common/dbdriver/KvDriver.ts";
-import type { ImageRepositoryRepositoryEntity } from "../../../src/common/repository/entity/ImageRepositoryRepositoryEntity.ts";
+import type { ImageRepositoryEntity } from "../../../src/common/repository/entity/ImageRepositoryEntity.ts";
 import type { VideoGameRelationImageRepositoryEntity } from "../../../src/common/repository/entity/VideoGameRelationImageRepositoryEntity.ts";
 import type { VideoGameRepositoryEntity } from "../../../src/common/repository/entity/VideoGameRepositoryEntity.ts";
 import type { Configuration } from "../../../src/configuration/domain/aggregate/Configuration.ts";
@@ -90,7 +90,7 @@ describe("PickerService", () => {
 });
 
 async function pickEveryPhotos(): Promise<void> {
-  const filesAfterScan: ImageRepositoryRepositoryEntity[] =
+  const filesAfterScan: ImageRepositoryEntity[] =
     await getAllImagesFromRepository(tempDatabaseFilePath);
   filesAfterScan.sort((a, b) => a.path.localeCompare(b.path));
   assertEquals(filesAfterScan.length, 13);

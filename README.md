@@ -45,6 +45,8 @@
 Find the latest release [here](https://github.com/Zhykos/autophoto/releases).
 Download the latest release for your platform and run the executable.
 
+Read the following instructions to use it with command lines.
+
 ### Scan directories to save photos in a database
 
 #### Configuration file
@@ -211,22 +213,48 @@ deno task hook install
 
 It will run the linter and tests before each commit.
 
-### Run the project
+### Run the app within the development environment and execute tasks into the real world
 
-There is no run configuration for the project because I just used unit tests to develop the project.
+#### Run the pre-scanner
 
-However you can execute a scan with the following command:
+You can execute a scan with the following command:
+
+```shell
+deno task e2e:prescan
+```
+
+#### Run the scanner
+
+You can execute a scan with the following command:
 
 ```shell
 deno task e2e:scan
 ```
 
-It will use the configuration files `config.yml` and `./test/resources/config2.yml`.
+It will use the configuration files `config.yml` and `./test/resources/config2.yml`, and create a local database `./test/e2e-debug.sqlite3`.
 
-You can execute a publish with the following command:
+#### Publish images
+
+> Careful this section will publish a message on a real Bluesky account!
+
+There is a small debug database in this project (created with the previous paragraph `Run the scanner`). If you want to publish a statistics message, follow these instructions. Be sure to have your Bluesky credentials (email and password).
+
+You can execute a publication with the following command:
 
 ```shell
 LOGIN=your_login PASSWORD=your_password deno task e2e:publish
+```
+
+#### Publish statistics
+
+> Careful this section will publish a message on a real Bluesky account!
+
+There is a small debug database in this project (created with the previous paragraph `Run the scanner`). If you want to publish a statistics message, follow these instructions. Be sure to have your Bluesky credentials (email and password).
+
+You can check a real execution with the following command line:
+
+```shell
+LOGIN=your_login PASSWORD=your_password deno task e2e:stats
 ```
 
 ### Run the tests
@@ -245,7 +273,7 @@ deno task coverage
 
 It will generate a coverage report in the `coverage` directory and open it in your browser.
 
-### Contribute
+### Send a contribution
 
 You can optionnally create an issue to describe a new feature, a bug or something else.
 
@@ -255,12 +283,13 @@ Then create a Pull Request (see non existing yet CONTRIBUTING.md file).
 
 This software uses the following open source packages:
 
-- Deno 2: [JavaScript runtime](https://deno.com/)
-- Biome: [Lint and format](https://biomejs.dev/)
+- JavaScript runtime: [Deno 2](https://deno.com/)
+- Lint and format: [Biome](https://biomejs.dev/)
 - JavaScript Standards: [jsr.io](https://jsr.io/@std)
 - To publish on Bluesky: [atproto - For Bluesky](https://atproto.com/)
 - Multiformats library: [Multiformats](https://multiformats.io/)
 - Git hook: [Hook](https://deno.land/x/deno_hooks)
+- Diagrams: [Mermaid](https://mermaid.js.org/)
 - README template by [Amit Merchant](https://github.com/amitmerchant1990)
 - I wish to not generate a header with IA so I used an image by <a href="https://unsplash.com/fr/@enikoo">eniko kis</a> on <a href="https://unsplash.com/fr/photos/appareil-photo-instantane-polaroid-one-step-2-blanc-et-noir-sur-tableau-blanc-KsLPTsYaqIQ">Unsplash</a>
 
@@ -275,7 +304,7 @@ This software uses the following open source packages:
 
 ## Projects using autophoto
 
-- [🖼️ Gallery of video games screenshots: more than 10.000 photos](https://bsky.app/profile/galleryvideogames.bsky.social)
+- [🖼️ Gallery of video games screenshots: more than 15.000 photos](https://bsky.app/profile/galleryvideogames.bsky.social)
 
 ---
 
@@ -306,3 +335,6 @@ the domains, the performance, etc. So, if you want to help me, I will be happy t
 * 2.4.0
   - Add "Xbox One (beta)" platform
   - New CLI option to publish statistics
+* 2.5.0
+  - Add "Nintendo Switch (demo)" platform
+  - Diagrams for statistics

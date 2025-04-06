@@ -21,7 +21,7 @@ jobs:
 
       # https://github.com/denoland/setup-deno/releases
       - name: Setup Deno
-        uses: denoland/setup-deno@4606d5cc6fb3f673efd4f594850e3f4b3e9d29cd
+        uses: denoland/setup-deno@909cc5acb0fdd60627fb858598759246509fa755
         with:
           deno-version: v2.x
 
@@ -31,5 +31,5 @@ jobs:
       - name: Archive Linux binary ARM
         uses: actions/upload-artifact@v4
         with:
-          name: autophoto-linux-arm-2.4.0
+          name: autophoto-linux-arm-2.5.0
           path: build/linux-arm
