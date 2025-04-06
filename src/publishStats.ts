@@ -1,8 +1,7 @@
-import puppeteer, { type Browser } from "npm:puppeteer";
 import { AtpAgent } from "@atproto/api";
 import type { Log } from "@cross/log";
-import { renderMermaid } from "@mermaid-js/mermaid-cli";
 import { distinct } from "@std/collections";
+import ChartJsImage from "chartjs-to-image";
 import type { BlueskyStatsPublisherAction } from "./cli/domain/valueobject/BlueskyStatsPublisherAction.ts";
 import type { KvDriver } from "./common/dbdriver/KvDriver.ts";
 import { CommonKvRelationRepository } from "./common/repository/CommonKvRelationRepository.ts";
@@ -129,10 +128,13 @@ export async function statsDiagrams(
 ): Promise<{ images: Uint8Array[]; alts: string[] }> {
   const diagramVideoGamePlatform: { image: Uint8Array; alt: string } =
     await statsDiagramVideoGameByPlatform(relationRepository);
+
   const diagramVideoGameYear: { image: Uint8Array; alt: string } =
     await statsDiagramVideoGameByYear(videoGameRepository);
+
   const diagramScreenshotsPlatform: { image: Uint8Array; alt: string } =
     await statsDiagramScreenshotsByPlatform(relationRepository);
+
   return {
     images: [
       diagramVideoGamePlatform.image,
@@ -161,16 +163,16 @@ async function statsDiagramVideoGameByPlatform(
     mapPlatformVideoGameIds.set(platform, videoGameIds);
   }
 
-  const graphDefinition = `pie showData title Video games by platform
-${mapPlatformVideoGameIds
-  .keys()
-  .map(
-    (k) =>
-      `"${k}" : ${distinct(mapPlatformVideoGameIds.get(k) as string[]).length}`,
-  )
-  .toArray()
-  .sort()
-  .join("\n")}`;
+  const graphDefinition: { label: string; value: number }[] =
+    mapPlatformVideoGameIds
+      .keys()
+      .map((k) => {
+        return {
+          label: k,
+          value: distinct(mapPlatformVideoGameIds.get(k) as string[]).length,
+        };
+      })
+      .toArray();
 
   const image: Uint8Array = await statsDiagramImage(graphDefinition);
 
@@ -212,13 +214,12 @@ async function statsDiagramVideoGameByYear(
     mapYearCount.set(year, yearCount + 1);
   }
 
-  const graphDefinition = `pie showData title Video games by original release year
-${mapYearCount
-  .keys()
-  .map((k) => `"${k}" : ${mapYearCount.get(k)}`)
-  .toArray()
-  .sort()
-  .join("\n")}`;
+  const graphDefinition: { label: string; value: number }[] = mapYearCount
+    .keys()
+    .map((k) => {
+      return { label: k.toString(), value: mapYearCount.get(k) as number };
+    })
+    .toArray();
 
   const image: Uint8Array = await statsDiagramImage(graphDefinition);
 
@@ -255,13 +256,12 @@ async function statsDiagramScreenshotsByPlatform(
     mapPlaformCount.set(platform, count + 1);
   }
 
-  const graphDefinition = `pie showData title Video games screenshots by platform
-${mapPlaformCount
-  .keys()
-  .map((k) => `"${k}" : ${mapPlaformCount.get(k)}`)
-  .toArray()
-  .sort()
-  .join("\n")}`;
+  const graphDefinition: { label: string; value: number }[] = mapPlaformCount
+    .keys()
+    .map((k) => {
+      return { label: k, value: mapPlaformCount.get(k) as number };
+    })
+    .toArray();
 
   const image: Uint8Array = await statsDiagramImage(graphDefinition);
 
@@ -286,14 +286,25 @@ ${mapPlaformCount
 }
 
 async function statsDiagramImage(
-  diagramDefinition: string,
+  dataSet: { label: string; value: number }[],
 ): Promise<Uint8Array> {
-  let browser: Browser | undefined;
-  try {
-    browser = await puppeteer.launch();
-    const { data } = await renderMermaid(browser, diagramDefinition, "png");
-    return data;
-  } finally {
-    browser?.close();
-  }
+  const sortedDataSet: { label: string; value: number }[] = dataSet.toSorted(
+    (a, b) => a.label.localeCompare(b.label),
+  );
+
+  const chart = new ChartJsImage();
+  chart.setConfig({
+    type: "pie",
+    data: {
+      labels: sortedDataSet.map((d) => d.label),
+      datasets: [
+        {
+          data: sortedDataSet.map((d) => d.value),
+          hoverOffset: 4,
+        },
+      ],
+    },
+  });
+
+  return new Uint8Array(await chart.toBinary());
 }

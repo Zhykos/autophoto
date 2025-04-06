@@ -25,7 +25,7 @@ jobs:
 
       # https://github.com/denoland/setup-deno/releases
       - name: Setup Deno
-        uses: denoland/setup-deno@4606d5cc6fb3f673efd4f594850e3f4b3e9d29cd
+        uses: denoland/setup-deno@909cc5acb0fdd60627fb858598759246509fa755
         with:
           deno-version: v2.x
 
@@ -33,7 +33,9 @@ jobs:
         run: deno lint
 
       - name: Run tests and activate coverage
-        run: deno test --allow-read --allow-write --unstable-kv --allow-env --allow-net --coverage -- --database=./test/it-database.sqlite3 --scan=config.yml
+        run: |
+          deno install --allow-scripts=npm:puppeteer@23.11.1,npm:vue-demi@0.14.10
+          deno test --allow-read --allow-write --allow-env --allow-net --allow-sys --allow-run --unstable-kv --coverage -- --database=./test/it-database.sqlite3 --scan=config.yml
 
       - name: Generate lcov report
         run: deno task lcov
@@ -43,3 +45,11 @@ jobs:
         with:
           coverage-file: cov.lcov
           minimum-coverage: 90
+
+      - name: Upload tests snapshots
+        uses: actions/upload-artifact@v4
+        if: ${{ failure() }}
+        with:
+          name: tests-snapshots
+          path: ./test/resources/snapshots
+          retention-days: 30
