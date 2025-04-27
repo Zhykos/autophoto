@@ -319,6 +319,22 @@ the domains, the performance, etc. So, if you want to help me, I will be happy t
 
 ---
 
+## Scripts
+
+If you need to update the database or something else, some scripts exist because the application does not support some features yet.
+
+You can find those scripts in the `scripts` directory:
+  - `setPublished.ts` updates the `published` property of an image: set a video game name and all its images will be set as published
+
+To use a script, run this command (replace `xxx.ts` with an actual name):
+
+```shell
+cd scripts
+deno run --allow-all --unstable-kv xxx.ts
+```
+
+---
+
 ## Changelog
 
 * 1.0.0
@@ -338,3 +354,5 @@ the domains, the performance, etc. So, if you want to help me, I will be happy t
 * 2.5.0
   - Add "Nintendo Switch (demo)" platform
   - Diagrams for statistics
+* 2.6.0
+  - Add some scripts to update the database
