@@ -1,0 +1,21 @@
+async function toto() {
+  const kv = await Deno.openKv("/Users/zhykos/Downloads/db.autophoto.sqlite3");
+  const entries = kv.list({ prefix: ["image"] });
+  for await (const entry of entries) {
+    const encoder = new TextDecoder();
+    const fileData = encoder.decode(entry.value as BufferSource);
+    const json = JSON.parse(fileData);
+    if (json.path.includes("Satisfactory")) {
+      const split = json.path.split("/");
+      split[4] = "Satisfactory (2024)";
+      json.path = split.join("/");
+      console.log(json);
+
+      const encoder = new TextEncoder();
+      const data: Uint8Array = encoder.encode(JSON.stringify(json));
+      await kv.set(["image", json.uuid], data);
+    }
+  }
+}
+
+toto();
