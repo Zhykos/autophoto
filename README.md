@@ -289,7 +289,7 @@ This software uses the following open source packages:
 - To publish on Bluesky: [atproto - For Bluesky](https://atproto.com/)
 - Multiformats library: [Multiformats](https://multiformats.io/)
 - Git hook: [Hook](https://deno.land/x/deno_hooks)
-- Diagrams: [Mermaid](https://mermaid.js.org/)
+- Diagrams: [Chart.js](https://www.chartjs.org/)
 - README template by [Amit Merchant](https://github.com/amitmerchant1990)
 - I wish to not generate a header with IA so I used an image by <a href="https://unsplash.com/fr/@enikoo">eniko kis</a> on <a href="https://unsplash.com/fr/photos/appareil-photo-instantane-polaroid-one-step-2-blanc-et-noir-sur-tableau-blanc-KsLPTsYaqIQ">Unsplash</a>
 
@@ -319,6 +319,22 @@ the domains, the performance, etc. So, if you want to help me, I will be happy t
 
 ---
 
+## Scripts
+
+If you need to update the database or something else, some scripts exist because the application does not support some features yet.
+
+You can find those scripts in the `scripts` directory:
+  - `setPublished.ts` updates the `published` property of an image: set a video game name and all its images will be set as published
+
+To use a script, run this command (replace `xxx.ts` with an actual name):
+
+```shell
+cd scripts
+deno run --allow-all --unstable-kv xxx.ts
+```
+
+---
+
 ## Changelog
 
 * 1.0.0
@@ -338,3 +354,6 @@ the domains, the performance, etc. So, if you want to help me, I will be happy t
 * 2.5.0
   - Add "Nintendo Switch (demo)" platform
   - Diagrams for statistics
+* 2.6.0
+  - Add some scripts to update the database
+  - Add "Nintendo Switch 2" platform

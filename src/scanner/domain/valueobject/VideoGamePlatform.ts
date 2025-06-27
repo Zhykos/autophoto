@@ -7,6 +7,7 @@ const platforms = [
   "iOS",
   "Nintendo Switch",
   "Nintendo Switch (demo)",
+  "Nintendo Switch 2",
   "PC",
   "PC (alpha)",
   "PC (demo)",

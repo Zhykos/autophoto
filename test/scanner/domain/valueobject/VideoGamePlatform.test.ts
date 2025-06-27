@@ -10,7 +10,7 @@ describe("VideoGamePlatform", () => {
     assert(error instanceof DomainError);
     assertEquals(
       error.message,
-      "Platform (foo) must be one of the following: Android, Android (preview), Nintendo Switch, Nintendo Switch (demo), PC, PC (alpha), PC (demo), PC (early access), PS Vita, PlayStation 4, PlayStation 4 (beta), PlayStation 4 (demo), PlayStation 5, Steam Deck, Xbox 360, Xbox Game Cloud, Xbox One, Xbox One (beta), Xbox Series X, Xbox Series X (beta), iOS, unknown",
+      "Platform (foo) must be one of the following: Android, Android (preview), Nintendo Switch, Nintendo Switch (demo), Nintendo Switch 2, PC, PC (alpha), PC (demo), PC (early access), PS Vita, PlayStation 4, PlayStation 4 (beta), PlayStation 4 (demo), PlayStation 5, Steam Deck, Xbox 360, Xbox Game Cloud, Xbox One, Xbox One (beta), Xbox Series X, Xbox Series X (beta), iOS, unknown",
     );
   });
 
