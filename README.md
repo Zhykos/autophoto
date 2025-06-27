@@ -356,3 +356,4 @@ deno run --allow-all --unstable-kv xxx.ts
   - Diagrams for statistics
 * 2.6.0
   - Add some scripts to update the database
+  - Add "Nintendo Switch 2" platform
